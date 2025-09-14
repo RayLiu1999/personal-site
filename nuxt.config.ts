@@ -41,7 +41,7 @@ export default defineNuxtConfig({
         { property: 'og:title', content: 'Ray Liu 個人網站' },
         { property: 'og:description', content: '您好，我是 Ray Liu，一位熱愛技術的後端工程師。這個網站展示我的專業技能與個人作品，歡迎參觀與交流！' },
         { property: 'og:image', content: '/og-image.png' },
-        { property: 'og:url', content: 'https://your-domain.com' },
+        { property: 'og:url', content: process.env.SITE_URL || 'https://your-domain.com' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Ray Liu 個人網站' },
@@ -58,7 +58,7 @@ export default defineNuxtConfig({
   },
   // Sitemap 配置
   sitemap: {
-    siteUrl: process.env.SITE_URL || 'https://xxx.com',
+    siteUrl: process.env.SITE_URL || 'https://your-domain.com',
     exclude: [
       '/admin/**',
       '/api/**'
