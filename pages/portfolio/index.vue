@@ -5,7 +5,7 @@
       <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">作品集</h1>
         <p class="text-coffee-600 dark:text-gray-400 max-w-2xl mx-auto">
-          展示我在後端開發領域的專案經驗與技術成果
+          展示我在前端與後端開發領域的專案經驗與技術成果
         </p>
       </div>
 
@@ -35,7 +35,9 @@
           :key="project.id"
           class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
         >
-          <img :src="project.image" :alt="project.title" class="w-full h-48 object-cover">
+          <NuxtLink :to="`/portfolio/${project.id}`" class="block">
+            <img :src="project.image" :alt="project.title" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+          </NuxtLink>
           <div class="p-6">
             <div class="flex items-center justify-between mb-2">
               <span class="px-3 py-1 bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 text-sm rounded-full">
@@ -67,6 +69,13 @@
                     <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
                   </svg>
                 </a>
+                <template v-if="project.githubs">
+                  <a v-for="(github, index) in project.githubs" :key="index" :href="github" target="_blank" class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </a>
+                </template>
                 <a v-if="project.demo" :href="project.demo" target="_blank" class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
@@ -84,69 +93,92 @@
 <script setup>
 const selectedCategory = ref('全部')
 
-const categories = ['全部', 'Web API', '微服務', '資料庫設計', 'DevOps', '系統架構']
+const categories = ['全部', '全端開發', '前端', '後端', '瀏覽器擴充功能', '工具/自動化', 'PHP', 'Discord 機器人']
 
 const projects = [
   {
     id: 1,
-    title: 'E-commerce API 系統',
-    description: '高併發電商後端系統，支援百萬級用戶同時在線，包含完整的訂單、支付、庫存管理功能',
-    image: '/project1.jpg',
-    category: 'Web API',
+    title: 'Discord 風格聊天應用',
+    description: '模仿 Discord 架構的即時聊天應用，支援伺服器、頻道、私訊、好友系統，採用 Vue 3 + Go 開發',
+    image: '/project1.png',
+    category: '全端開發',
     year: '2024',
-    technologies: ['Node.js', 'Express.js', 'Redis', 'MySQL', 'Docker', 'JWT'],
-    github: 'https://github.com/example/ecommerce-api',
-    demo: 'https://api.example.com'
+    technologies: ['Vue 3', 'TypeScript', 'Go', 'Gin', 'MongoDB', 'Redis', 'WebSocket', 'JWT', 'Element Plus'],
+    demo: 'https://chat-app.liu-yucheng.com',
+    githubs: [
+      { name: '前端', url: 'https://github.com/RayLiu1999/chat_app_frontend' },
+      { name: '後端', url: 'https://github.com/RayLiu1999/chat_app_backend' }
+    ],
+    features: ['即時聊天', '好友系統', '檔案上傳', '三層架構', 'WebSocket 通訊']
   },
   {
     id: 2,
-    title: '微服務架構平台',
-    description: '基於 Kubernetes 的微服務架構，提升系統可擴展性，支援自動擴縮容與服務發現',
-    image: '/project2.jpg',
-    category: '微服務',
+    title: 'Vue 國際象棋遊戲',
+    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
+    image: '/project2.png',
+    category: '前端',
     year: '2024',
-    technologies: ['Python', 'FastAPI', 'Kubernetes', 'PostgreSQL', 'RabbitMQ', 'Prometheus'],
-    github: 'https://github.com/example/microservices-platform'
+    technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
+    demo: 'https://chess.liu-yucheng.com',
+    github: 'https://github.com/RayLiu1999/chess-in-vue',
+    features: ['完整象棋規則', 'AI 對戰', '可行動位置高亮', 'FEN 格式支援', '響應式設計']
   },
   {
     id: 3,
-    title: '即時數據分析系統',
-    description: '大數據處理與即時分析平台，處理 TB 級數據，提供即時報表與預警功能',
-    image: '/project3.jpg',
-    category: '系統架構',
-    year: '2023',
-    technologies: ['Java', 'Spring Boot', 'Kafka', 'Elasticsearch', 'MongoDB', 'Grafana'],
-    github: 'https://github.com/example/realtime-analytics'
+    title: '綠芬芳手工皂電商網站',
+    description: '使用 Nuxt.js 3 建構的手工皂電商平台，包含前台、後台管理和 RESTful API',
+    image: '/project3.png',
+    category: '全端開發',
+    year: '2024',
+    technologies: ['Nuxt.js 3', 'Tailwind CSS', 'TypeScript', 'Go', 'Gin', 'MySQL', 'JWT', 'reCAPTCHA'],
+    demo: 'https://gf-soap.com',
+    features: ['SEO 最佳化', '動態內容管理', '產品篩選', '管理後台', 'CSRF 保護']
   },
   {
     id: 4,
-    title: '分散式快取系統',
-    description: '高效能分散式快取解決方案，支援多種快取策略與自動故障轉移',
-    image: '/project4.jpg',
-    category: '系統架構',
-    year: '2023',
-    technologies: ['Go', 'Redis Cluster', 'Consul', 'Docker Swarm'],
-    github: 'https://github.com/example/distributed-cache'
+    title: 'YouTube 影片下載擴充功能',
+    description: 'Chrome 擴充功能，支援 YouTube 影片下載和 AI 總結功能，整合 n8n 工作流自動化',
+    image: '/project4.png',
+    category: '瀏覽器擴充功能',
+    year: '2024',
+    technologies: ['JavaScript', 'Chrome Extension API', 'n8n', 'yt-dlp', 'Docker Compose', 'Webhook'],
+    github: 'https://github.com/RayLiu1999/youtube-extension',
+    features: ['多品質下載', 'AI 影片總結', '快捷鍵支援', '線上/本地模式', '後台服務整合']
   },
   {
     id: 5,
-    title: 'CI/CD 自動化平台',
-    description: '企業級 CI/CD 平台，支援多種程式語言與部署環境，提升開發效率',
-    image: '/project5.jpg',
-    category: 'DevOps',
-    year: '2023',
-    technologies: ['Jenkins', 'GitLab CI', 'Ansible', 'Terraform', 'AWS', 'Helm'],
-    github: 'https://github.com/example/cicd-platform'
+    title: 'PHP 簡易電商購物車',
+    description: '使用 PHP 開發的簡易電商系統，包含商品瀏覽、購物車、用戶註冊登入等基本功能',
+    image: '/project5.png',
+    category: 'PHP',
+    year: '2024',
+    technologies: ['PHP', 'MySQL', 'Composer', 'Apache'],
+    github: 'https://github.com/RayLiu1999/e-commerce-cart',
+    demo: 'https://e-commerce-cart.liu-yucheng.com',
+    features: ['MVC 架構', '購物車系統', '用戶管理', '商品管理', 'Session 管理']
   },
   {
     id: 6,
-    title: '金融交易系統',
-    description: '高頻交易後端系統，毫秒級響應時間，確保交易安全與資料一致性',
-    image: '/project6.jpg',
-    category: 'Web API',
-    year: '2022',
-    technologies: ['C++', 'PostgreSQL', 'Redis', 'RabbitMQ', 'Nginx'],
-    github: 'https://github.com/example/trading-system'
+    title: '番茄鐘生產力應用',
+    description: '基於番茄工作法的生產力管理應用，幫助用戶管理任務與專注時間',
+    image: '/project6.png',
+    category: 'PHP',
+    year: '2023',
+    technologies: ['PHP', 'MySQL', 'JavaScript', 'Gulp', 'Prepros'],
+    demo: 'https://pomodoro.liu-yucheng.com',
+    github: 'https://github.com/RayLiu1999/tomato-clock',
+    features: ['番茄計時器', '任務管理', '專注統計', '熱重整開發', '響應式設計']
+  },
+  {
+    id: 7,
+    title: 'YouTube Discord 機器人',
+    description: 'Discord 機器人，自動爬取 YouTube 頻道的最新影片和直播，並推送到指定頻道',
+    image: '/project7.png',
+    category: 'Discord 機器人',
+    year: '2024',
+    technologies: ['Node.js', 'Discord.js', 'PM2', 'YouTube API', 'Puppeteer', 'JavaScript'],
+    github: 'https://github.com/RayLiu1999/yt_discord_bot',
+    features: ['自動爬取影片', '定時推播', '頻道管理', '指令控制', 'PM2 部署']
   }
 ]
 

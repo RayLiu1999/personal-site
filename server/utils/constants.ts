@@ -14,17 +14,6 @@ export const API_MESSAGES = {
   RATE_LIMIT: '請求過於頻繁，請稍後再試'
 } as const
 
-export const CONTACT_INFO = {
-  EMAIL: 'rayliu219@gmail.com',
-  RESPONSE_TIME: '通常在 24 小時內回覆',
-  AVAILABILITY: [
-    '全端 Web 應用開發',
-    'API 設計與後端服務',
-    '系統架構諮詢',
-    '技術指導與 Code Review'
-  ]
-} as const
-
 export const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
 
 export const RECAPTCHA_ERROR_CODES = {

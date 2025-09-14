@@ -1,4 +1,3 @@
-// 舊的 import 已經不包含 Client，所以移除
 import {
   messagingApi,
 } from '@line/bot-sdk'

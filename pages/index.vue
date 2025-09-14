@@ -11,7 +11,7 @@
             你好，我是<span class="text-coffee-600 dark:text-blue-400">Ray Liu</span>
           </h1>
           <p class="text-xl text-coffee-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            專精於後端系統架構設計、API 開發與資料庫優化，致力於打造高效能、可擴展的解決方案
+            我是一名擁有 3 年實戰經驗的後端工程師，熱衷於探索新技術，無論是前端、後端、DevOps。我目前專注於高效能系統的研究與應用，致力於打造穩定且高效的技術解決方案。
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink to="/portfolio" class="bg-coffee-600 hover:bg-coffee-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
@@ -34,7 +34,9 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div v-for="skill in skills" :key="skill.name" class="text-center p-6 bg-coffee-50 dark:bg-gray-700 rounded-lg hover:shadow-lg transition-shadow">
-            <div class="text-4xl mb-4">{{ skill.icon }}</div>
+            <img v-if="skill.iconType === 'image'" class="w-24 h-24 mb-4 mx-auto" :src="skill.icon" alt="">
+            <span v-else-if="skill.iconType === 'emoji'" class="w-24 h-24 mb-4 mx-auto text-4xl">{{ skill.icon }}</span>
+            <svg v-else-if="skill.iconType === 'svg'" class="w-24 h-24 mb-4 mx-auto" v-html="skill.icon"></svg>
             <h3 class="text-lg font-semibold text-coffee-800 dark:text-white mb-2">{{ skill.name }}</h3>
             <p class="text-coffee-600 dark:text-gray-300 text-sm">{{ skill.description }}</p>
           </div>
@@ -49,20 +51,44 @@
           <h2 class="text-3xl font-bold text-coffee-800 dark:text-white mb-4">精選作品</h2>
           <p class="text-coffee-600 dark:text-gray-400">最新的專案成果</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="project in featuredProjects" :key="project.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-            <img :src="project.image" :alt="project.title" class="w-full h-48 object-cover">
-            <div class="p-6">
+        <div class="flex flex-wrap justify-center gap-8">
+          <div v-for="project in featuredProjects" :key="project.id" 
+               class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.34rem)] flex flex-col">
+            <NuxtLink :to="`/portfolio/${project.id}`" class="block">
+              <img :src="project.image" :alt="project.title" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+            </NuxtLink>
+            <div class="p-6 flex flex-col flex-grow">
               <h3 class="text-xl font-semibold text-coffee-800 dark:text-white mb-2">{{ project.title }}</h3>
-              <p class="text-coffee-600 dark:text-gray-300 mb-4">{{ project.description }}</p>
+              <p class="text-coffee-600 dark:text-gray-300 mb-4 flex-grow">{{ project.description }}</p>
               <div class="flex flex-wrap gap-2 mb-4">
                 <span v-for="tech in project.technologies" :key="tech" class="px-3 py-1 bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 text-sm rounded-full">
                   {{ tech }}
                 </span>
               </div>
-              <NuxtLink :to="`/portfolio/${project.id}`" class="text-coffee-600 dark:text-blue-400 hover:text-coffee-800 dark:hover:text-blue-300 font-semibold">
-                查看詳情 →
-              </NuxtLink>
+              <div class="flex justify-between items-center mt-auto pt-4 border-t border-coffee-100 dark:border-gray-700">
+                <NuxtLink :to="`/portfolio/${project.id}`" class="text-coffee-600 dark:text-blue-400 hover:text-coffee-800 dark:hover:text-blue-300 font-semibold">
+                  查看詳情 →
+                </NuxtLink>
+                <div class="flex gap-2">
+                  <a v-if="project.github" :href="project.github" target="_blank" class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300" title="GitHub Repository">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </a>
+                  <template v-if="project.githubs">
+                    <a v-for="(github, index) in project.githubs" :key="index" :href="github" target="_blank" class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300" :title="`GitHub Repository ${index + 1}`">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </a>
+                  </template>
+                  <a v-if="project.demo" :href="project.demo" target="_blank" class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300" title="Live Demo">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -79,48 +105,61 @@
 <script setup>
 const skills = [
   {
-    name: 'Node.js',
-    icon: '🟢',
-    description: 'Express.js, Koa.js, NestJS 框架開發'
+    name: 'PHP',
+    icon: 'https://www.php.net/images/logos/new-php-logo.svg',
+    iconType: 'image',
+    description: '網頁、Laravel 框架開發'
   },
   {
-    name: 'Python',
-    icon: '🐍',
-    description: 'Django, FastAPI, Flask 後端開發'
+    name: 'Golang',
+    icon: 'https://go.dev/blog/go-brand/Go-Logo/SVG/Go-Logo_Blue.svg',
+    iconType: 'image',
+    description: '高效能後端開發'
+  },
+  {
+    name: 'Node.js',
+    icon: 'https://nodejs.org/static/logos/nodejsStackedDark.svg',
+    iconType: 'image',
+    description: 'Express.js 框架開發'
   },
   {
     name: 'Database',
-    icon: '🗄️',
+    icon: '/database.png',
+    iconType: 'image',
     description: 'MySQL, PostgreSQL, MongoDB, Redis'
   },
   {
     name: 'DevOps',
-    icon: '⚙️',
-    description: 'Docker, Kubernetes, CI/CD, AWS'
+    icon: '/devops.png',
+    iconType: 'image',
+    description: 'Docker, Kubernetes, CI/CD, VPS'
   }
 ]
 
 const featuredProjects = [
   {
     id: 1,
-    title: 'E-commerce API 系統',
-    description: '高併發電商後端系統，支援百萬級用戶同時在線',
-    image: '/project1.jpg',
-    technologies: ['Node.js', 'Redis', 'MySQL', 'Docker']
+    title: 'Discord 風格聊天應用',
+    description: '模仿 Discord 架構的即時聊天應用，支援伺服器、頻道、私訊、好友系統，採用 Vue 3 + Go 開發',
+    image: '/project1.png',
+    category: '全端開發',
+    year: '2024',
+    technologies: ['Vue 3', 'TypeScript', 'Go', 'Gin', 'MongoDB', 'Redis', 'WebSocket', 'JWT', 'Element Plus'],
+    demo: 'https://chat-app.liu-yucheng.com',
+    githubs: ['https://github.com/RayLiu1999/chat_app_frontend', 'https://github.com/RayLiu1999/chat_app_backend'],
+    features: ['即時聊天', '好友系統', '檔案上傳', '三層架構', 'WebSocket 通訊']
   },
   {
     id: 2,
-    title: '微服務架構平台',
-    description: '基於 Kubernetes 的微服務架構，提升系統可擴展性',
-    image: '/project2.jpg',
-    technologies: ['Python', 'Kubernetes', 'PostgreSQL', 'RabbitMQ']
+    title: 'Vue 國際象棋遊戲',
+    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
+    image: '/project2.png',
+    category: '前端',
+    year: '2024',
+    technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
+    demo: 'https://chess.liu-yucheng.com',
+    github: 'https://github.com/RayLiu1999/chess-in-vue',
+    features: ['完整象棋規則', 'AI 對戰', '可行動位置高亮', 'FEN 格式支援', '響應式設計']
   },
-  {
-    id: 3,
-    title: '即時數據分析系統',
-    description: '大數據處理與即時分析平台，處理 TB 級數據',
-    image: '/project3.jpg',
-    technologies: ['Java', 'Kafka', 'Elasticsearch', 'MongoDB']
-  }
 ]
 </script>
