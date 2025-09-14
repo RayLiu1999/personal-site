@@ -8,8 +8,15 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
-            <NuxtLink :to="localePath('/')" class="text-coffee-50 dark:text-white text-xl font-bold">
-              Ray Liu
+            <NuxtLink :to="localePath('/')" class="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-300">
+              <img 
+                src="/logo.png" 
+                alt="Ray Liu Logo" 
+                class="h-8 w-auto"
+              >
+              <span class="text-coffee-50 dark:text-white text-xl font-bold hidden sm:block">
+                Ray Liu
+              </span>
             </NuxtLink>
           </div>
           <div class="hidden md:flex items-center space-x-6">

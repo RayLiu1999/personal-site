@@ -29,9 +29,29 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: '後端工程師個人網站',
+      title: 'Ray Liu 個人網站',
       meta: [
-        { name: 'description', content: '後端工程師作品集與個人簡介' }
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'Ray Liu 作品集與個人簡介' },
+        { name: 'keywords', content: 'Ray Liu, 後端工程師, 程式設計, 作品集' },
+        { name: 'author', content: 'Ray Liu' },
+        // Open Graph (Facebook)
+        { property: 'og:title', content: 'Ray Liu 個人網站' },
+        { property: 'og:description', content: 'Ray Liu 作品集與個人簡介' },
+        { property: 'og:image', content: '/og-image.png' },
+        { property: 'og:url', content: 'https://your-domain.com' },
+        // Twitter Card
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Ray Liu 個人網站' },
+        { name: 'twitter:description', content: 'Ray Liu 作品集與個人簡介' },
+        { name: 'twitter:image', content: '/og-image.png' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        // 字體載入
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }
       ]
     }
   },
