@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "home": "首頁",
+    "portfolio": "作品集",
+    "about": "關於我",
+    "blog": "部落格",
+    "contact": "聯絡我"
+  },
+  "ui": {
+    "toggleDarkMode": "切換到深色模式",
+    "toggleLightMode": "切換到亮色模式",
+    "language": "語言"
+  },
+  "footer": {
+    "copyright": "個人網站. All rights reserved.",
+    "privacyPolicy": "隱私權政策"
+  }
+}

@@ -4,8 +4,26 @@ import { defineNuxtConfig } from 'nuxt/config';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-31',
   modules: [
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/i18n'
   ],
+  i18n: {
+    locales: [
+      {
+        code: 'zh-tw',
+        name: '繁體中文',
+        file: 'zh-tw.json'
+      },
+      {
+        code: 'en',
+        name: 'English',
+        file: 'en.json'
+      }
+    ],
+    langDir: 'locales/',
+    defaultLocale: 'zh-tw',
+    strategy: 'prefix_except_default'
+  },
   imports: {
     autoImport: true
   },

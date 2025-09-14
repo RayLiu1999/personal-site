@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "home": "Home",
+    "portfolio": "Portfolio", 
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "ui": {
+    "toggleDarkMode": "Switch to dark mode",
+    "toggleLightMode": "Switch to light mode",
+    "language": "Language"
+  },
+  "footer": {
+    "copyright": "Personal Website. All rights reserved.",
+    "privacyPolicy": "Privacy Policy"
+  }
+}
