@@ -44,8 +44,9 @@ export const useLocalizedMeta = (metaData: {
 
 // 專案詳細頁面的動態 meta
 export const useProjectMeta = (project: any, locale: string) => {
-  const baseUrl = 'https://ray-liu.dev'
-  
+  const config = useRuntimeConfig()
+  const baseUrl = config.public.siteUrl || 'https://your-domain.com'
+
   const titles = {
     'zh-tw': `${project.title} - Ray Liu 作品集`,
     'en': `${project.title} - Ray Liu Portfolio`

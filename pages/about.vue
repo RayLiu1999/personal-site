@@ -93,6 +93,9 @@
 </template>
 
 <script setup>
+  const config = useRuntimeConfig()
+  const siteUrl = config.public.siteUrl
+
 const philosophy = [
   {
     title: '程式碼是門手藝',
@@ -159,7 +162,7 @@ useHead({
     },
     {
       property: 'og:url',
-      content: 'https://ray-liu.dev/about'
+      content: `${siteUrl}/about`
     }
   ]
 })

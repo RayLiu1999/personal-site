@@ -146,6 +146,8 @@
 <script setup>
 const route = useRoute()
 const projectId = parseInt(route.params.id)
+const config = useRuntimeConfig()
+const siteUrl = config.public.siteUrl
 
 // Mock project data - 實際專案數據
 const projects = {
@@ -513,6 +515,22 @@ const projects = {
 }
 
 const project = projects[projectId] || null
+let description = ''
+let keywords = ''
+
+if (project) {
+  description = project.description;
+} else {
+  description = '抱歉，您要查看的專案不存在。';
+}
+
+if (project) {
+  keywords = `${project.title}`;
+  if (Array.isArray(project.technologies)) {
+    keywords += `, ${project.technologies.join(', ')}`
+  }
+  keywords += `, ${project.category}, Ray Liu 專案`
+}
 
 // SEO Meta 設定
 useHead({
@@ -520,15 +538,11 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: project 
-        ? `${project.description} - 此專案展示了 ${project.technologies.join('、')} 等技術的應用，包含 ${project.features?.slice(0, 3).join('、')} 等功能特色。`
-        : '抱歉，您要查看的專案不存在。'
+      content: description,
     },
     {
       name: 'keywords',
-      content: project 
-        ? `${project.title}, ${project.technologies.join(', ')}, ${project.category}, Ray Liu 專案`
-        : 'Ray Liu, 作品集, 專案'
+      content: keywords,
     },
     // Open Graph
     {
@@ -545,11 +559,11 @@ useHead({
     },
     {
       property: 'og:url',
-      content: `https://ray-liu.dev/portfolio/${projectId}`
+      content: `${siteUrl}/portfolio/${projectId}`
     },
     {
       property: 'og:image',
-      content: project ? `https://ray-liu.dev${project.image}` : 'https://ray-liu.dev/og-image.png'
+      content: project ? `${siteUrl}${project.image}` : `${siteUrl}/og-image.png`
     },
     // Article specific
     {

@@ -128,6 +128,9 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
+const siteUrl = config.public.siteUrl
+
 const form = ref({
   name: '',
   email: '',
@@ -273,7 +276,7 @@ useHead({
     },
     {
       property: 'og:url',
-      content: 'https://ray-liu.dev/contact'
+      content: `${siteUrl}/contact`
     }
   ]
 })

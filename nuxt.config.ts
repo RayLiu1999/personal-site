@@ -94,6 +94,7 @@ export default defineNuxtConfig({
       recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY || ''
     },
     public: {
+      siteUrl: process.env.SITE_URL || 'https://your-domain.com',
       recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY || '',
       contactResponseTime: '通常於 24 小時內回覆您的訊息'
     }

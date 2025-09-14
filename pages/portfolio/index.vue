@@ -91,6 +91,9 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
+const siteUrl = config.public.siteUrl
+
 const selectedCategory = ref('全部')
 
 const categories = ['全部', '全端開發', '前端', '後端', '瀏覽器擴充功能', '工具/自動化', 'PHP', 'Discord 機器人']
@@ -216,7 +219,7 @@ useHead({
     },
     {
       property: 'og:url',
-      content: 'https://ray-liu.dev/portfolio'
+      content: `${siteUrl}/portfolio`
     }
   ]
 })
