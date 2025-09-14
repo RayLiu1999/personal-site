@@ -16,5 +16,19 @@ export default defineNuxtConfig({
         { name: 'description', content: '後端工程師作品集與個人簡介' }
       ]
     }
+  },
+  runtimeConfig: {
+    private: {
+      lineChannelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
+      lineChannelSecret: process.env.LINE_CHANNEL_SECRET || '',
+      lineUserId: process.env.LINE_USER_ID || '',
+      recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY || ''
+    },
+    
+    // 公開變數
+    public: {
+      recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY || '',
+      contactResponseTime: '通常在 24 小時內回覆'
+    }
   }
 });
