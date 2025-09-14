@@ -12,9 +12,9 @@
               <img 
                 src="/logo.png" 
                 alt="Ray Liu Logo" 
-                class="h-8 w-auto"
+                class="h-5 w-auto"
               >
-              <span class="text-coffee-50 dark:text-white text-xl font-bold hidden sm:block">
+              <span class="text-coffee-50 dark:text-white text-xl font-bold">
                 Ray Liu
               </span>
             </NuxtLink>
