@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed right-4 top-1/2 -translate-y-1/2 z-50">
+  <div class="fixed right-4 top-1/2 -translate-y-1/2 z-50 hidden md:block">
     <div class="flex flex-col items-center space-y-4">
       <a 
         v-for="item in socialLinks" 
@@ -17,7 +17,7 @@
           text-coffee-600 dark:text-gray-300 
           hover:text-coffee-800 dark:hover:text-white
           transition-all duration-300
-          transform hover:scale-110
+          transform hover:scale-110 hover:-translate-x-1
           border border-coffee-100 dark:border-gray-700
         "
       >

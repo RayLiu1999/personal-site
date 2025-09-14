@@ -147,6 +147,34 @@
     <!-- Footer -->
     <footer class="bg-coffee-800 dark:bg-gray-800 text-coffee-100 dark:text-gray-300">
       <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Contact info section for mobile -->
+        <div class="md:hidden mb-6">
+          <h3 class="text-lg font-semibold text-white mb-4 text-center">{{ $t('footer.contact') }}</h3>
+          <div class="flex justify-center space-x-6">
+            <a 
+              v-for="item in socialLinks" 
+              :key="item.name"
+              :href="item.url" 
+              target="_blank" 
+              :title="item.name"
+              class="
+                w-10 h-10 
+                bg-coffee-700 dark:bg-gray-700 
+                hover:bg-coffee-600 dark:hover:bg-gray-600
+                rounded-full 
+                flex items-center justify-center 
+                text-coffee-100 dark:text-gray-300 
+                hover:text-white
+                transition-all duration-300
+                transform hover:scale-110
+              "
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" v-html="item.icon"></svg>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Main footer content -->
         <div class="text-center space-y-2">
           <p>&copy; 2025 Ray Liu {{ $t('footer.copyright') }}</p>
           <div class="flex justify-center space-x-6 text-sm">
@@ -182,6 +210,25 @@ const languages = [
     code: 'en',
     name: 'English',
     short: 'EN',
+  }
+]
+
+// 社群媒體連結 (用於手機版頁尾)
+const socialLinks = [
+  {
+    name: 'Email',
+    url: 'mailto:rayliu219@gmail.com',
+    icon: '<path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>'
+  },
+  {
+    name: 'GitHub',
+    url: 'https://github.com/Rayliu1999',
+    icon: '<path d="M12 1.27a11 11 0 00-3.48 21.46c.55.1.73-.24.73-.53v-1.84c-3.03.66-3.67-1.47-3.67-1.47-.5-1.27-1.22-1.61-1.22-1.61-1-.68.08-.67.08-.67 1.1.08 1.68 1.13 1.68 1.13.98 1.68 2.56 1.2 3.18.92.1-.72.38-1.2.7-1.48-2.42-.28-4.97-1.2-4.97-5.38 0-1.19.42-2.16 1.12-2.92-.11-.28-.48-1.38.1-2.88 0 0 .91-.29 3 .91a10.5 10.5 0 015.46 0c2.09-1.2 3-.91 3-.91.58 1.5.21 2.6.1 2.88.7.76 1.12 1.73 1.12 2.92 0 4.19-2.55 5.1-4.99 5.38.39.33.73.98.73 1.98v2.91c0 .29.18.63.73.53A11 11 0 0012 1.27z"/>'
+  },
+  {
+    name: 'LinkedIn',
+    url: 'https://linkedin.com/in/育誠-劉-279634233',
+    icon: '<path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14zm-7 6.67h-2.5v7h2.5v-7zm-1.25-1.84a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM17 10.33c-1.43 0-2.1.7-2.44 1.32h-.07v-1.15h-2.5v7h2.5v-3.5c0-.93.18-1.83 1.33-1.83s1.16.9 1.16 1.9v3.43h2.5v-4.07c0-2.2-1.18-3.27-2.98-3.27z"/>'
   }
 ]
 
