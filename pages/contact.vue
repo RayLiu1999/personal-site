@@ -246,11 +246,35 @@ onMounted(() => {
   loadRecaptcha()
 })
 
-// SEO
+// SEO Meta 設定
 useHead({
-  title: '聯絡我 - 後端工程師個人網站',
+  title: '聯絡我 - Ray Liu | 後端工程師合作洽談',
   meta: [
-    { name: 'description', content: '歡迎與我討論技術問題或合作機會' }
+    {
+      name: 'description',
+      content: '歡迎與 Ray Liu 討論技術問題、專案合作或工作機會。透過安全的聯絡表單快速聯繫，我會在 24 小時內回覆您的訊息。專業的後端工程師，樂意協助解決技術挑戰。'
+    },
+    {
+      name: 'keywords',
+      content: '聯絡 Ray Liu, 技術合作, 專案洽談, 後端工程師聯絡, 工作機會, 技術諮詢'
+    },
+    // Open Graph
+    {
+      property: 'og:title',
+      content: '聯絡我 - Ray Liu 後端工程師'
+    },
+    {
+      property: 'og:description',
+      content: '歡迎與我討論技術問題、專案合作或工作機會，24 小時內快速回覆。'
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      property: 'og:url',
+      content: 'https://ray-liu.dev/contact'
+    }
   ]
 })
 </script>

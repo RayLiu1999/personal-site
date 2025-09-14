@@ -514,11 +514,52 @@ const projects = {
 
 const project = projects[projectId] || null
 
-// SEO
+// SEO Meta 設定
 useHead({
-  title: project ? `${project.title} - 作品集` : '專案不存在',
+  title: project ? `${project.title} - Ray Liu 作品集` : '專案不存在 - Ray Liu',
   meta: [
-    { name: 'description', content: project ? project.description : '專案不存在' }
+    {
+      name: 'description',
+      content: project 
+        ? `${project.description} - 此專案展示了 ${project.technologies.join('、')} 等技術的應用，包含 ${project.features?.slice(0, 3).join('、')} 等功能特色。`
+        : '抱歉，您要查看的專案不存在。'
+    },
+    {
+      name: 'keywords',
+      content: project 
+        ? `${project.title}, ${project.technologies.join(', ')}, ${project.category}, Ray Liu 專案`
+        : 'Ray Liu, 作品集, 專案'
+    },
+    // Open Graph
+    {
+      property: 'og:title',
+      content: project ? `${project.title} - Ray Liu 作品集` : '專案不存在'
+    },
+    {
+      property: 'og:description',
+      content: project ? project.description : '抱歉，您要查看的專案不存在。'
+    },
+    {
+      property: 'og:type',
+      content: 'article'
+    },
+    {
+      property: 'og:url',
+      content: `https://ray-liu.dev/portfolio/${projectId}`
+    },
+    {
+      property: 'og:image',
+      content: project ? `https://ray-liu.dev${project.image}` : 'https://ray-liu.dev/og-image.png'
+    },
+    // Article specific
+    {
+      property: 'article:author',
+      content: 'Ray Liu'
+    },
+    {
+      property: 'article:section',
+      content: project?.category || '程式設計'
+    }
   ]
 })
 </script>

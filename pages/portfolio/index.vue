@@ -188,4 +188,36 @@ const filteredProjects = computed(() => {
   }
   return projects.filter(project => project.category === selectedCategory.value)
 })
+
+// SEO Meta 設定
+useHead({
+  title: '作品集 - Ray Liu | 後端工程師專案展示',
+  meta: [
+    {
+      name: 'description',
+      content: '瀏覽 Ray Liu 的程式設計作品集，包含全端開發、後端系統、DevOps 自動化等專案。展示使用 Node.js、Python、Vue.js、Docker 等技術的實戰經驗與創新解決方案。'
+    },
+    {
+      name: 'keywords',
+      content: 'Ray Liu 作品集, 程式設計專案, 全端開發, 後端系統, Node.js 專案, Python 應用, Vue.js 開發, DevOps 自動化'
+    },
+    // Open Graph
+    {
+      property: 'og:title',
+      content: '作品集 - Ray Liu 後端工程師'
+    },
+    {
+      property: 'og:description',
+      content: '瀏覽 Ray Liu 的程式設計作品集，展示全端開發、後端系統、DevOps 等領域的專業專案。'
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      property: 'og:url',
+      content: 'https://ray-liu.dev/portfolio'
+    }
+  ]
+})
 </script>

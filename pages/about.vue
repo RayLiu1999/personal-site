@@ -132,11 +132,35 @@ const languages = [
   { name: '日文', level: '基礎', style: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' }
 ]
 
-// SEO
+// SEO Meta 設定
 useHead({
-  title: '關於我 - Ray Liu',
+  title: '關於我 - Ray Liu | 後端工程師個人簡介',
   meta: [
-    { name: 'description', content: '一個熱愛用程式碼解決問題、創造有趣事物的後端工程師。' }
+    {
+      name: 'description',
+      content: '了解 Ray Liu 的程式設計師成長故事與職涯歷程。一個熱愛用程式碼解決問題、創造有趣事物的後端工程師，分享我的技術哲學、核心技能和持續學習的心路歷程。'
+    },
+    {
+      name: 'keywords',
+      content: 'Ray Liu 簡介, 後端工程師背景, 程式設計師故事, 技術哲學, 職涯發展, 個人經歷'
+    },
+    // Open Graph
+    {
+      property: 'og:title',
+      content: '關於我 - Ray Liu 後端工程師'
+    },
+    {
+      property: 'og:description',
+      content: '了解 Ray Liu 的程式設計師成長故事，一個熱愛用程式碼解決問題的後端工程師。'
+    },
+    {
+      property: 'og:type',
+      content: 'profile'
+    },
+    {
+      property: 'og:url',
+      content: 'https://ray-liu.dev/about'
+    }
   ]
 })
 </script>
