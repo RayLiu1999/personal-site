@@ -13,17 +13,25 @@
       <div class="mb-8">
         <div class="flex flex-wrap justify-center gap-4">
           <button 
-            v-for="category in categories" 
-            :key="category"
-            @click="selectedCategory = category"
+            v-for="tag in allTags" 
+            :key="tag"
+            @click="toggleTag(tag)"
             :class="[
               'px-6 py-2 rounded-full font-semibold transition-colors',
-              selectedCategory === category 
+              selectedTags.includes(tag)
                 ? 'bg-coffee-600 dark:bg-blue-600 text-white' 
                 : 'bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 hover:bg-coffee-200 dark:hover:bg-gray-600'
             ]"
           >
-            {{ category }}
+            {{ tag }}
+          </button>
+        </div>
+        <div v-if="selectedTags.length > 0" class="text-center mt-4">
+          <button 
+            @click="selectedTags = []"
+            class="text-sm text-coffee-600 dark:text-blue-400 hover:underline"
+          >
+            清除所有篩選
           </button>
         </div>
       </div>
@@ -99,9 +107,7 @@
 const config = useRuntimeConfig()
 const siteUrl = config.public.siteUrl
 
-const selectedCategory = ref('全部')
-
-const categories = ['全部', '全端開發', '前端', '後端', '瀏覽器擴充功能', '工具/自動化', 'PHP', 'Discord 機器人']
+const selectedTags = ref([])
 
 const projects = [
   {
@@ -111,36 +117,36 @@ const projects = [
     image: '/project1.png',
     category: '全端開發',
     year: '2024',
+    tags: ['Vue', 'Go', 'WebSocket'],
     technologies: ['Vue 3', 'TypeScript', 'Go', 'Gin', 'MongoDB', 'Redis', 'WebSocket', 'JWT', 'Element Plus'],
     demo: 'https://chat-app.liu-yucheng.com',
     githubs: [
       { name: '前端', url: 'https://github.com/RayLiu1999/chat_app_frontend' },
       { name: '後端', url: 'https://github.com/RayLiu1999/chat_app_backend' }
     ],
-    features: ['即時聊天', '好友系統', '檔案上傳', '三層架構', 'WebSocket 通訊']
   },
   {
     id: 2,
-    title: 'Vue 國際象棋遊戲',
-    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
-    image: '/project2.png',
-    category: '前端',
-    year: '2024',
-    technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
-    demo: 'https://chess.liu-yucheng.com',
-    github: 'https://github.com/RayLiu1999/chess-in-vue',
-    features: ['完整象棋規則', 'AI 對戰', '可行動位置高亮', 'FEN 格式支援', '響應式設計']
-  },
-  {
-    id: 3,
     title: '綠芬芳手工皂電商網站',
     description: '使用 Nuxt.js 3 建構的手工皂電商平台，包含前台、後台管理和 RESTful API',
     image: '/project3.png',
     category: '全端開發',
     year: '2024',
-    technologies: ['Nuxt.js 3', 'Tailwind CSS', 'TypeScript', 'Go', 'Gin', 'MySQL', 'JWT', 'reCAPTCHA'],
+    tags: ['Nuxt.js', 'Node.js', 'Express.js'],
+    technologies: ['Nuxt.js 3', 'Tailwind CSS', 'TypeScript', 'Express.js', 'Gin', 'MySQL', 'JWT', 'reCAPTCHA'],
     demo: 'https://gf-soap.com',
-    features: ['SEO 最佳化', '動態內容管理', '產品篩選', '管理後台', 'CSRF 保護']
+  },
+  {
+    id: 3,
+    title: 'Vue 國際象棋遊戲',
+    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
+    image: '/project2.png',
+    category: '前端',
+    year: '2024',
+    tags: ['Vue', '遊戲開發'],
+    technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
+    demo: 'https://chess.liu-yucheng.com',
+    github: 'https://github.com/RayLiu1999/chess-in-vue',
   },
   {
     id: 4,
@@ -149,9 +155,9 @@ const projects = [
     image: '/project4.png',
     category: '瀏覽器擴充功能',
     year: '2024',
+    tags: ['瀏覽器擴充功能', '工具/自動化', 'n8n'],
     technologies: ['JavaScript', 'Chrome Extension API', 'n8n', 'yt-dlp', 'Docker Compose', 'Webhook'],
     github: 'https://github.com/RayLiu1999/youtube-extension',
-    features: ['多品質下載', 'AI 影片總結', '快捷鍵支援', '線上/本地模式', '後台服務整合']
   },
   {
     id: 5,
@@ -160,6 +166,7 @@ const projects = [
     image: '/project5.png',
     category: 'PHP',
     year: '2024',
+    tags: ['PHP', 'MySQL'],
     technologies: ['PHP', 'MySQL', 'Composer', 'Apache'],
     github: 'https://github.com/RayLiu1999/e-commerce-cart',
     demo: 'https://e-commerce-cart.liu-yucheng.com',
@@ -172,29 +179,52 @@ const projects = [
     image: '/project6.png',
     category: 'PHP',
     year: '2023',
+    tags: ['PHP', 'MySQL'],
     technologies: ['PHP', 'MySQL', 'JavaScript', 'Gulp', 'Prepros'],
     demo: 'https://pomodoro.liu-yucheng.com',
     github: 'https://github.com/RayLiu1999/tomato-clock',
-    features: ['番茄計時器', '任務管理', '專注統計', '熱重整開發', '響應式設計']
   },
   {
     id: 7,
-    title: 'YouTube Discord 機器人',
-    description: 'Discord 機器人，自動爬取 YouTube 頻道的最新影片和直播，並推送到指定頻道',
+    title: 'YouTube Discord Bot',
+    description: 'Discord Bot，自動爬取 YouTube 頻道的最新影片和直播，並推送到指定頻道',
     image: '/project7.png',
-    category: 'Discord 機器人',
+    category: 'Discord Bot',
     year: '2024',
+    tags: ['Discord Bot', 'Node.js', '工具/自動化'],
     technologies: ['Node.js', 'Discord.js', 'PM2', 'YouTube API', 'Puppeteer', 'JavaScript'],
     github: 'https://github.com/RayLiu1999/yt_discord_bot',
-    features: ['自動爬取影片', '定時推播', '頻道管理', '指令控制', 'PM2 部署']
   }
 ]
 
+const allTags = computed(() => {
+  const tags = new Set()
+  projects.forEach(p => {
+    p.tags.forEach(t => tags.add(t))
+  })
+  return ['全部', ...Array.from(tags).sort()]
+})
+
+const toggleTag = (tag) => {
+  if (tag === '全部') {
+    selectedTags.value = []
+    return
+  }
+  const index = selectedTags.value.indexOf(tag)
+  if (index > -1) {
+    selectedTags.value.splice(index, 1)
+  } else {
+    selectedTags.value.push(tag)
+  }
+}
+
 const filteredProjects = computed(() => {
-  if (selectedCategory.value === '全部') {
+  if (selectedTags.value.length === 0) {
     return projects
   }
-  return projects.filter(project => project.category === selectedCategory.value)
+  return projects.filter(project => 
+    selectedTags.value.every(tag => project.tags.includes(tag))
+  )
 })
 
 // SEO Meta 設定

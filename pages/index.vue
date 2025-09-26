@@ -30,7 +30,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h2 class="text-3xl font-bold text-coffee-800 dark:text-white mb-4">技術專長</h2>
-          <p class="text-coffee-600 dark:text-gray-400">專精的後端技術與工具</p>
+          <p class="text-coffee-600 dark:text-gray-400">擅長的後端技術與工具</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div v-for="skill in skills" :key="skill.name" class="text-center p-6 bg-coffee-50 dark:bg-gray-700 rounded-lg hover:shadow-lg transition-shadow">
@@ -114,7 +114,7 @@ const skills = [
     name: 'Golang',
     icon: 'https://go.dev/blog/go-brand/Go-Logo/SVG/Go-Logo_Blue.svg',
     iconType: 'image',
-    description: '高效能後端開發'
+    description: 'Gin, WebSocket, 多協程開發'
   },
   {
     name: 'Node.js',
@@ -126,13 +126,13 @@ const skills = [
     name: 'Database',
     icon: '/database.png',
     iconType: 'image',
-    description: 'MySQL, PostgreSQL, MongoDB, Redis'
+    description: 'MySQL, MongoDB, Redis'
   },
   {
     name: 'DevOps',
     icon: '/devops.png',
     iconType: 'image',
-    description: 'Docker, Kubernetes, CI/CD, VPS'
+    description: 'Docker, CI/CD, Nginx, Linux'
   }
 ]
 
@@ -147,19 +147,28 @@ const featuredProjects = [
     technologies: ['Vue 3', 'TypeScript', 'Go', 'Gin', 'MongoDB', 'Redis', 'WebSocket', 'JWT', 'Element Plus'],
     demo: 'https://chat-app.liu-yucheng.com',
     githubs: ['https://github.com/RayLiu1999/chat_app_frontend', 'https://github.com/RayLiu1999/chat_app_backend'],
-    features: ['即時聊天', '好友系統', '檔案上傳', '三層架構', 'WebSocket 通訊']
   },
-  {
-    id: 2,
-    title: 'Vue 國際象棋遊戲',
-    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
-    image: '/project2.png',
-    category: '前端',
-    year: '2024',
-    technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
-    demo: 'https://chess.liu-yucheng.com',
-    github: 'https://github.com/RayLiu1999/chess-in-vue',
-    features: ['完整象棋規則', 'AI 對戰', '可行動位置高亮', 'FEN 格式支援', '響應式設計']
-  },
+  // {
+  //   id: 2,
+  //   title: '綠芬芳手工皂電商網站',
+  //   description: '使用 Nuxt.js 3 建構的手工皂電商平台，包含前台、後台管理和 RESTful API',
+  //   image: '/project3.png',
+  //   category: '全端開發',
+  //   year: '2025',
+  //   technologies: ['Nuxt.js 3', 'Vue 3', 'TypeScript', 'Node.js', 'Express.js', 'MySQL'],
+  //   demo: 'https://gf-soap.com',
+  // },
+  // {
+  //   id: 2,
+  //   title: 'Vue 國際象棋遊戲',
+  //   description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
+  //   image: '/project2.png',
+  //   category: '前端',
+  //   year: '2024',
+  //   technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
+  //   demo: 'https://chess.liu-yucheng.com',
+  //   github: 'https://github.com/RayLiu1999/chess-in-vue',
+  //   features: ['完整象棋規則', 'AI 對戰', '可行動位置高亮', 'FEN 格式支援', '響應式設計']
+  // },
 ]
 </script>

@@ -55,7 +55,7 @@
 
         <!-- Project Image -->
         <div class="mb-8">
-          <img :src="project.image" :alt="project.title" class="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg">
+          <img :src="project.image" :alt="project.title" class="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg cursor-pointer" @click="openLightbox(project.image)">
         </div>
 
         <!-- Content Grid -->
@@ -83,10 +83,10 @@
             </section>
 
             <!-- Architecture -->
-            <section class="mb-8">
+            <section v-if="project.architecture" class="mb-8">
               <h2 class="text-2xl font-bold text-coffee-800 dark:text-white mb-4">系統架構</h2>
               <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700">
-                <img :src="project.architecture" alt="系統架構圖" class="w-full rounded-lg">
+                <img :src="project.architecture" alt="系統架構圖" class="w-full rounded-lg cursor-pointer" @click="openLightbox(project.architecture)">
                 <p class="text-coffee-600 dark:text-gray-300 mt-4">{{ project.architectureDescription }}</p>
               </div>
             </section>
@@ -119,7 +119,7 @@
             </div>
 
             <!-- Project Stats -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700 mb-6">
+            <!-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700 mb-6">
               <h3 class="text-lg font-semibold text-coffee-800 dark:text-white mb-4">專案數據</h3>
               <div class="space-y-3">
                 <div v-for="stat in project.stats" :key="stat.label" class="flex justify-between">
@@ -127,10 +127,10 @@
                   <span class="font-semibold text-coffee-800 dark:text-white">{{ stat.value }}</span>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <!-- Timeline -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700">
+            <!-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700">
               <h3 class="text-lg font-semibold text-coffee-800 dark:text-white mb-4">開發時程</h3>
               <div class="space-y-3">
                 <div v-for="milestone in project.timeline" :key="milestone.phase" class="flex items-start">
@@ -141,8 +141,19 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
+        </div>
+
+        <!-- Lightbox -->
+        <div v-if="isLightboxOpen" 
+             class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+             @click="closeLightbox">
+          <img :src="lightboxImage" 
+               alt="放大的圖片" 
+               class="max-w-full max-h-full object-contain"
+               @click.stop>
+          <button @click="closeLightbox" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
         </div>
       </div>
       
@@ -157,6 +168,20 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const isLightboxOpen = ref(false)
+const lightboxImage = ref('')
+
+const openLightbox = (image) => {
+  lightboxImage.value = image
+  isLightboxOpen.value = true
+}
+
+const closeLightbox = () => {
+  isLightboxOpen.value = false
+}
+
 const route = useRoute()
 const projectId = parseInt(route.params.id)
 const config = useRuntimeConfig()
@@ -181,14 +206,14 @@ const projects = {
         url: 'https://github.com/RayLiu1999/chat_app_backend'
       }
     ],
-    overview: '這是一個以 Discord 為樣板製作的即時聊天應用，包含前端（Vue 3）和後端（Go）兩個部分。支援伺服器（Server/Guild）、頻道（Channel/Room）、私訊（DM）、好友系統等完整功能。採用 WebSocket 實現即時通訊，MongoDB 儲存數據，Redis 處理快取和訊息推播。',
-    architecture: '/project1.png',
-    architectureDescription: '前端使用 Vue 3 + TypeScript，後端採用 Go + Gin 框架，三層架構設計（Controller → Service → Repository），WebSocket 提供即時通訊，MongoDB 儲存聊天記錄，Redis 處理狀態管理。',
+    overview: '這是一個以 Discord 為樣板製作的即時聊天應用，包含前端（Vue 3）和後端（Go）兩個部分。支援伺服器（Server/Guild）、頻道（Channel/Room）、私訊（DM）、好友系統等完整功能。採用 WebSocket 實現即時通訊，MongoDB 儲存數據，Redis 處理部分資料快取。',
+    architecture: '/project1-sa.png',
+    architectureDescription: '前端使用 Vue 3 + TypeScript，後端採用 Go + Gin 框架，三層架構設計（Controller → Service → Repository），WebSocket 提供即時通訊，MongoDB 儲存聊天記錄，Redis 處理資料快取。',
     challenges: [
       {
         title: 'WebSocket 連線管理',
         problem: '需要處理多個聊天室的即時訊息推播，確保訊息準確送達到對應的房間成員。',
-        solution: '實作 WebSocket 連線池管理，使用 Redis Pub/Sub 進行跨服務的訊息廣播，確保訊息實時性。'
+        solution: '實作 WebSocket 連線池管理，使用房間（Room）概念分組連線，確保訊息只推播給相關成員。'
       },
       {
         title: '權限與安全',
@@ -203,7 +228,7 @@ const projects = {
       },
       {
         name: '後端',
-        technologies: ['Go', 'Gin', 'gorilla/websocket', 'JWT', 'Viper']
+        technologies: ['Go', 'Gin', 'WebsSocket', 'JWT', 'ODM', 'DI', 'MVC']
       },
       {
         name: '資料庫',
@@ -226,57 +251,6 @@ const projects = {
   },
   2: {
     id: 2,
-    title: 'Vue 國際象棋遊戲',
-    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
-    image: '/project2.png',
-    category: '前端',
-    year: '2024',
-    github: 'https://github.com/RayLiu1999/chess_in_vue',
-    overview: '一款使用 Vue 3 和 Vite 開發的網頁版國際象棋遊戲，提供美觀直觀的使用者介面。整合 Stockfish 國際象棋引擎提供 AI 對戰功能，支援完整的國際象棋規則實現，包含可行動位置高亮、FEN 格式棋盤狀態等進階功能。',
-    architecture: '/project2.png',
-    architectureDescription: '使用 Vue 3 + Vuex 4 進行狀態管理，Stockfish.js 提供 AI 引擎，支援 FEN 格式的棋盤狀態序列化，Docker 容器化部署。',
-    challenges: [
-      {
-        title: '象棋規則實現',
-        problem: '需要完整實現國際象棋的複雜規則，包含特殊移動如王車易位、過路兵等。',
-        solution: '設計完整的棋子類別系統，實作各種棋子的移動邏輯，並加入規則驗證機制。'
-      },
-      {
-        title: 'AI 引擎整合',
-        problem: '需要將 Stockfish 引擎整合到網頁應用中，並處理 AI 運算的異步問題。',
-        solution: '使用 Stockfish.js 在瀏覽器中運行引擎，透過 Web Worker 避免阻塞主線程。'
-      }
-    ],
-    techStack: [
-      {
-        name: '前端框架',
-        technologies: ['Vue 3', 'Vuex 4', 'Vite']
-      },
-      {
-        name: 'AI 引擎',
-        technologies: ['Stockfish.js', 'Web Worker']
-      },
-      {
-        name: '部署',
-        technologies: ['Docker', 'Nginx']
-      }
-    ],
-    stats: [
-      { label: '程式碼行數', value: '8,000+' },
-      { label: '象棋規則', value: '100% 完整' },
-      { label: '開發週期', value: '2 個月' },
-      { label: 'AI 強度', value: '專業級' }
-    ],
-    timeline: [
-      { phase: '遊戲邏輯', duration: '3 週' },
-      { phase: 'UI 設計', duration: '2 週' },
-      { phase: 'AI 整合', duration: '2 週' },
-      { phase: '測試優化', duration: '1 週' }
-    ],
-    learnings: '這個專案讓我深入理解了遊戲邏輯的設計模式，學會了如何處理複雜的狀態管理，以及 AI 引擎的整合技術。特別是在效能優化和使用者體驗設計方面有了顯著提升。'
-  },
-  3: {
-    id: 3,
     title: '綠芬芳手工皂電商網站',
     description: '使用 Nuxt.js 3 建構的手工皂電商平台，包含前台、後台管理和 RESTful API',
     image: '/project3.png',
@@ -284,7 +258,7 @@ const projects = {
     year: '2025',
     demo: 'https://gf-soap.com',
     overview: '一個完整的電商平台解決方案，包含使用 Nuxt.js 3 開發的前台網站、Vue.js 管理後台，以及 Node.js 開發的 RESTful API。支援動態內容管理、SEO 最佳化、產品管理等電商功能。',
-    architecture: '/project3.png',
+    architecture: '/project3-sa.png',
     architectureDescription: '前台使用 Nuxt.js 3 進行 SSG 靜態生成，管理後台採用 Vue.js SPA，後端 API 使用 Node.js + Express.js 框架，MySQL 資料庫，整合 Google reCAPTCHA 安全防護。',
     challenges: [
       {
@@ -326,6 +300,58 @@ const projects = {
     ],
     learnings: '通過這個專案掌握了現代化的前端開發工作流程，深入理解了 SSG 的優勢和 SEO 最佳化技巧。同時也提升了全端開發的能力，學會了如何設計易用的管理介面。'
   },
+  3: {
+    id: 3,
+    title: 'Vue 國際象棋遊戲',
+    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
+    image: '/project2.png',
+    category: '前端',
+    year: '2024',
+    demo: 'https://chess.liu-yucheng.com',
+    github: 'https://github.com/RayLiu1999/chess_in_vue',
+    overview: '一款使用 Vue 3 和 Vite 開發的網頁版國際象棋遊戲，提供美觀直觀的使用者介面。整合 Stockfish 國際象棋引擎提供 AI 對戰功能，支援完整的國際象棋規則實現，包含可行動位置高亮、FEN 格式棋盤狀態等進階功能。',
+    architecture: '/project2-sa.png',
+    architectureDescription: '使用 Vue 3 + Vuex 4 進行狀態管理，Stockfish.js 提供 AI 引擎，支援 FEN 格式的棋盤狀態序列化，Docker 容器化部署。',
+    challenges: [
+      {
+        title: '象棋規則實現',
+        problem: '需要完整實現國際象棋的複雜規則，包含特殊移動如王車易位、過路兵等。',
+        solution: '設計完整的棋子類別系統，實作各種棋子的移動邏輯，並加入規則驗證機制。'
+      },
+      {
+        title: 'AI 引擎整合',
+        problem: '需要將 Stockfish 引擎整合到網頁應用中，並處理 AI 運算的異步問題。',
+        solution: '使用 Stockfish.js 在瀏覽器中運行引擎，透過 Web Worker 避免阻塞主線程。'
+      }
+    ],
+    techStack: [
+      {
+        name: '前端框架',
+        technologies: ['Vue 3', 'Vuex 4', 'Vite']
+      },
+      {
+        name: 'AI 引擎',
+        technologies: ['Stockfish.js', 'Web Worker']
+      },
+      {
+        name: '部署',
+        technologies: ['Docker', 'Nginx']
+      }
+    ],
+    stats: [
+      { label: '程式碼行數', value: '8,000+' },
+      { label: '象棋規則', value: '100% 完整' },
+      { label: '開發週期', value: '2 個月' },
+      { label: 'AI 強度', value: '專業級' }
+    ],
+    timeline: [
+      { phase: '遊戲邏輯', duration: '3 週' },
+      { phase: 'UI 設計', duration: '2 週' },
+      { phase: 'AI 整合', duration: '2 週' },
+      { phase: '測試優化', duration: '1 週' }
+    ],
+    learnings: '這個專案讓我深入理解了遊戲邏輯的設計模式，學會了如何處理複雜的狀態管理，以及 AI 引擎的整合技術。特別是在效能優化和使用者體驗設計方面有了顯著提升。'
+  },
   4: {
     id: 4,
     title: 'YouTube 影片下載擴充功能',
@@ -335,7 +361,7 @@ const projects = {
     year: '2024',
     github: 'https://github.com/RayLiu1999/youtube-extension',
     overview: '一個功能豐富的 Chrome 擴充功能，不僅支援 YouTube 影片的多品質下載，還整合了 AI 影片總結功能。使用 n8n 工作流自動化平台處理下載和總結任務，支援線上和本地兩種運行模式。',
-    architecture: '/project4.png',
+    architecture: '/project4-sa.png',
     architectureDescription: '擴充功能使用 Chrome Extension API，透過 Webhook 與 n8n 工作流通訊，後端使用 yt-dlp 進行影片下載，AI 模型處理影片總結。',
     challenges: [
       {
@@ -387,7 +413,7 @@ const projects = {
     github: 'https://github.com/RayLiu1999/e-commerce-cart',
     demo: 'https://e-commerce-cart.liu-yucheng.com',
     overview: '一個使用 PHP 開發的簡易電商購物車系統，採用 MVC 架構模式。包含商品瀏覽、購物車管理、用戶註冊登入、訂單處理等電商基本功能。適合學習 PHP 開發和電商系統設計的入門專案。',
-    architecture: '/project5.png',
+    architecture: '/project5-sa.png',
     architectureDescription: '採用 MVC 架構，Controllers 處理請求路由，Models 負責資料處理，Views 渲染頁面。使用 Composer 管理依賴，Apache 服務器部署。',
     challenges: [
       {
@@ -438,7 +464,7 @@ const projects = {
     github: 'https://github.com/RayLiu1999/tomato-clock',
     demo: 'https://pomodoro.liu-yucheng.com',
     overview: '一個基於番茄工作法的生產力管理應用，幫助用戶提升專注力和工作效率。支援任務管理、番茄計時器、專注統計等功能。使用 PHP 後端開發，提供響應式的使用者介面。',
-    architecture: '/project6.png',
+    architecture: '/project6-sa.png',
     architectureDescription: '使用 PHP + MySQL 後端，前端採用響應式設計，支援 Gulp 和 Prepros 熱重整開發環境。',
     challenges: [
       {
@@ -488,7 +514,7 @@ const projects = {
     year: '2024',
     github: 'https://github.com/RayLiu1999/yt_discord_bot',
     overview: '這是一個自動化的 Discord 機器人，專門用於爬取 YouTube 頻道的最新影片和直播內容，並將其推送到指定的 Discord 頻道。機器人支援自動排程（每小時整點和半點檢查）和手動觸發，並具備完整的頻道管理功能，避免重複推送相同內容。',
-    architecture: '/project7.png',
+    architecture: '/project7-sa.png',
     architectureDescription: '使用 Node.js + Discord.js 開發，支援 Fetch API 和 Puppeteer 兩種爬蟲模式，透過 PM2 進行程序管理，定時任務確保穩定運行。',
     challenges: [
       {
