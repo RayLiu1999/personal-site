@@ -206,6 +206,7 @@ const projects = {
         url: 'https://github.com/RayLiu1999/chat_app_backend'
       }
     ],
+    demo: 'https://chat-app.liu-yucheng.com',
     overview: '這是一個以 Discord 為樣板製作的即時聊天應用，包含前端（Vue 3）和後端（Go）兩個部分。支援伺服器（Server/Guild）、頻道（Channel/Room）、私訊（DM）、好友系統等完整功能。採用 WebSocket 實現即時通訊，MongoDB 儲存數據，Redis 處理部分資料快取。',
     architecture: '/project1-sa.png',
     architectureDescription: '前端使用 Vue 3 + TypeScript，後端採用 Go + Gin 框架，三層架構設計（Controller → Service → Repository），WebSocket 提供即時通訊，MongoDB 儲存聊天記錄，Redis 處理資料快取。',
@@ -358,7 +359,7 @@ const projects = {
     description: 'Chrome 擴充功能，支援 YouTube 影片下載和 AI 總結功能，整合 n8n 工作流自動化',
     image: '/project4.png',
     category: '瀏覽器擴充功能',
-    year: '2024',
+    year: '2025',
     github: 'https://github.com/RayLiu1999/youtube-extension',
     overview: '一個功能豐富的 Chrome 擴充功能，不僅支援 YouTube 影片的多品質下載，還整合了 AI 影片總結功能。使用 n8n 工作流自動化平台處理下載和總結任務，支援線上和本地兩種運行模式。',
     architecture: '/project4-sa.png',
@@ -404,114 +405,12 @@ const projects = {
     learnings: '這個專案讓我學會了瀏覽器擴充功能的開發，掌握了工作流自動化的設計思維，以及如何整合不同的服務和 API 來實現複雜的功能需求。'
   },
   5: {
-    id: 5,
-    title: 'PHP 簡易電商購物車',
-    description: '使用 PHP 開發的簡易電商系統，包含商品瀏覽、購物車、用戶註冊登入等基本功能',
-    image: '/project5.png',
-    category: 'PHP',
-    year: '2024',
-    github: 'https://github.com/RayLiu1999/e-commerce-cart',
-    demo: 'https://e-commerce-cart.liu-yucheng.com',
-    overview: '一個使用 PHP 開發的簡易電商購物車系統，採用 MVC 架構模式。包含商品瀏覽、購物車管理、用戶註冊登入、訂單處理等電商基本功能。適合學習 PHP 開發和電商系統設計的入門專案。',
-    architecture: '/project5-sa.png',
-    architectureDescription: '採用 MVC 架構，Controllers 處理請求路由，Models 負責資料處理，Views 渲染頁面。使用 Composer 管理依賴，Apache 服務器部署。',
-    challenges: [
-      {
-        title: 'Session 管理',
-        problem: '需要安全地管理用戶登入狀態和購物車數據的持久化。',
-        solution: '使用 PHP Session 機制結合資料庫儲存，確保購物車數據的安全性和持久性。'
-      },
-      {
-        title: 'MVC 架構實現',
-        problem: '如何在 PHP 中實現清晰的 MVC 架構分離。',
-        solution: '設計路由系統，實作 Controller 基類，Model 類別處理資料庫操作，View 負責模板渲染。'
-      }
-    ],
-    techStack: [
-      {
-        name: '後端',
-        technologies: ['PHP 7.4+', 'MySQL', 'Apache']
-      },
-      {
-        name: '前端',
-        technologies: ['HTML5', 'CSS3', 'JavaScript', 'Bootstrap']
-      },
-      {
-        name: '工具',
-        technologies: ['Composer', 'Git']
-      }
-    ],
-    stats: [
-      { label: '程式碼行數', value: '5,000+' },
-      { label: '功能模組', value: '6 個' },
-      { label: '開發週期', value: '1 個月' },
-      { label: '資料表', value: '8 張' }
-    ],
-    timeline: [
-      { phase: '資料庫設計', duration: '1 週' },
-      { phase: '後端開發', duration: '2 週' },
-      { phase: '前端整合', duration: '1 週' }
-    ],
-    learnings: '通過這個專案加深了對 PHP 語言和 MVC 架構的理解，學會了如何設計簡潔的資料庫結構，以及電商系統的基本業務邏輯實現。'
-  },
-  6: {
-    id: 6,
-    title: '番茄鐘生產力應用',
-    description: '基於番茄工作法的生產力管理應用，幫助用戶管理任務與專注時間',
-    image: '/project6.png',
-    category: 'PHP',
-    year: '2023',
-    github: 'https://github.com/RayLiu1999/tomato-clock',
-    demo: 'https://pomodoro.liu-yucheng.com',
-    overview: '一個基於番茄工作法的生產力管理應用，幫助用戶提升專注力和工作效率。支援任務管理、番茄計時器、專注統計等功能。使用 PHP 後端開發，提供響應式的使用者介面。',
-    architecture: '/project6-sa.png',
-    architectureDescription: '使用 PHP + MySQL 後端，前端採用響應式設計，支援 Gulp 和 Prepros 熱重整開發環境。',
-    challenges: [
-      {
-        title: '計時器準確性',
-        problem: '需要確保番茄鐘計時的準確性，即使在瀏覽器後台運行也要保持同步。',
-        solution: '使用 JavaScript 定時器結合服務器時間校對，確保計時準確性。'
-      },
-      {
-        title: '數據統計',
-        problem: '需要為用戶提供有意義的專注時間統計和分析。',
-        solution: '設計統計演算法，提供日、週、月的專注時間報表和趨勢分析。'
-      }
-    ],
-    techStack: [
-      {
-        name: '後端',
-        technologies: ['PHP', 'MySQL']
-      },
-      {
-        name: '前端',
-        technologies: ['HTML5', 'CSS3', 'JavaScript']
-      },
-      {
-        name: '開發工具',
-        technologies: ['Gulp', 'Prepros', 'Apache']
-      }
-    ],
-    stats: [
-      { label: '計時精度', value: '秒級' },
-      { label: '統計維度', value: '多時間區間' },
-      { label: '開發週期', value: '3 週' },
-      { label: '響應式支援', value: '完整' }
-    ],
-    timeline: [
-      { phase: '功能設計', duration: '1 週' },
-      { phase: '核心開發', duration: '1.5 週' },
-      { phase: '介面優化', duration: '0.5 週' }
-    ],
-    learnings: '通過開發這個應用，學會了如何設計簡潔有效的時間管理工具，掌握了前端計時器的實現技巧，以及數據統計和視覺化的基本方法。'
-  },
-  7: {
     id: 7,
     title: 'YouTube Discord 機器人',
     description: 'Discord 機器人，自動爬取 YouTube 頻道的最新影片和直播，並推送到指定頻道',
     image: '/project7.png',
     category: 'Discord 機器人',
-    year: '2024',
+    year: '2023',
     github: 'https://github.com/RayLiu1999/yt_discord_bot',
     overview: '這是一個自動化的 Discord 機器人，專門用於爬取 YouTube 頻道的最新影片和直播內容，並將其推送到指定的 Discord 頻道。機器人支援自動排程（每小時整點和半點檢查）和手動觸發，並具備完整的頻道管理功能，避免重複推送相同內容。',
     architecture: '/project7-sa.png',
@@ -559,7 +458,109 @@ const projects = {
       { phase: '定時任務與部署', duration: '1 週' }
     ],
     learnings: '這個專案讓我深入學習了 Discord 機器人開發、網頁爬蟲技術，以及自動化任務的設計。特別是在處理反爬蟲機制和確保服務穩定性方面積累了寶貴經驗。'
-  }
+  },
+  6: {
+    id: 5,
+    title: 'PHP 簡易電商購物車',
+    description: '使用 PHP 開發的簡易電商系統，包含商品瀏覽、購物車、用戶註冊登入等基本功能',
+    image: '/project5.png',
+    category: 'PHP',
+    year: '2022',
+    github: 'https://github.com/RayLiu1999/e-commerce-cart',
+    demo: 'https://e-commerce-cart.liu-yucheng.com',
+    overview: '一個使用 PHP 開發的簡易電商購物車系統，採用 MVC 架構模式。包含商品瀏覽、購物車管理、用戶註冊登入、訂單處理等電商基本功能。適合學習 PHP 開發和電商系統設計的入門專案。',
+    architecture: '/project5-sa.png',
+    architectureDescription: '採用 MVC 架構，Controllers 處理請求路由，Models 負責資料處理，Views 渲染頁面。使用 Composer 管理依賴，Apache 服務器部署。',
+    challenges: [
+      {
+        title: 'Session 管理',
+        problem: '需要安全地管理用戶登入狀態和購物車數據的持久化。',
+        solution: '使用 PHP Session 機制結合資料庫儲存，確保購物車數據的安全性和持久性。'
+      },
+      {
+        title: 'MVC 架構實現',
+        problem: '如何在 PHP 中實現清晰的 MVC 架構分離。',
+        solution: '設計路由系統，實作 Controller 基類，Model 類別處理資料庫操作，View 負責模板渲染。'
+      }
+    ],
+    techStack: [
+      {
+        name: '後端',
+        technologies: ['PHP 7.4+', 'MySQL', 'Apache']
+      },
+      {
+        name: '前端',
+        technologies: ['HTML5', 'CSS3', 'JavaScript', 'Bootstrap']
+      },
+      {
+        name: '工具',
+        technologies: ['Composer', 'Git']
+      }
+    ],
+    stats: [
+      { label: '程式碼行數', value: '5,000+' },
+      { label: '功能模組', value: '6 個' },
+      { label: '開發週期', value: '1 個月' },
+      { label: '資料表', value: '8 張' }
+    ],
+    timeline: [
+      { phase: '資料庫設計', duration: '1 週' },
+      { phase: '後端開發', duration: '2 週' },
+      { phase: '前端整合', duration: '1 週' }
+    ],
+    learnings: '通過這個專案加深了對 PHP 語言和 MVC 架構的理解，學會了如何設計簡潔的資料庫結構，以及電商系統的基本業務邏輯實現。'
+  },
+  7: {
+    id: 6,
+    title: '番茄鐘生產力應用',
+    description: '基於番茄工作法的生產力管理應用，幫助用戶管理任務與專注時間',
+    image: '/project6.png',
+    category: 'PHP',
+    year: '2022',
+    github: 'https://github.com/RayLiu1999/tomato-clock',
+    demo: 'https://pomodoro.liu-yucheng.com',
+    overview: '一個基於番茄工作法的生產力管理應用，幫助用戶提升專注力和工作效率。支援任務管理、番茄計時器、專注統計等功能。使用 PHP 後端開發，提供響應式的使用者介面。',
+    architecture: '/project6-sa.png',
+    architectureDescription: '使用 PHP + MySQL 後端，前端採用響應式設計，支援 Gulp 和 Prepros 熱重整開發環境。',
+    challenges: [
+      {
+        title: '計時器準確性',
+        problem: '需要確保番茄鐘計時的準確性，即使在瀏覽器後台運行也要保持同步。',
+        solution: '使用 JavaScript 定時器結合服務器時間校對，確保計時準確性。'
+      },
+      {
+        title: '數據統計',
+        problem: '需要為用戶提供有意義的專注時間統計和分析。',
+        solution: '設計統計演算法，提供日、週、月的專注時間報表和趨勢分析。'
+      }
+    ],
+    techStack: [
+      {
+        name: '後端',
+        technologies: ['PHP', 'MySQL']
+      },
+      {
+        name: '前端',
+        technologies: ['HTML5', 'CSS3', 'JavaScript']
+      },
+      {
+        name: '開發工具',
+        technologies: ['Gulp', 'Prepros', 'Apache']
+      }
+    ],
+    stats: [
+      { label: '計時精度', value: '秒級' },
+      { label: '統計維度', value: '多時間區間' },
+      { label: '開發週期', value: '3 週' },
+      { label: '響應式支援', value: '完整' }
+    ],
+    timeline: [
+      { phase: '功能設計', duration: '1 週' },
+      { phase: '核心開發', duration: '1.5 週' },
+      { phase: '介面優化', duration: '0.5 週' }
+    ],
+    learnings: '通過開發這個應用，學會了如何設計簡潔有效的時間管理工具，掌握了前端計時器的實現技巧，以及數據統計和視覺化的基本方法。'
+  },
 }
 
 const project = projects[projectId] || null
