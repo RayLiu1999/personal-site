@@ -8,10 +8,10 @@
             <img src="/avatar.jpg" alt="個人頭像" class="w-32 h-32 rounded-full mx-auto mb-6 shadow-lg object-cover">
           </div>
           <h1 class="text-4xl md:text-6xl font-bold text-coffee-800 dark:text-white mb-6">
-            你好，我是<span class="text-coffee-600 dark:text-blue-400">Ray Liu</span>
+            Hi, 我是<span class="text-coffee-600 dark:text-blue-400">Ray Liu</span>
           </h1>
           <p class="text-xl text-coffee-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            我是一名擁有 3 年實戰經驗的後端工程師，熱衷於探索新技術，無論是前端、後端、DevOps。我目前專注於高效能系統的研究與應用，致力於打造穩定且高效的技術解決方案。
+            我是一名熱愛技術的工程師，無論是前端、後端、DevOps 都有興趣。我目前專注於高效能系統的研究與應用，讓自己有能力打造穩定且高效的系統。
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink to="/portfolio" class="bg-coffee-600 hover:bg-coffee-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
@@ -25,21 +25,45 @@
       </div>
     </section>
 
-    <!-- Skills Section -->
+    <!-- Latest Blog Posts Section -->
     <section class="py-16 bg-white dark:bg-gray-800 transition-colors">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-coffee-800 dark:text-white mb-4">技術專長</h2>
-          <p class="text-coffee-600 dark:text-gray-400">擅長的後端技術與工具</p>
+          <h2 class="text-3xl font-bold text-coffee-800 dark:text-white mb-4">部落格最新文章</h2>
+          <p class="text-coffee-600 dark:text-gray-400">分享技術與日常生活</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div v-for="skill in skills" :key="skill.name" class="text-center p-6 bg-coffee-50 dark:bg-gray-700 rounded-lg hover:shadow-lg transition-shadow">
-            <img v-if="skill.iconType === 'image'" class="w-24 h-24 mb-4 mx-auto" :src="skill.icon" alt="">
-            <span v-else-if="skill.iconType === 'emoji'" class="w-24 h-24 mb-4 mx-auto text-4xl">{{ skill.icon }}</span>
-            <svg v-else-if="skill.iconType === 'svg'" class="w-24 h-24 mb-4 mx-auto" v-html="skill.icon"></svg>
-            <h3 class="text-lg font-semibold text-coffee-800 dark:text-white mb-2">{{ skill.name }}</h3>
-            <p class="text-coffee-600 dark:text-gray-300 text-sm">{{ skill.description }}</p>
-          </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <a v-for="post in blogPosts" :key="post.id" :href="post.url" target="_blank" 
+             class="bg-coffee-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+            <div class="relative overflow-hidden">
+              <img :src="post.cover" :alt="post.title" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center text-coffee-500 dark:text-gray-400 text-sm mb-3">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                {{ post.date }}
+              </div>
+              <h3 class="text-lg font-semibold text-coffee-800 dark:text-white mb-2 group-hover:text-coffee-600 dark:group-hover:text-blue-400 transition-colors">
+                {{ post.title }}
+              </h3>
+              <p class="text-coffee-600 dark:text-gray-300 text-sm mb-4">{{ post.excerpt }}</p>
+              <div class="flex items-center text-coffee-600 dark:text-blue-400 font-semibold text-sm group-hover:gap-2 transition-all">
+                閱讀更多
+                <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="text-center mt-12">
+          <a href="https://blog.liu-yucheng.com" target="_blank" 
+             class="inline-block bg-coffee-600 hover:bg-coffee-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+            前往部落格
+          </a>
         </div>
       </div>
     </section>
@@ -103,36 +127,30 @@
 </template>
 
 <script setup>
-const skills = [
+const blogPosts = [
   {
-    name: 'PHP',
-    icon: 'https://www.php.net/images/logos/new-php-logo.svg',
-    iconType: 'image',
-    description: '網頁、Laravel 框架開發'
+    id: 1,
+    title: 'Laravel WebSockets 常見用法',
+    excerpt: '深入探討 Laravel WebSockets 套件的實際應用場景與常見用法，包含即時通訊、推播通知等功能實作。',
+    cover: 'https://blog.liu-yucheng.com/images/laravel_websockets_usage/banner.png',
+    url: 'https://blog.liu-yucheng.com/2025/08/24/laravel-websockets-common-usage/',
+    date: '2025-08-24'
   },
   {
-    name: 'Golang',
-    icon: 'https://go.dev/blog/go-brand/Go-Logo/SVG/Go-Logo_Blue.svg',
-    iconType: 'image',
-    description: 'Gin, WebSocket, 多協程開發'
+    id: 2,
+    title: 'Docker 與 Docker Compose 完全指南：從容器化到微服務部署實戰',
+    excerpt: '深入探討 Docker 與 Docker Compose 的使用技巧，從容器化應用到微服務架構的實戰經驗分享。',
+    cover: 'https://blog.liu-yucheng.com/images/docker-guide/banner.png',
+    url: 'https://blog.liu-yucheng.com/2025/08/10/docker-guide/',
+    date: '2025-08-10'
   },
   {
-    name: 'Node.js',
-    icon: 'https://nodejs.org/static/logos/nodejsStackedDark.svg',
-    iconType: 'image',
-    description: 'Express.js 框架開發'
-  },
-  {
-    name: 'Database',
-    icon: '/database.png',
-    iconType: 'image',
-    description: 'MySQL, MongoDB, Redis'
-  },
-  {
-    name: 'DevOps',
-    icon: '/devops.png',
-    iconType: 'image',
-    description: 'Docker, CI/CD, Nginx, Linux'
+    id: 3,
+    title: 'Go vet 工具詳解：程式碼靜態分析利器',
+    excerpt: '深入探討 Go vet 工具的使用方法與實際案例，提升程式碼品質與可維護性。',
+    cover: 'https://blog.liu-yucheng.com/images/golang_vet/banner.webp',
+    url: 'https://blog.liu-yucheng.com/2025/08/05/golang_vet/',
+    date: '2025-08-05'
   }
 ]
 
