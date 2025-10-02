@@ -77,7 +77,10 @@
                 <div v-for="challenge in project.challenges" :key="challenge.title" class="bg-coffee-50 dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                   <h3 class="text-lg font-semibold text-coffee-800 dark:text-white mb-2">{{ challenge.title }}</h3>
                   <p class="text-coffee-600 dark:text-gray-300 mb-3">{{ challenge.problem }}</p>
-                  <p class="text-coffee-700 dark:text-gray-300"><strong>解決方案：</strong>{{ challenge.solution }}</p>
+                  <div class="text-coffee-700 dark:text-gray-300">
+                    <strong class="block mb-2">解決方案：</strong>
+                    <div v-html="challenge.solution" class="solution-content prose prose-coffee dark:prose-invert max-w-none"></div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -212,14 +215,44 @@ const projects = {
     architectureDescription: '前端使用 Vue 3 + TypeScript，後端採用 Go + Gin 框架，三層架構設計（Controller → Service → Repository），WebSocket 提供即時通訊，MongoDB 儲存聊天記錄，Redis 處理資料快取。',
     challenges: [
       {
-        title: 'WebSocket 連線管理',
-        problem: '需要處理多個聊天室的即時訊息推播，確保訊息準確送達到對應的房間成員。',
-        solution: '實作 WebSocket 連線池管理，使用房間（Room）概念分組連線，確保訊息只推播給相關成員。'
+        title: '後端系統架構',
+        problem: '這是我學習Golang的第一個專案，所以只有PHP經驗的我，對於Golang的生態和最佳實踐完全不懂，加上我原本預想是要直接朝向高效能架構設計。',
+        solution: '花了不少時間了解與重構架構，最後考慮到真實情況通常不會直上最高效能，反而是要在可維護性和效能中取得平衡，所以我選擇了MVC架構，並且使用依賴注入（DI）來降低模組間的耦合度，讓程式碼更易於測試和維護。'
       },
       {
-        title: '權限與安全',
-        problem: '需要實現複雜的權限系統，包含 JWT 認證、CSRF 防護等安全機制。',
-        solution: '採用 Access/Refresh Token 雙重驗證，自訂 Gin Middleware 處理 CSRF Token 驗證。'
+        title: '會員系統',
+        problem: '要實現SPA的會員系統，並且確保安全性。',
+        solution: '採用 JWT Access/Refresh Token 雙重驗證，refresh token存放在httpOnly cookie中，防止XSS攻擊。後端資料庫也有存放refresh token，確保token的有效性。'
+      },
+      {
+        title: 'WebSocket 即時通訊',
+        problem: '需要實現高效能且穩定的即時通訊系統。',
+        solution: `
+          使用 Go 的 Gorilla WebSocket 庫來處理 WebSocket 連線，並且設計了 Hub、Client、Room 三個主要結構來管理連線和訊息傳遞：
+          <ul>
+            <li><strong>Hub</strong> 負責管理所有 Client 和 Room</li>
+            <li><strong>Client</strong> 負責處理單一用戶的連線</li>
+            <li><strong>Room</strong> 負責管理聊天室內的訊息傳遞</li>
+          </ul>
+          <br>
+          <p>具體實作上：</p>
+          <ul>
+            <li>在每個 Client 建立獨立的 readPump / writePump goroutine，使用 channel 傳遞要寫出的訊息，避免在同一 goroutine 同時處理讀寫造成阻塞</li>
+            <li>Hub 的 broadcast 與註冊/取消註冊可各自放在 goroutine，但共享狀態要透過 channel 或 mutex 保護，推薦以 channel 作為單一變更入口以避免競爭條件</li>
+            <li>Room 的訊息分發可在獨立 goroutine 處理大量廣播工作，並用緩衝 channel 控制回壓（backpressure）</li>
+          </ul>
+          <p><strong>注意資源回收：</strong>連線關閉時應關閉相關 channel、使用 context 或 close channel 取消 goroutine，避免 goroutine 泄漏。</p>
+        `
+      },
+      {
+        title: '聊天室設計',
+        problem: '需要處理 Channel 與 DM 不同種類的聊天室。',
+        solution: '雖然兩者是不同的資料表，但是在記憶體 Room 結構中，Channel 和 DM 都是 Room 的一種，所以在記憶體中只需要一個 Room 結構，並且用 Type 來區分是 Channel 還是 DM。'
+      },
+      {
+        title: '前端Vue狀態管理',
+        problem: '前端需要有效管理多個聊天室、用戶狀態和即時訊息。',
+        solution: '使用 Pinia 進行全局狀態管理，將用戶資料、聊天室列表、訊息等狀態集中管理，確保各組件能夠同步更新。'
       }
     ],
     techStack: [
@@ -252,20 +285,20 @@ const projects = {
   },
   2: {
     id: 2,
-    title: '綠芬芳手工皂電商網站',
-    description: '使用 Nuxt.js 3 建構的手工皂電商平台，包含前台、後台管理和 RESTful API',
+    title: '綠芬芳手工皂形象網站',
+    description: '使用 Nuxt.js 3 建構的手工皂形象平台，包含前台、後台管理和 RESTful API',
     image: '/project3.png',
     category: '全端開發',
     year: '2025',
     demo: 'https://gf-soap.com',
-    overview: '一個完整的電商平台解決方案，包含使用 Nuxt.js 3 開發的前台網站、Vue.js 管理後台，以及 Node.js 開發的 RESTful API。支援動態內容管理、SEO 最佳化、產品管理等電商功能。',
+    overview: '以 Vibe Coding 為主加上手動微調製作的簡易形象網站，包含使用 Nuxt 3 開發的前台網站、Vue 3 管理後台，以及 Express.js 開發的 RESTful API。支援動態內容管理、SEO 最佳化、產品管理等功能。',
     architecture: '/project3-sa.png',
     architectureDescription: '前台使用 Nuxt.js 3 進行 SSG 靜態生成，管理後台採用 Vue.js SPA，後端 API 使用 Node.js + Express.js 框架，MySQL 資料庫，整合 Google reCAPTCHA 安全防護。',
     challenges: [
       {
         title: 'SEO 最佳化',
-        problem: '電商網站需要良好的搜尋引擎排名，傳統 SPA 難以滿足 SEO 需求。',
-        solution: '採用 Nuxt.js 3 的 SSG 模式，自動生成 Sitemap，實作動態 meta 標籤和結構化資料。'
+        problem: '形象網站需要良好的搜尋引擎排名，傳統 SPA 難以滿足 SEO 需求。',
+        solution: '採用 Nuxt 3 的 SSG 模式，自動生成 Sitemap，實作動態 meta 標籤和結構化資料。'
       },
       {
         title: '內容管理系統',
@@ -626,3 +659,21 @@ useHead({
   ]
 })
 </script>
+
+<style scoped>
+.solution-content :deep(ul) {
+  @apply list-disc pl-6 space-y-2 mt-2;
+}
+
+.solution-content :deep(ol) {
+  @apply list-decimal pl-6 space-y-2 mt-2;
+}
+
+.solution-content :deep(li) {
+  @apply text-coffee-700 dark:text-gray-300 leading-relaxed;
+}
+
+.solution-content :deep(p) {
+  @apply mb-2;
+}
+</style>

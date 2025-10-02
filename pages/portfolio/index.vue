@@ -127,8 +127,8 @@ const projects = [
   },
   {
     id: 2,
-    title: '綠芬芳手工皂電商網站',
-    description: '使用 Nuxt.js 3 建構的手工皂電商平台，包含前台、後台管理和 RESTful API',
+    title: '綠芬芳手工皂形象網站',
+    description: '使用 Nuxt.js 3 建構的手工皂形象平台，包含前台、後台管理和 RESTful API',
     image: '/project3.png',
     category: '全端開發',
     year: '2025',

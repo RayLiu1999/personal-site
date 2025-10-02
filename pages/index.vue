@@ -11,7 +11,7 @@
             Hi, 我是<span class="text-coffee-600 dark:text-blue-400">Ray Liu</span>
           </h1>
           <p class="text-xl text-coffee-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            我是一名熱愛技術的工程師，無論是前端、後端、DevOps 都有興趣。我目前專注於高效能系統的研究與應用，讓自己有能力打造穩定且高效的系統。
+            我是一名熱愛技術的後端工程師，無論是前端、後端、DevOps 都蠻有興趣。我目前專注於高效能系統的研究與應用，讓自己有能力打造穩定且高效的系統。
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink to="/portfolio" class="bg-coffee-600 hover:bg-coffee-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">

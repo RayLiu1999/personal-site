@@ -3,7 +3,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="text-center mb-16">
-        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">Hello, 我是 Ray Liu</h1>
+        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">Hi, 我是 Ray Liu</h1>
         <p class="text-lg text-coffee-600 dark:text-gray-400">一個熱愛用程式碼解決問題、創造有趣事物的後端工程師。</p>
       </div>
 
