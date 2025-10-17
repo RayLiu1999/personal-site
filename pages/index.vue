@@ -127,32 +127,27 @@
 </template>
 
 <script setup>
-const blogPosts = [
-  {
-    id: 1,
-    title: 'Laravel WebSockets 常見用法',
-    excerpt: '深入探討 Laravel WebSockets 套件的實際應用場景與常見用法，包含即時通訊、推播通知等功能實作。',
-    cover: 'https://blog.liu-yucheng.com/images/laravel_websockets_usage/banner.png',
-    url: 'https://blog.liu-yucheng.com/2025/08/24/laravel-websockets-common-usage/',
-    date: '2025-08-24'
-  },
-  {
-    id: 2,
-    title: 'Docker 與 Docker Compose 完全指南：從容器化到微服務部署實戰',
-    excerpt: '深入探討 Docker 與 Docker Compose 的使用技巧，從容器化應用到微服務架構的實戰經驗分享。',
-    cover: 'https://blog.liu-yucheng.com/images/docker-guide/banner.png',
-    url: 'https://blog.liu-yucheng.com/2025/08/10/docker-guide/',
-    date: '2025-08-10'
-  },
-  {
-    id: 3,
-    title: 'Go vet 工具詳解：程式碼靜態分析利器',
-    excerpt: '深入探討 Go vet 工具的使用方法與實際案例，提升程式碼品質與可維護性。',
-    cover: 'https://blog.liu-yucheng.com/images/golang_vet/banner.webp',
-    url: 'https://blog.liu-yucheng.com/2025/08/05/golang_vet/',
-    date: '2025-08-05'
-  }
-]
+const blogUrl = useRuntimeConfig().public.blogUrl
+
+// 從 API 獲取部落格文章
+const { data: blogData } = await useFetch(`${blogUrl}/content.json`)
+
+const blogPosts = computed(() => {
+  if (!blogData.value) return []
+  
+  return blogData.value.slice(0, 3).map((post, index) => ({
+    id: index + 1,
+    title: post.title,
+    excerpt: post.excerpt,
+    cover: `${blogUrl}${post.cover}`,
+    url: `${blogUrl}/${post.path}`,
+    date: new Date(post.date).toLocaleDateString('zh-TW', { 
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit' 
+    })
+  }))
+})
 
 const featuredProjects = [
   {
