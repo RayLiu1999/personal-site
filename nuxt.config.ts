@@ -99,5 +99,11 @@ export default defineNuxtConfig({
       recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY || '',
       contactResponseTime: '通常於 24 小時內回覆您的訊息'
     }
+  },
+  nitro: {
+    // 設定代理路由，將 /api/blog 的請求轉發到外部部落格 API，避免 CORS 問題
+    routeRules: {
+      '/api/blog': { proxy: 'https://blog.liu-yucheng.com/content.json' }
+    }
   }
 });

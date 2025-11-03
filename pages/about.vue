@@ -121,17 +121,17 @@ const skills = [
   },
   {
     category: '資料庫與快取',
-    items: ['MySQL', 'PostgreSQL', 'Redis', 'MongoDB', 'Elasticsearch']
+    items: ['MySQL','Redis', 'MongoDB']
   },
   {
     category: 'DevOps & Infra',
-    items: ['Docker', 'GCP', 'Kubernetes', 'Jenkins', 'Terraform']
+    items: ['Docker', 'GCP', 'AWS', 'GitHub Actions', 'GitLab CI/CD']
   }
 ]
 
 const languages = [
   { name: '中文', level: '母語', style: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
-  { name: '英文', level: '流利', style: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
+  { name: '英文', level: '基礎', style: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' },
   { name: '日文', level: '基礎', style: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' }
 ]
 

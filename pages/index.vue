@@ -128,9 +128,13 @@
 
 <script setup>
 const blogUrl = useRuntimeConfig().public.blogUrl
+const siteUrl = useRuntimeConfig().public.siteUrl
 
 // 從 API 獲取部落格文章
-const { data: blogData } = await useFetch(`${blogUrl}/content.json`)
+const { data: blogData } = await useFetch(`${siteUrl}/api/blog`, {
+  server: true,
+  lazy: false,
+})
 
 const blogPosts = computed(() => {
   if (!blogData.value) return []
