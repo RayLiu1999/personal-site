@@ -26,8 +26,7 @@
           </div>
 
           <h1 class="text-4xl md:text-7xl font-bold text-coffee-800 dark:text-white mb-6 tracking-tight">
-            Hi, 我是 <span class="text-coffee-600 dark:text-blue-400 inline-block min-w-[200px] text-left">{{ displayedName }}</span>
-            <span class="animate-pulse">|</span>
+            Hi, 我是 <span class="text-coffee-600 dark:text-blue-400">{{ displayedName }}</span><span class="animate-pulse">|</span>
           </h1>
           
           <p class="text-xl md:text-2xl text-coffee-700 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed opacity-0 animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards;">
@@ -38,8 +37,8 @@
 
           <div class="flex flex-col sm:flex-row gap-6 justify-center opacity-0 animate-fade-in-up" style="animation-delay: 1s; animation-fill-mode: forwards;">
              <NuxtLink to="/portfolio" class="group relative px-8 py-4 bg-coffee-600 dark:bg-blue-600 text-white rounded-lg font-semibold overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <span class="absolute inset-0 w-full h-full bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-out -translate-x-full skew-x-12"></span>
-              <span class="relative flex items-center gap-2">
+              <span class="absolute inset-0 w-full h-full bg-white/20 opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-500 ease-out -translate-x-full skew-x-12"></span>
+              <span class="relative flex items-center justify-center gap-2">
                 查看作品集
                 <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
               </span>
@@ -52,7 +51,7 @@
       </div>
 
       <!-- Scroll Indicator - moved outside content div -->
-      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20" @click="scrollToContent">
+      <div class="absolute bottom-4 left-0 right-0 flex justify-center animate-bounce cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20" @click="scrollToContent">
         <svg class="w-8 h-8 text-coffee-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
         </svg>
