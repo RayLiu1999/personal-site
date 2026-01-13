@@ -206,10 +206,10 @@ const project = computed(() => {
         architecture: '/project1-sa.png',
         categoryKey: 'fullstack',
         challengesCount: 5,
-        techStackKeys: [
-          { nameKey: 'frontend', techCount: 4 },
-          { nameKey: 'backend', techCount: 5 },
-          { nameKey: 'database', techCount: 2 }
+        techStack: [
+          { nameKey: 'frontend', technologies: ['Vue 3', 'TypeScript', 'Element Plus', 'Pinia'] },
+          { nameKey: 'backend', technologies: ['Go', 'Gin', 'WebSocket', 'JWT', 'Redis'] },
+          { nameKey: 'database', technologies: ['MongoDB', 'Redis'] }
         ]
       },
       2: {
@@ -219,10 +219,10 @@ const project = computed(() => {
         architecture: '/project3-sa.png',
         categoryKey: 'fullstack',
         challengesCount: 2,
-        techStackKeys: [
-          { nameKey: 'client_side', techCount: 3 },
-          { nameKey: 'admin_panel', techCount: 3 },
-          { nameKey: 'backend', techCount: 4 }
+        techStack: [
+          { nameKey: 'client_side', technologies: ['Nuxt.js 3', 'Tailwind CSS', 'TypeScript'] },
+          { nameKey: 'admin_panel', technologies: ['Vue 3', 'Element Plus', 'Vite'] },
+          { nameKey: 'backend', technologies: ['Express.js', 'MySQL', 'JWT', 'reCAPTCHA'] }
         ]
       },
       3: {
@@ -233,10 +233,10 @@ const project = computed(() => {
         architecture: '/project2-sa.png',
         categoryKey: 'frontend',
         challengesCount: 2,
-        techStackKeys: [
-          { nameKey: 'frontend_framework', techCount: 3 },
-          { nameKey: 'ai_engine', techCount: 1 },
-          { nameKey: 'deployment', techCount: 1 }
+        techStack: [
+          { nameKey: 'frontend_framework', technologies: ['Vue 3', 'Vuex 4', 'Vite'] },
+          { nameKey: 'ai_engine', technologies: ['Stockfish.js'] },
+          { nameKey: 'deployment', technologies: ['Docker'] }
         ]
       },
       4: {
@@ -246,10 +246,10 @@ const project = computed(() => {
         architecture: '/project4-sa.png',
         categoryKey: 'extension',
         challengesCount: 2,
-        techStackKeys: [
-          { nameKey: 'extension', techCount: 2 },
-          { nameKey: 'workflow', techCount: 3 },
-          { nameKey: 'ai_service', techCount: 1 }
+        techStack: [
+          { nameKey: 'extension', technologies: ['JavaScript', 'Chrome Extension API'] },
+          { nameKey: 'workflow', technologies: ['n8n', 'yt-dlp', 'Docker Compose'] },
+          { nameKey: 'ai_service', technologies: ['Webhook'] }
         ]
       },
       5: {
@@ -259,10 +259,10 @@ const project = computed(() => {
         architecture: '/project7-sa.png',
         categoryKey: 'discord_bot',
         challengesCount: 3,
-        techStackKeys: [
-          { nameKey: 'core_tech', techCount: 3 },
-          { nameKey: 'crawler_tech', techCount: 2 },
-          { nameKey: 'deployment_management', techCount: 1 }
+        techStack: [
+          { nameKey: 'core_tech', technologies: ['Node.js', 'Discord.js', 'JavaScript'] },
+          { nameKey: 'crawler_tech', technologies: ['Puppeteer', 'YouTube API'] },
+          { nameKey: 'deployment_management', technologies: ['PM2'] }
         ]
       },
       6: {
@@ -273,9 +273,9 @@ const project = computed(() => {
         architecture: '/project5-sa.png',
         categoryKey: 'php',
         challengesCount: 2,
-        techStackKeys: [
-          { nameKey: 'backend', techCount: 2 },
-          { nameKey: 'tools', techCount: 2 }
+        techStack: [
+          { nameKey: 'backend', technologies: ['PHP', 'MySQL'] },
+          { nameKey: 'tools', technologies: ['Composer', 'Apache'] }
         ]
       },
       7: {
@@ -286,9 +286,9 @@ const project = computed(() => {
         architecture: '/project6-sa.png',
         categoryKey: 'php',
         challengesCount: 2,
-        techStackKeys: [
-          { nameKey: 'backend', techCount: 2 },
-          { nameKey: 'dev_tools', techCount: 3 }
+        techStack: [
+          { nameKey: 'backend', technologies: ['PHP', 'MySQL'] },
+          { nameKey: 'dev_tools', technologies: ['JavaScript', 'Gulp', 'Prepros'] }
         ]
       }
     }
@@ -309,24 +309,11 @@ const project = computed(() => {
       }
     }
 
-    // Build techStack array using tm() with proper conversion
-    const techStackRaw = tm(`${key}.techStack`)
-    let techStack = []
-    if (Array.isArray(techStackRaw)) {
-      techStack = techStackRaw.map((cat, catIndex) => {
-        // Get the name using indexed key
-        const name = t(`${key}.techStack[${catIndex}].name`)
-        // Get technologies array
-        const techRaw = tm(`${key}.techStack[${catIndex}].technologies`)
-        let technologies = []
-        if (Array.isArray(techRaw)) {
-          technologies = techRaw.map((_, techIndex) =>
-            t(`${key}.techStack[${catIndex}].technologies[${techIndex}]`)
-          )
-        }
-        return { name, technologies }
-      })
-    }
+    // Build techStack array using staticData structure and translate category names
+    const techStack = staticP.techStack.map(cat => ({
+      name: t(`portfolio.techStack.${cat.nameKey}`),
+      technologies: cat.technologies
+    }))
 
     // Construct merged project
     const p = {
