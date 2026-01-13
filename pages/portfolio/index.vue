@@ -3,54 +3,46 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="text-center mb-12 scroll-reveal">
-        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">作品集</h1>
+        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">{{ $t('portfolio.title') }}</h1>
         <p class="text-coffee-600 dark:text-gray-400 max-w-2xl mx-auto">
-          展示我在前端與後端開發領域的專案經驗與技術成果
+          {{ $t('portfolio.subtitle') }}
         </p>
       </div>
 
       <!-- Filter -->
       <div class="mb-8 scroll-reveal" style="transition-delay: 100ms;">
         <div class="flex flex-wrap justify-center gap-4">
-          <button 
-            v-for="tag in allTags" 
-            :key="tag"
-            @click="toggleTag(tag)"
-            :class="[
-              'px-6 py-2 rounded-full font-semibold transition-colors duration-300',
-              selectedTags.includes(tag)
-                ? 'bg-coffee-600 dark:bg-blue-600 text-white shadow-lg transform scale-105' 
-                : 'bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 hover:bg-coffee-200 dark:hover:bg-gray-600'
-            ]"
-          >
+          <button v-for="tag in allTags" :key="tag" @click="toggleTag(tag)" :class="[
+            'px-6 py-2 rounded-full font-semibold transition-colors duration-300',
+            selectedTags.includes(tag)
+              ? 'bg-coffee-600 dark:bg-blue-600 text-white shadow-lg transform scale-105'
+              : 'bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 hover:bg-coffee-200 dark:hover:bg-gray-600'
+          ]">
             {{ tag }}
           </button>
         </div>
         <div v-if="selectedTags.length > 0" class="text-center mt-4">
-          <button 
-            @click="selectedTags = []"
-            class="text-sm text-coffee-600 dark:text-blue-400 hover:underline"
-          >
-            清除所有篩選
+          <button @click="selectedTags = []" class="text-sm text-coffee-600 dark:text-blue-400 hover:underline">
+            {{ $t('portfolio.filter.clear') }}
           </button>
         </div>
       </div>
 
       <!-- Projects Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div 
-          v-for="(project, index) in filteredProjects" 
-          :key="project.id"
+        <div v-for="(project, index) in filteredProjects" :key="project.id"
           class="scroll-reveal bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-          :style="{ transitionDelay: `${index * 100}ms` }"
-        >
-          <NuxtLink :to="`/portfolio/${project.id}`" class="block relative group">
-            <img :src="project.image" :alt="project.title" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-            <div class="absolute inset-0 bg-coffee-900/0 group-hover:bg-coffee-900/10 transition-colors duration-300"></div>
+          :style="{ transitionDelay: `${index * 100}ms` }">
+          <NuxtLink :to="localePath(`/portfolio/${project.id}`)" class="block relative group">
+            <img :src="project.image" :alt="project.title"
+              class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-coffee-900/0 group-hover:bg-coffee-900/10 transition-colors duration-300">
+            </div>
           </NuxtLink>
           <div class="p-6">
             <div class="flex items-center justify-between mb-2">
-              <span class="px-3 py-1 bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 text-sm rounded-full">
+              <span
+                class="px-3 py-1 bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 text-sm rounded-full">
                 {{ project.category }}
               </span>
               <span class="text-coffee-500 dark:text-gray-400 text-sm">{{ project.year }}</span>
@@ -58,43 +50,42 @@
             <h3 class="text-xl font-semibold text-coffee-800 dark:text-white mb-2">{{ project.title }}</h3>
             <p class="text-coffee-600 dark:text-gray-300 mb-4">{{ project.description }}</p>
             <div class="flex flex-wrap gap-2 mb-4">
-              <span 
-                v-for="tech in project.technologies" 
-                :key="tech" 
-                class="px-2 py-1 bg-coffee-50 dark:bg-gray-700 text-coffee-600 dark:text-gray-300 text-xs rounded"
-              >
+              <span v-for="tech in project.technologies" :key="tech"
+                class="px-2 py-1 bg-coffee-50 dark:bg-gray-700 text-coffee-600 dark:text-gray-300 text-xs rounded">
                 {{ tech }}
               </span>
             </div>
             <div class="flex justify-between items-center">
-              <NuxtLink 
-                :to="`/portfolio/${project.id}`" 
-                class="text-coffee-600 dark:text-blue-400 hover:text-coffee-800 dark:hover:text-blue-300 font-semibold flex items-center group/link"
-              >
-                查看詳情 
+              <NuxtLink :to="localePath(`/portfolio/${project.id}`)"
+                class="text-coffee-600 dark:text-blue-400 hover:text-coffee-800 dark:hover:text-blue-300 font-semibold flex items-center group/link">
+                {{ $t('portfolio.project.viewDetails') }}
                 <span class="inline-block transition-transform duration-300 group-hover/link:translate-x-1">→</span>
               </NuxtLink>
               <div class="flex gap-2">
-                <a v-if="project.github" :href="project.github" target="_blank" class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors">
+                <a v-if="project.github" :href="project.github" target="_blank"
+                  class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors">
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                    <path fill-rule="evenodd"
+                      d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
+                      clip-rule="evenodd"></path>
                   </svg>
                 </a>
                 <template v-if="project.githubs">
-                  <a v-for="(github, index) in project.githubs" 
-                     :key="index" 
-                     :href="github.url" 
-                     target="_blank" 
-                     class="relative group text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors"
-                     :title="github.name">
+                  <a v-for="(github, index) in project.githubs" :key="index" :href="github.url" target="_blank"
+                    class="relative group text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors"
+                    :title="github.name">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                      <path fill-rule="evenodd"
+                        d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
+                        clip-rule="evenodd"></path>
                     </svg>
                   </a>
                 </template>
-                <a v-if="project.demo" :href="project.demo" target="_blank" class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors">
+                <a v-if="project.demo" :href="project.demo" target="_blank"
+                  class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                   </svg>
                 </a>
               </div>
@@ -109,16 +100,18 @@
 <script setup>
 const config = useRuntimeConfig()
 const siteUrl = config.public.siteUrl
+const { t } = useI18n()
+const localePath = useLocalePath()
 
 const selectedTags = ref([])
 
-const projects = [
+const projects = computed(() => [
   {
     id: 1,
-    title: 'Discord 風格聊天應用',
-    description: '模仿 Discord 架構的即時聊天應用，支援伺服器、頻道、私訊、好友系統，採用 Vue 3 + Go 開發',
+    title: t('portfolio.items.p1.title'),
+    description: t('portfolio.items.p1.description'),
     image: '/project1.png',
-    category: '全端開發',
+    category: t('portfolio.categories.fullstack'),
     year: '2024',
     tags: ['Vue', 'Go', 'WebSocket'],
     technologies: ['Vue 3', 'TypeScript', 'Go', 'Gin', 'MongoDB', 'Redis', 'WebSocket', 'JWT', 'Element Plus'],
@@ -130,10 +123,10 @@ const projects = [
   },
   {
     id: 2,
-    title: '綠芬芳手工皂形象網站',
-    description: '使用 Nuxt.js 3 建構的手工皂形象平台，包含前台、後台管理和 RESTful API',
+    title: t('portfolio.items.p2.title'),
+    description: t('portfolio.items.p2.description'),
     image: '/project3.png',
-    category: '全端開發',
+    category: t('portfolio.categories.fullstack'),
     year: '2025',
     tags: ['Nuxt.js', 'Node.js', 'Express.js'],
     technologies: ['Nuxt.js 3', 'Tailwind CSS', 'TypeScript', 'Express.js', 'Gin', 'MySQL', 'JWT', 'reCAPTCHA'],
@@ -141,44 +134,44 @@ const projects = [
   },
   {
     id: 3,
-    title: 'Vue 國際象棋遊戲',
-    description: '使用 Vue 3 開發的網頁版國際象棋遊戲，整合 Stockfish 引擎提供 AI 對戰功能',
+    title: t('portfolio.items.p3.title'),
+    description: t('portfolio.items.p3.description'),
     image: '/project2.png',
-    category: '前端',
+    category: t('portfolio.categories.frontend'),
     year: '2024',
-    tags: ['Vue', '遊戲開發'],
+    tags: ['Vue', t('portfolio.tags.game_dev')],
     technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
     demo: 'https://chess.liu-yucheng.com',
     github: 'https://github.com/RayLiu1999/chess-in-vue',
   },
   {
     id: 4,
-    title: 'YouTube 影片下載擴充功能',
-    description: 'Chrome 擴充功能，支援 YouTube 影片下載和 AI 總結功能，整合 n8n 工作流自動化',
+    title: t('portfolio.items.p4.title'),
+    description: t('portfolio.items.p4.description'),
     image: '/project4.png',
-    category: '瀏覽器擴充功能',
+    category: t('portfolio.categories.extension'),
     year: '2025',
-    tags: ['瀏覽器擴充功能', '工具/自動化', 'n8n'],
+    tags: [t('portfolio.categories.extension'), t('portfolio.tags.tools'), 'n8n'],
     technologies: ['JavaScript', 'Chrome Extension API', 'n8n', 'yt-dlp', 'Docker Compose', 'Webhook'],
     github: 'https://github.com/RayLiu1999/youtube-extension',
   },
   {
     id: 5,
-    title: 'YouTube Discord Bot',
-    description: 'Discord Bot，自動爬取 YouTube 頻道的最新影片和直播，並推送到指定頻道',
+    title: t('portfolio.items.p5.title'),
+    description: t('portfolio.items.p5.description'),
     image: '/project7.png',
-    category: 'Discord Bot',
+    category: t('portfolio.categories.discord_bot'),
     year: '2023',
-    tags: ['Discord Bot', 'Node.js', '工具/自動化'],
+    tags: [t('portfolio.categories.discord_bot'), 'Node.js', t('portfolio.tags.tools')],
     technologies: ['Node.js', 'Discord.js', 'PM2', 'YouTube API', 'Puppeteer', 'JavaScript'],
     github: 'https://github.com/RayLiu1999/yt_discord_bot',
   },
   {
     id: 6,
-    title: 'PHP 簡易電商購物車',
-    description: '使用 PHP 開發的簡易電商系統，包含商品瀏覽、購物車、用戶註冊登入等基本功能',
+    title: t('portfolio.items.p6.title'),
+    description: t('portfolio.items.p6.description'),
     image: '/project5.png',
-    category: 'PHP',
+    category: t('portfolio.categories.php'),
     year: '2022',
     tags: ['PHP', 'MySQL'],
     technologies: ['PHP', 'MySQL', 'Composer', 'Apache'],
@@ -188,28 +181,28 @@ const projects = [
   },
   {
     id: 7,
-    title: '番茄鐘生產力應用',
-    description: '基於番茄工作法的生產力管理應用，幫助用戶管理任務與專注時間',
+    title: t('portfolio.items.p7.title'),
+    description: t('portfolio.items.p7.description'),
     image: '/project6.png',
-    category: 'PHP',
+    category: t('portfolio.categories.php'),
     year: '2022',
     tags: ['PHP', 'MySQL'],
     technologies: ['PHP', 'MySQL', 'JavaScript', 'Gulp', 'Prepros'],
     demo: 'https://pomodoro.liu-yucheng.com',
     github: 'https://github.com/RayLiu1999/tomato-clock',
   },
-]
+])
 
 const allTags = computed(() => {
   const tags = new Set()
-  projects.forEach(p => {
+  projects.value.forEach(p => {
     p.tags.forEach(t => tags.add(t))
   })
-  return ['全部', ...Array.from(tags).sort()]
+  return [t('portfolio.filter.all'), ...Array.from(tags).sort()]
 })
 
 const toggleTag = (tag) => {
-  if (tag === '全部') {
+  if (tag === t('portfolio.filter.all')) {
     selectedTags.value = []
     return
   }
@@ -223,9 +216,9 @@ const toggleTag = (tag) => {
 
 const filteredProjects = computed(() => {
   if (selectedTags.value.length === 0) {
-    return projects
+    return projects.value
   }
-  return projects.filter(project => 
+  return projects.value.filter(project =>
     selectedTags.value.every(tag => project.tags.includes(tag))
   )
 })
@@ -243,11 +236,11 @@ onMounted(() => {
 
 // SEO Meta 設定
 useHead({
-  title: '作品集 - Ray Liu | 後端工程師專案展示',
+  title: t('portfolio.title') + ' - Ray Liu | 後端工程師專案展示',
   meta: [
     {
       name: 'description',
-      content: '瀏覽 Ray Liu 的程式設計作品集，包含全端開發、後端系統、DevOps 自動化等專案。展示使用 Node.js、Python、Vue.js、Docker 等技術的實戰經驗與創新解決方案。'
+      content: t('portfolio.subtitle')
     },
     {
       name: 'keywords',
@@ -256,11 +249,11 @@ useHead({
     // Open Graph
     {
       property: 'og:title',
-      content: '作品集 - Ray Liu 後端工程師'
+      content: t('portfolio.title') + ' - Ray Liu 後端工程師'
     },
     {
       property: 'og:description',
-      content: '瀏覽 Ray Liu 的程式設計作品集，展示全端開發、後端系統、DevOps 等領域的專業專案。'
+      content: t('portfolio.subtitle')
     },
     {
       property: 'og:type',

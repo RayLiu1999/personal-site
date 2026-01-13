@@ -3,47 +3,50 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">聯絡我</h1>
-        <p class="text-coffee-600 dark:text-gray-400">歡迎與我討論技術問題或合作機會</p>
+        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">{{ $t('contact.header.title') }}</h1>
+        <p class="text-coffee-600 dark:text-gray-400">{{ $t('contact.header.subtitle') }}</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Contact Form -->
         <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border dark:border-gray-700">
-          <h2 class="text-2xl font-bold text-coffee-800 dark:text-white mb-6">發送訊息</h2>
+          <h2 class="text-2xl font-bold text-coffee-800 dark:text-white mb-6">{{ $t('contact.form.submit') }}</h2>
           <form @submit.prevent="submitForm" class="space-y-6">
             <div>
-              <label for="name" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">姓名</label>
+              <label for="name" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
+                $t('contact.form.name') }}</label>
               <input type="text" id="name" v-model="form.name" required
                 class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent"
-                placeholder="請輸入您的姓名">
+                :placeholder="$t('contact.form.namePlaceholder')">
             </div>
 
             <div>
-              <label for="email" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">電子郵件</label>
+              <label for="email" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
+                $t('contact.form.email') }}</label>
               <input type="email" id="email" v-model="form.email" required
                 class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent"
-                placeholder="請輸入您的電子郵件">
+                :placeholder="$t('contact.form.emailPlaceholder')">
             </div>
 
             <div>
-              <label for="subject" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">主旨</label>
+              <label for="subject" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
+                $t('contact.form.subject') }}</label>
               <input type="text" id="subject" v-model="form.subject" required
                 class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent"
-                placeholder="請輸入訊息主旨">
+                :placeholder="$t('contact.form.subjectPlaceholder')">
             </div>
 
             <div>
-              <label for="message"
-                class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">訊息內容</label>
+              <label for="message" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
+                $t('contact.form.message') }}</label>
               <textarea id="message" v-model="form.message" required rows="6"
                 class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent resize-none"
-                placeholder="請輸入您想說的話..."></textarea>
+                :placeholder="$t('contact.form.messagePlaceholder')"></textarea>
             </div>
 
             <button type="submit" :disabled="isSubmitting"
               class="w-full bg-coffee-600 hover:bg-coffee-700 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-coffee-400 dark:disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-              <span v-if="!isSubmitting">發送訊息</span>
+              <span v-if="!isSubmitting">{{ $t('contact.form.submit') }}</span>
               <span v-else class="flex items-center justify-center">
                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                   viewBox="0 0 24 24">
@@ -52,7 +55,7 @@
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                   </path>
                 </svg>
-                發送中...
+                {{ $t('contact.form.sending') }}
               </span>
             </button>
           </form>
@@ -66,7 +69,7 @@
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                   clip-rule="evenodd"></path>
               </svg>
-              訊息已成功發送！我會盡快回覆您。
+              {{ $t('contact.form.success') }}
             </div>
           </div>
         </div>
@@ -75,39 +78,52 @@
         <div class="space-y-6">
           <!-- What we can talk about -->
           <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border dark:border-gray-700">
-            <h2 class="text-2xl font-bold text-coffee-800 dark:text-white mb-6">我們可以聊些什麼？</h2>
+            <h2 class="text-2xl font-bold text-coffee-800 dark:text-white mb-6">{{ $t('contact.sidebar.title') }}</h2>
             <div class="space-y-5">
               <div class="flex items-start">
-                <div class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                <div
+                  class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h3 class="font-semibold text-coffee-800 dark:text-white">聊聊技術</h3>
-                  <p class="text-coffee-600 dark:text-gray-400 text-sm">從後端架構、系統設計到 DevOps，我都樂於交流。</p>
+                  <h3 class="font-semibold text-coffee-800 dark:text-white">{{ $t('contact.sidebar.tech.title') }}</h3>
+                  <p class="text-coffee-600 dark:text-gray-400 text-sm">{{ $t('contact.sidebar.tech.desc') }}</p>
                 </div>
               </div>
               <div class="flex items-start">
-                <div class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                <div
+                  class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                    </path>
                   </svg>
                 </div>
                 <div>
-                  <h3 class="font-semibold text-coffee-800 dark:text-white">有趣的專案</h3>
-                  <p class="text-coffee-600 dark:text-gray-400 text-sm">有好點子或需要技術夥伴嗎？我很感興趣！</p>
+                  <h3 class="font-semibold text-coffee-800 dark:text-white">{{ $t('contact.sidebar.project.title') }}
+                  </h3>
+                  <p class="text-coffee-600 dark:text-gray-400 text-sm">{{ $t('contact.sidebar.project.desc') }}</p>
                 </div>
               </div>
               <div class="flex items-start">
-                <div class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 3v4a2 2 0 01-2 2H5a2 2 0 01-2-2V3m18 0l-6 6M3 3l6 6m0 0V3m0 6v4a2 2 0 002 2h4a2 2 0 002-2V9"></path>
+                <div
+                  class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 3v4a2 2 0 01-2 2H5a2 2 0 01-2-2V3m18 0l-6 6M3 3l6 6m0 0V3m0 6v4a2 2 0 002 2h4a2 2 0 002-2V9">
+                    </path>
                   </svg>
                 </div>
                 <div>
-                  <h3 class="font-semibold text-coffee-800 dark:text-white">喝杯咖啡</h3>
-                  <p class="text-coffee-600 dark:text-gray-400 text-sm">如果你在附近，我們可以約個時間，聊聊任何事。</p>
+                  <h3 class="font-semibold text-coffee-800 dark:text-white">{{ $t('contact.sidebar.coffee.title') }}
+                  </h3>
+                  <p class="text-coffee-600 dark:text-gray-400 text-sm">{{ $t('contact.sidebar.coffee.desc') }}</p>
                 </div>
               </div>
             </div>
@@ -115,11 +131,9 @@
 
           <!-- Response Time -->
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700 text-center">
-            <h3 class="font-semibold text-coffee-800 dark:text-white mb-2">訊息回覆</h3>
-            <p class="text-coffee-600 dark:text-gray-400 text-sm">
-              通常在 24 小時內回覆。<br>
-              如果沒回，可能是我正在專心寫扣或是在探索新的咖啡店！☕️
-            </p>
+            <h3 class="font-semibold text-coffee-800 dark:text-white mb-2">{{ $t('contact.sidebar.response.title') }}
+            </h3>
+            <p class="text-coffee-600 dark:text-gray-400 text-sm" v-html="$t('contact.sidebar.response.desc')"></p>
           </div>
         </div>
       </div>
@@ -130,6 +144,7 @@
 <script setup>
 const config = useRuntimeConfig()
 const siteUrl = config.public.siteUrl
+const { t } = useI18n()
 
 const form = ref({
   name: '',
@@ -160,7 +175,7 @@ const submitForm = async () => {
     if (typeof window !== 'undefined' && window.grecaptcha) {
       const config = useRuntimeConfig()
       const siteKey = config.public.recaptchaSiteKey
-      
+
       const token = await window.grecaptcha.execute(siteKey, { action: 'contact_form' })
       recaptchaToken.value = token
       if (token) {
@@ -198,6 +213,7 @@ const submitForm = async () => {
 
   } catch (error) {
     console.error('發送失敗:', error)
+    alert(t('contact.form.error')) // Using translation for alert too
   } finally {
     isSubmitting.value = false
   }
@@ -251,11 +267,11 @@ onMounted(() => {
 
 // SEO Meta 設定
 useHead({
-  title: '聯絡我 - Ray Liu | 後端工程師合作洽談',
+  title: t('contact.header.title') + ' - Ray Liu | 後端工程師合作洽談',
   meta: [
     {
       name: 'description',
-      content: '歡迎與 Ray Liu 討論技術問題、專案合作或工作機會。透過安全的聯絡表單快速聯繫，我會在 24 小時內回覆您的訊息。專業的後端工程師，樂意協助解決技術挑戰。'
+      content: t('contact.header.subtitle')
     },
     {
       name: 'keywords',
@@ -264,11 +280,11 @@ useHead({
     // Open Graph
     {
       property: 'og:title',
-      content: '聯絡我 - Ray Liu 後端工程師'
+      content: t('contact.header.title') + ' - Ray Liu 後端工程師'
     },
     {
       property: 'og:description',
-      content: '歡迎與我討論技術問題、專案合作或工作機會，24 小時內快速回覆。'
+      content: t('contact.header.subtitle')
     },
     {
       property: 'og:type',

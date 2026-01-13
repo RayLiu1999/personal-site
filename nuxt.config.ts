@@ -23,7 +23,10 @@ export default defineNuxtConfig({
     ],
     langDir: 'locales/',
     defaultLocale: 'zh-tw',
-    strategy: 'prefix_except_default'
+    strategy: 'prefix_except_default',
+    compilation: {
+      strictMessage: false
+    }
   },
   imports: {
     autoImport: true
@@ -69,7 +72,7 @@ export default defineNuxtConfig({
       '/contact',
       '/portfolio',
       '/portfolio/chat-app-backend',
-      '/portfolio/chat-app-frontend', 
+      '/portfolio/chat-app-frontend',
       '/portfolio/chess-in-vue',
       '/portfolio/e-commerce-cart',
       '/portfolio/green-fragrance-soap-admin',

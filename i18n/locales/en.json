@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "Home",
-    "portfolio": "Portfolio", 
+    "portfolio": "Portfolio",
     "about": "About",
     "blog": "Blog",
     "contact": "Contact"
@@ -15,5 +15,357 @@
     "copyright": "Personal Website. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "contact": "Contact Me"
+  },
+  "home": {
+    "hero": {
+      "greeting": "Hi, I am",
+      "role": "Back-end Developer",
+      "intro_part1": "I am a passionate",
+      "intro_part2": ",",
+      "intro_part3": " focusing on building ",
+      "intro_highlight1": "stable",
+      "intro_highlight2": "high-performance",
+      "intro_highlight3": "scalable",
+      "intro_part4": " systems.",
+      "viewPortfolio": "View Portfolio",
+      "contactMe": "Contact Me",
+      "and1": ", ",
+      "and2": " and "
+    },
+    "blog": {
+      "title": "Latest Blog Posts",
+      "subtitle": "Sharing technology and daily life",
+      "readMore": "Read More",
+      "visitBlog": "Visit Blog"
+    },
+    "projects": {
+      "title": "Featured Projects",
+      "subtitle": "Latest Project Outcomes",
+      "viewDetails": "View Details",
+      "viewAll": "View All Projects"
+    }
+  },
+  "about": {
+    "header": {
+      "title": "Hi, I am Ray Liu",
+      "subtitle": "A back-end developer who loves solving problems with code and creating interesting things."
+    },
+    "story": {
+      "title": "My Story",
+      "subtitle": "A journey starting from a line of code",
+      "p1": "Hello! I am a back-end developer with over 3 years of practical experience. For me, programming is not just a job, but an art of creation and problem-solving. I have a strong curiosity for all new technologies, whether it's frontend, backend, or the world of DevOps automation.",
+      "p2": "I especially enjoy learning through Side Projects because I believe this is the most solid and practical way to grow. Especially today, with AI tools becoming increasingly powerful, the efficiency and depth of learning have been unprecedentedly improved, allowing me to apply new knowledge to projects faster.",
+      "p3": "Outside of work and study, I also like to write small tools that bring convenience or pure fun to life. I believe the greatest value of technology lies in its ability to truly integrate into daily life.",
+      "p4": "This website is my little world for practicing ideas. Welcome to look around!"
+    },
+    "philosophy": {
+      "title": "My Philosophy",
+      "items": {
+        "craft": {
+          "title": "Code is a Craft",
+          "description": "I believe good code should not only work but also be clear, elegant, and easy to maintain."
+        },
+        "pragmatic": {
+          "title": "Pragmatic Solutions",
+          "description": "Technology exists to solve problems. I focus on finding the most suitable tools and architecture for the current context, rather than blindly following trends."
+        },
+        "learning": {
+          "title": "Continuous Learning",
+          "description": "Technology changes rapidly. I enjoy the process of constantly learning new knowledge and am happy to share with the team to grow together."
+        }
+      }
+    },
+    "sidebar": {
+      "toolbox": "My Tech Toolbox",
+      "languages": "Languages",
+      "lang_items": {
+        "chinese": "Chinese",
+        "english": "English",
+        "japanese": "Japanese",
+        "native": "Native",
+        "basic": "Basic"
+      },
+      "skills": {
+        "main": "Main Languages",
+        "db": "Database & Cache",
+        "devops": "DevOps & Infra"
+      }
+    }
+  },
+  "contact": {
+    "header": {
+      "title": "Contact Me",
+      "subtitle": "Feel free to contact me for any cooperation opportunities or questions"
+    },
+    "form": {
+      "name": "Your Name",
+      "namePlaceholder": "Please enter your name",
+      "email": "Your Email",
+      "emailPlaceholder": "Please enter your email",
+      "subject": "Subject",
+      "subjectPlaceholder": "Please enter the message subject",
+      "message": "Message",
+      "messagePlaceholder": "Please enter your message...",
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent!",
+      "error": "Failed to send, please try again."
+    },
+    "sidebar": {
+      "title": "What can we talk about?",
+      "tech": {
+        "title": "Tech Talk",
+        "desc": "From backend architecture, system design to DevOps, I am happy to exchange ideas."
+      },
+      "project": {
+        "title": "Interesting Projects",
+        "desc": "Have a great idea or need a tech partner? I am interested!"
+      },
+      "coffee": {
+        "title": "Have a Coffee",
+        "desc": "If you are nearby, we can meet up and chat about anything."
+      },
+      "response": {
+        "title": "Response Time",
+        "desc": "Usually reply within 24 hours.<br>If not, I might be focusing on coding or exploring a new coffee shop! ☕️"
+      }
+    }
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "subtitle": "Showcasing my project experience and technical achievements in frontend and backend development.",
+    "filter": {
+      "all": "All",
+      "clear": "Clear all filters"
+    },
+    "project": {
+      "viewDetails": "View Details",
+      "backToPortfolio": "Back to Portfolio",
+      "githubSource": "GitHub Source",
+      "liveDemo": "Live Demo",
+      "overview": "Project Overview",
+      "challenges": "Technical Challenges & Solutions",
+      "solutionLabel": "Solution:",
+      "architecture": "Architecture",
+      "learnings": "Learnings",
+      "techStack": "Tech Stack",
+      "notFound": "Project Not Found"
+    },
+    "categories": {
+      "fullstack": "Full Stack",
+      "frontend": "Frontend",
+      "extension": "Browser Extension",
+      "discord_bot": "Discord Bot",
+      "php": "PHP"
+    },
+    "tags": {
+      "game_dev": "Game Dev",
+      "tools": "Tools/Automation"
+    },
+    "techStack": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "database": "Database",
+      "client_side": "Client Side",
+      "admin_panel": "Admin Panel",
+      "frontend_framework": "Frontend Framework",
+      "ai_engine": "AI Engine",
+      "deployment": "Deployment",
+      "extension": "Extension",
+      "workflow": "Workflow",
+      "ai_service": "AI Service",
+      "core_tech": "Core Tech",
+      "crawler_tech": "Crawler Tech",
+      "deployment_management": "Deployment Management",
+      "tools": "Tools",
+      "dev_tools": "Dev Tools"
+    },
+    "items": {
+      "p1": {
+        "title": "Discord-style Chat App",
+        "description": "A real-time chat application mimicking Discord architecture, supporting servers, channels, direct messages, and friend systems, built with Vue 3 + Go.",
+        "overview": "This is a real-time chat application modeled after Discord, consisting of a frontend (Vue 3) and backend (Go). It supports complete features including servers (Guilds), channels (Rooms), direct messages (DM), and a specific friend system. It uses WebSocket for real-time communication, MongoDB for data storage, and Redis for caching.",
+        "architectureDescription": "The frontend uses Vue 3 + TypeScript, while the backend adopts Go + Gin framework with a three-layer architecture (Controller → Service → Repository). WebSocket provides real-time communication, MongoDB stores chat records, and Redis handles data caching.",
+        "learnings": "Through this project, I deeply learned WebSocket real-time communication technology, mastered Go language details with Gin framework, and Vue 3 Composition API usage. I gained valuable experience especially in handling complex state management and real-time message broadcasting.",
+        "challenges": [
+          {
+            "title": "Backend Architecture",
+            "problem": "This was my first Golang project. With only PHP experience, I was unfamiliar with Golang's ecosystem and best practices, yet I aimed for a high-performance architecture.",
+            "solution": "I spent significant time understanding and refactoring. Considering that real-world scenarios prioritize balance between maintainability and performance over raw speed, I chose an MVC architecture and used Dependency Injection (DI) to reduce coupling, making code easier to test and maintain."
+          },
+          {
+            "title": "Member System",
+            "problem": "Implementing a secure member system for an SPA.",
+            "solution": "Adopted JWT Access/Refresh Token double verification. The refresh token is stored in an httpOnly cookie to prevent XSS attacks. The backend database also stores the refresh token to ensure its validity."
+          },
+          {
+            "title": "WebSocket Real-time Communication",
+            "problem": "Needed to implement a high-performance and stable real-time communication system.",
+            "solution": "Used Go's Gorilla WebSocket library to handle connections. Designed Hub, Client, and Room structures to manage connections and message passing:<ul><li><strong>Hub</strong> manages all Clients and Rooms</li><li><strong>Client</strong> handles individual user connections</li><li><strong>Room</strong> manages message broadcasting within a chat room</li></ul>"
+          },
+          {
+            "title": "Chat Room Design",
+            "problem": "Handling different types of chat rooms (Channel vs DM).",
+            "solution": "Although they are different tables in the DB, in the in-memory Room structure, both are just a type of Room. So I used a single Room structure with a Type field to distinguish them."
+          },
+          {
+            "title": "Frontend Vue State Management",
+            "problem": "Effectively managing multiple chat rooms, user states, and real-time messages.",
+            "solution": "Used Pinia for global state management to centralize user data, chat lists, and messages, ensuring all components update synchronously."
+          }
+        ],
+        "githubs": {
+          "frontend": "Frontend Source",
+          "backend": "Backend Source"
+        }
+      },
+      "p2": {
+        "title": "Green Fragrance Handmade Soap Site",
+        "description": "A handmade soap image platform built with Nuxt.js 3, including frontend, backend management, and RESTful API.",
+        "overview": "A simple image website built mainly with Vibe Coding plus manual fine-tuning. It includes a frontend site developed with Nuxt 3, a Vue 3 admin panel, and a RESTful API developed with Express.js. Supports dynamic content management, SEO optimization, and product management.",
+        "architectureDescription": "Frontend uses Nuxt.js 3 for SSG (Static Site Generation), admin panel uses Vue.js SPA, backend API uses Node.js + Express.js framework with MySQL database, integrated with Google reCAPTCHA for security.",
+        "learnings": "Through this project, I mastered the modern frontend development workflow and deeply understood the advantages of SSG and SEO optimization techniques. I also improved my full-stack development skills and learned how to design user-friendly management interfaces.",
+        "challenges": [
+          {
+            "title": "SEO Optimization",
+            "problem": "Image websites need good search engine rankings, which traditional SPAs struggle to satisfy.",
+            "solution": "Adopted Nuxt 3's SSG mode to automatically generate Sitemaps and implement dynamic meta tags and structured data."
+          },
+          {
+            "title": "Content Management System",
+            "problem": "Needed to allow non-technical staff to easily manage website content and product information.",
+            "solution": "Developed an intuitive admin panel supporting WYSIWYG editors, image uploads, and product management."
+          }
+        ]
+      },
+      "p3": {
+        "title": "Vue Chess Game",
+        "description": "A web-based chess game developed with Vue 3, integrating Stockfish engine for AI battles.",
+        "overview": "A web-based chess game developed using Vue 3 and Vite, providing a beautiful and intuitive user interface. Integrates Stockfish chess engine to provide AI battle functions, supports full chess rule implementation including advanced features like valid move highlighting and FEN board state.",
+        "architectureDescription": "Uses Vue 3 + Vuex 4 for state management, Stockfish.js for AI engine, supports FEN format board state serialization, and Docker containerized deployment.",
+        "learnings": "This project allowed me to deeply understand game logic design patterns, learn how to handle complex state management, and integrate AI engines. Specifically significant improvements in performance optimization and user experience design.",
+        "challenges": [
+          {
+            "title": "Chess Rules Implementation",
+            "problem": "Needed to fully implement complex chess rules, including special moves like castling and en passant.",
+            "solution": "Designed a complete piece class system, implemented move logic for each piece, and added rule verification mechanisms."
+          },
+          {
+            "title": "AI Engine Integration",
+            "problem": "Integrating Stockfish engine into a web app and handling asynchronous AI calculations.",
+            "solution": "Used Stockfish.js to run the engine in the browser via Web Workers to avoid blocking the main thread."
+          }
+        ]
+      },
+      "p4": {
+        "title": "YouTube Video Downloader Extension",
+        "description": "Chrome extension supporting YouTube video downloading and AI summarization, integrated with n8n workflow automation.",
+        "overview": "A feature-rich Chrome extension that supports multi-quality YouTube video downloading and integrates AI video summarization. Uses n8n workflow automation platform to handle download and summarization tasks, supporting both online and local operation modes.",
+        "architectureDescription": "The extension uses Chrome Extension API, communicates with n8n workflows via Webhook. The backend uses yt-dlp for video downloading and AI models for text summarization.",
+        "learnings": "This project taught me browser extension development, workflow automation design thinking, and how to integrate different services and APIs to realize complex feature requirements.",
+        "challenges": [
+          {
+            "title": "Cross-Origin Communication",
+            "problem": "Browser extensions need safe cross-origin communication with external API services.",
+            "solution": "Used Chrome Extension's background script to handle API requests and configured appropriate permissions and CSP policies."
+          },
+          {
+            "title": "Workflow Integration",
+            "problem": "Needed to automate complex video processing flows, including downloading, transcoding, and AI analysis.",
+            "solution": "Designed complete workflows using n8n, triggered via Webhook, and deployed related services using Docker Compose."
+          }
+        ]
+      },
+      "p5": {
+        "title": "YouTube Discord Bot",
+        "description": "Discord Bot that automatically crawls the latest videos and live streams from YouTube channels and pushes them to specified channels.",
+        "overview": "An automated Discord bot dedicated to crawling the latest videos and live content from YouTube channels and pushing them to specified Discord channels. Supports automated scheduling (checks every hour/half-hour) and manual triggers, with complete channel management to avoid duplicate pushes.",
+        "architectureDescription": "Developed with Node.js + Discord.js, supporting both Fetch API and Puppeteer crawling modes. Managed by PM2 for stability and scheduled tasks.",
+        "learnings": "I deeply learned Discord bot development, web crawling techniques, and automated task design. Gained valuable experience in handling anti-crawling mechanisms and ensuring service stability.",
+        "challenges": [
+          {
+            "title": "YouTube Crawler Implementation",
+            "problem": "Needed to stably crawl YouTube channel content and handle anti-crawling mechanisms.",
+            "solution": "Implemented a dual crawler strategy: Fetch API as the primary method, and Puppeteer as a backup to ensure stability."
+          },
+          {
+            "title": "Duplicate Content Avoidance",
+            "problem": "Tracking pushed videos to avoid notifying users repeatedly.",
+            "solution": "Established a local cache mechanism to record pushed content IDs and implemented smart filtering algorithms."
+          },
+          {
+            "title": "Scheduled Task Management",
+            "problem": "Ensuring the bot executes scheduled checks regardless of service restarts.",
+            "solution": "Used PM2 for process management with automatic restart and error handling configuration."
+          }
+        ]
+      },
+      "p6": {
+        "title": "PHP E-commerce Cart",
+        "description": "A simple e-commerce system developed with PHP, including product browsing, shopping cart, user registration/login and other basic functions.",
+        "overview": "A simple e-commerce shopping cart system developed using PHP and MVC architecture. Includes basic e-commerce functions like product browsing, cart management, user registration/login, and order processing. Suitable as an introductory project for learning PHP development and e-commerce system design.",
+        "architectureDescription": "Adopts MVC architecture. Controllers handle request routing, Models handle data processing, Views render pages. Uses Composer for dependency management and Apache server for deployment.",
+        "learnings": "Deepened understanding of PHP language and MVC architecture, learned how to design clean database structures, and implemented basic business logic for e-commerce systems.",
+        "challenges": [
+          {
+            "title": "Session Management",
+            "problem": "Securely managing user login state and shopping cart data persistence.",
+            "solution": "Used PHP Session mechanism combined with database storage to ensure security and persistence of cart data."
+          },
+          {
+            "title": "MVC Architecture Implementation",
+            "problem": "How to implement clear MVC separation in PHP.",
+            "solution": "Designed a routing system, implemented Controller base class, Model classes for DB operations, and Views for template rendering."
+          }
+        ]
+      },
+      "p7": {
+        "title": "Pomodoro Productivity App",
+        "description": "A productivity management application based on the Pomodoro Technique to help users manage tasks and focus time.",
+        "overview": "A productivity management app based on the Pomodoro Technique to help users improve focus and work efficiency. Supports task management, Pomodoro timer, and focus statistics. Developed with PHP backend and responsive user interface.",
+        "architectureDescription": "Uses PHP + MySQL backend, responsive frontend design, and supports Gulp and Prepros hot-reload development environment.",
+        "learnings": "Learned how to design simple and effective time management tools, mastered frontend timer implementation techniques, and basic methods for data statistics and visualization.",
+        "challenges": [
+          {
+            "title": "Timer Accuracy",
+            "problem": "Ensuring Pomodoro timer accuracy even when running in browser background.",
+            "solution": "Used JavaScript timers combined with server time calibration."
+          },
+          {
+            "title": "Data Statistics",
+            "problem": "Providing meaningful focus time statistics and analysis for users.",
+            "solution": "Designed statistical algorithms to provide daily, weekly, and monthly focus time reports and trend analysis."
+          }
+        ]
+      }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last Updated",
+    "intro": {
+      "title": "Introduction",
+      "content": "Welcome to this website. We value your privacy, so we have developed this Privacy Policy to explain how we collect, use, and protect your personal information."
+    },
+    "collection": {
+      "title": "Information Collection and Use",
+      "content": "When you use the contact form on this website, we collect the name, email address, and message content you provide. This information is used solely to reply to your inquiries and will not be used for any other purpose."
+    },
+    "cookie": {
+      "title": "Cookies",
+      "content": "This website may use Cookie technology to provide more personalized services. Cookies are a technology used by the website server to communicate with the user's browser. They may store certain information on the user's computer, but users can cancel or limit this function through browser settings."
+    },
+    "recaptcha": {
+      "title": "Google reCAPTCHA",
+      "content": "To protect the contact form from spam abuse, this website uses the reCAPTCHA v3 service provided by Google. The use of this service implies that you agree to and accept Google's <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-500 hover:underline\">Privacy Policy</a> and <a href=\"https://policies.google.com/terms\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-500 hover:underline\">Terms of Service</a>. reCAPTCHA collects necessary hardware and software information (such as device and application data) and transmits it to Google for analysis to determine if you are a human user."
+    },
+    "revision": {
+      "title": "Policy Revision",
+      "content": "We reserve the right to revise this Privacy Policy at any time. When we make significant changes, we will post them on this page."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "If you have any questions about this Privacy Policy, please feel free to contact me via the <a href=\"/contact\" class=\"text-blue-500 hover:underline\">Contact Page</a>."
+    }
   }
 }
