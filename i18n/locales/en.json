@@ -20,7 +20,7 @@
     "hero": {
       "greeting": "Hi, I am",
       "role": "Back-end Developer",
-      "intro_part1": "I am a passionate",
+      "intro_part1": "I am a passionate ",
       "intro_part2": ",",
       "intro_part3": " focusing on building ",
       "intro_highlight1": "stable",
