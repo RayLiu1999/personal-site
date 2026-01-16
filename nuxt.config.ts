@@ -112,7 +112,7 @@ export default defineNuxtConfig({
   },
   umami: {
     host: 'https://gcp-umami.liu-yucheng.com',    // Umami 公開網址
-    id: '30dd2ca2-39a6-4ed2-ac27-852ad63876d0',   // Umami 後台拿到的 ID
+    id: 'b7893dc1-fc3b-4858-a403-e374971638b3',   // Umami 後台拿到的 ID
     autoTrack: true,                               // 自動追蹤頁面切換
     ignoreLocalhost: true,                         // 開發模式下不計入統計
     // 如果你在 Umami 設定了自定義腳本名稱（例如 stats），可以改這裡
