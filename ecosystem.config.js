@@ -1,8 +1,6 @@
-// ecosystem.config.js
 module.exports = {
   apps: [{
     name: "personal-site", // 你的應用程式名稱
-    port: 3102, // 預設開發環境端口
     script: "./server/index.mjs", // Nuxt 3 的啟動檔案路徑
 
     // 實例配置
@@ -12,7 +10,7 @@ module.exports = {
     // 環境變數
     env: {
       NODE_ENV: "production",
-      PORT: 3102
+      PORT: process.env.PORT || 3000,
     },
 
     // 重啟配置
