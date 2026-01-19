@@ -1,11 +1,11 @@
 module.exports = {
   apps: [{
-    name: "personal-site", // 你的應用程式名稱
-    script: "./server/index.mjs", // Nuxt 3 的啟動檔案路徑
+    name: "personal-site",
+    script: "./server/index.mjs",
 
-    // 實例配置
-    instances: 1, // 建議限制實例數量以節省記憶體
-    exec_mode: "cluster",
+    // 執行模式：單實例使用 fork 模式，開銷較低
+    instances: 1,
+    exec_mode: "fork",
 
     // 環境變數
     env: {
@@ -13,31 +13,25 @@ module.exports = {
       PORT: 3001,
     },
 
-    // 重啟配置
-    max_memory_restart: "1G", // 記憶體超過 1GB 時重啟
-    min_uptime: "5s", // 最小運行時間（開發環境縮短）
-    max_restarts: 20, // 最大重啟次數（開發環境增加）
-    cron_restart: "10 0 * * *", // 凌晨12:10重啟
+    // 記憶體管理：Nuxt 3 生產環境通常 100-200MB，設 300M 可及早發現洩漏
+    max_memory_restart: "300M",
 
-    // 自動重啟
+    // 重啟策略
+    min_uptime: "10s",       // 最小運行時間，避免啟動失敗時無限重啟
+    max_restarts: 10,        // 最大重啟次數
+    restart_delay: 3000,     // 重啟間隔 3 秒
     autorestart: true,
-    restart_delay: 2000, // 重啟延遲 2 秒（開發環境縮短）
 
     // 進程配置
-    kill_timeout: 5000, // 強制關閉超時
-    listen_timeout: 8000, // 監聽超時
+    kill_timeout: 5000,
+    listen_timeout: 8000,
 
-    // 其他配置
-    source_map_support: true,
-    disable_source_map_support: false,
+    // 生產環境停用 source map 以減少記憶體與 CPU 開銷
+    source_map_support: false,
 
-    // 健康檢查
-    health_check_grace_period: 3000,
-
-    // 日誌輪轉
+    // 日誌配置
     log_type: "json",
-
-    // 時區
-    time: true
+    time: true,
+    merge_logs: true,        // 合併 stdout/stderr 日誌
   }]
 };
