@@ -4,13 +4,13 @@ module.exports = {
     script: "./server/index.mjs", // Nuxt 3 的啟動檔案路徑
 
     // 實例配置
-    instances: "max", // 或使用 "max" 來使用所有 CPU 核心
+    instances: 1, // 建議限制實例數量以節省記憶體
     exec_mode: "cluster",
 
     // 環境變數
     env: {
       NODE_ENV: "production",
-      PORT: process.env.PORT || 3000,
+      PORT: 3001,
     },
 
     // 重啟配置
