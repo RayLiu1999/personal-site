@@ -2,9 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../base
-  - sealed-secret.yaml
+- ../../base
+- sealed-secret.yaml
 
 images:
-  - name: ghcr.io/rayliu1999/personal-site
-    newTag: latest # CI 將會自動更新此標籤
+- name: ghcr.io/RayLiu1999/personal-site
+  newName: ghcr.io/RayLiu1999/personal-site
+  newTag: 20260128-11ff468
+- name: ghcr.io/rayliu1999/personal-site
+  newTag: latest
