@@ -16,14 +16,6 @@ spec:
         - name: personal-site
           port: 80
       middlewares:
-        - name: redirect-to-https
-
-    - match: (Host(`liu-yucheng.com`) || Host(`www.liu-yucheng.com`)) && (EntryPoint(`websecure`) || EntryPoint(`web`))
-      kind: Rule
-      services:
-        - name: personal-site
-          port: 80
-      middlewares:
         - name: secure-headers
         - name: real-ip
 
