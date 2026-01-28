@@ -1,0 +1,60 @@
+name: Sync ArgoCD (GitOps)
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:  # 允許手動觸發同步
+
+jobs:
+  sync-argocd:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+
+      - name: Login to ArgoCD
+        env:
+          ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+          ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+        run: |
+          argocd login $ARGOCD_SERVER --auth-token=$ARGOCD_AUTH_TOKEN --grpc-web
+
+      - name: Sync Application
+        run: |
+          argocd app sync personal-site --grpc-web
+
+      - name: Wait for sync to complete
+        run: |
+          argocd app wait personal-site --health --timeout 300 --grpc-web
+
+      - name: Get Application Status
+        if: always()
+        run: |
+          argocd app get personal-site --grpc-web
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          APP_STATUS=$(argocd app get personal-site --output json --grpc-web)
+          HEALTH=$(echo $APP_STATUS | jq -r '.status.health.status')
+          SYNC=$(echo $APP_STATUS | jq -r '.status.sync.status')
+          
+          echo "### ArgoCD Deployment Summary :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Application**: personal-site" >> $GITHUB_STEP_SUMMARY
+          echo "**Health**: $HEALTH" >> $GITHUB_STEP_SUMMARY
+          echo "**Sync Status**: $SYNC" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View in ArgoCD](${{ secrets.ARGOCD_SERVER }}/applications/personal-site)" >> $GITHUB_STEP_SUMMARY

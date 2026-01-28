@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: personal-site-config
+  namespace: default
+data:
+  # Application settings
+  NODE_ENV: "production"
+  PORT: "3002"
+
+  # URLs
+  SITE_URL: "https://liu-yucheng.com" # 替換成你的域名
+  BLOG_URL: "https://blog.liu-yucheng.com" # 替換成你的域名
+
+  # reCAPTCHA (public key)
+  RECAPTCHA_SITE_KEY: "6LcfSIErAAAAAMegzyPzQD69Gj79psfNcY0tWO22" # 替換成實際的 site key

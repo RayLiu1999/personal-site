@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: personal-site
+  namespace: argocd  # ArgoCD 安裝的 namespace
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  
+  # 來源：Git repository（私人 repo 需要認證）
+  source:
+    repoURL: https://github.com/RayLiu1999/personal-site.git
+    targetRevision: main
+    path: k8s  # Kubernetes manifests 所在目錄
+    # 如果是私人 repo，需要在 argocd/github-secret.yaml 中設定認證
+  
+  # 目標：K3s 集群
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  
+  # 同步策略
+  syncPolicy:
+    automated:
+      prune: true      # 自動刪除不在 Git 中的資源
+      selfHeal: true   # 自動修復手動變更
+      allowEmpty: false
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=false
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  # 忽略某些欄位的差異
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas  # 如果使用 HPA，忽略 replicas 差異

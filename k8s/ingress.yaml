@@ -1,0 +1,81 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: personal-site
+  namespace: default
+  labels:
+    app: personal-site
+spec:
+  entryPoints:
+    - web # HTTP (port 80)
+    - websecure # HTTPS (port 443)
+  routes:
+    - match: Host(`liu-yucheng.com`) || Host(`www.liu-yucheng.com`)
+      kind: Rule
+      services:
+        - name: personal-site
+          port: 80
+      middlewares:
+        - name: redirect-to-https
+
+    - match: (Host(`liu-yucheng.com`) || Host(`www.liu-yucheng.com`)) && (EntryPoint(`websecure`) || EntryPoint(`web`))
+      kind: Rule
+      services:
+        - name: personal-site
+          port: 80
+      middlewares:
+        - name: secure-headers
+        - name: real-ip
+
+---
+# 中間件：HTTP 重定向到 HTTPS
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: default
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+
+---
+# 中間件：安全標頭
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: secure-headers
+  namespace: default
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    frameDeny: true
+    sslRedirect: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customResponseHeaders:
+      X-Frame-Options: "SAMEORIGIN"
+      X-XSS-Protection: "1; mode=block"
+      X-Content-Type-Options: "nosniff"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+
+---
+# 中間件：正確取得客戶端真實 IP（重要：用於 contact.post.ts 的 IP 記錄）
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: real-ip
+  namespace: default
+spec:
+  headers:
+    proxyProtocol: false
+    forwardedHeaders:
+      trustedIPs:
+        - 127.0.0.1/32
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+      insecure: true # 配合 Cloudflare Tunnel 使用，接收 X-Forwarded-For
+

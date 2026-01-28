@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: personal-site
+  namespace: default
+  labels:
+    app: personal-site
+    version: v1
+spec:
+  replicas: 1 # 可根據流量調整
+  selector:
+    matchLabels:
+      app: personal-site
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: personal-site
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3002" # 這裡需與下方 containerPort 一致
+        prometheus.io/path: "/api/metrics"
+    spec:
+      terminationGracePeriodSeconds: 30 # 給予 Nuxt 足夠時間處理剩餘請求
+      # 新增這段指定主機
+      nodeSelector:
+        kubernetes.io/hostname: vps-670f31cd
+      containers:
+        - name: personal-site
+          image: ghcr.io/rayliu1999/personal-site:latest # 替換成你的 GitHub username
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3002
+              protocol: TCP
+
+          # 環境變數來自 ConfigMap
+          envFrom:
+            - configMapRef:
+                name: personal-site-config
+
+          # 敏感環境變數來自 Secret
+          env:
+            - name: LINE_CHANNEL_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: personal-site-secret
+                  key: LINE_CHANNEL_ACCESS_TOKEN
+            - name: LINE_CHANNEL_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: personal-site-secret
+                  key: LINE_CHANNEL_SECRET
+            - name: LINE_USER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: personal-site-secret
+                  key: LINE_USER_ID
+            - name: RECAPTCHA_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: personal-site-secret
+                  key: RECAPTCHA_SECRET_KEY
+
+          # 資源限制（參考 PM2 的 300MB 限制）
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          # 健康檢查（參考 PM2 設定）
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10 # PM2 min_uptime: 10s
+            periodSeconds: 30
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+
+          # 啟動探測（給應用更多啟動時間）
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 12 # 最多等待 60 秒
+
+          # 安全設定
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+
+      # 如果使用私有 GitHub Container Registry，需要配置 imagePullSecrets
+      # imagePullSecrets:
+      # - name: ghcr-secret
+
+      # 重啟策略
+      restartPolicy: Always
+
+      # DNS 設定
+      dnsPolicy: ClusterFirst

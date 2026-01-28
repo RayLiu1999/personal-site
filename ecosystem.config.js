@@ -10,7 +10,7 @@ module.exports = {
     // 環境變數
     env: {
       NODE_ENV: "production",
-      PORT: 3001,
+      PORT: 3002,
     },
 
     // 記憶體管理：Nuxt 3 生產環境通常 100-200MB，設 300M 可及早發現洩漏
