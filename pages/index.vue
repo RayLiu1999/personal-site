@@ -32,7 +32,7 @@
 
           <h1 class="text-4xl md:text-7xl font-bold text-coffee-800 dark:text-white mb-6 tracking-tight">
             {{ $t('home.hero.greeting') }} <span class="text-coffee-600 dark:text-blue-400">{{ displayedName
-              }}</span><span class="animate-pulse">|</span>
+            }}</span><span class="animate-pulse">|</span>
           </h1>
 
           <p class="text-xl md:text-2xl text-coffee-700 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed opacity-0 animate-fade-in-up"
@@ -41,7 +41,7 @@
               $t('home.hero.role') }}</span>{{ $t('home.hero.intro_part2') }}
             <br class="hidden md:block" />
             {{ $t('home.hero.intro_part3') }}<span class="highlight-text">{{ $t('home.hero.intro_highlight1')
-              }}</span>{{ $t('home.hero.and1') }}<span class="highlight-text">{{ $t('home.hero.intro_highlight2')
+            }}</span>{{ $t('home.hero.and1') }}<span class="highlight-text">{{ $t('home.hero.intro_highlight2')
               }}</span>{{ $t('home.hero.and2') }}<span class="highlight-text">{{ $t('home.hero.intro_highlight3')
               }}</span>{{ $t('home.hero.intro_part4') }}
           </p>
@@ -288,8 +288,8 @@ onMounted(() => {
   }, 100)
 })
 
-// 從 API 獲取部落格文章 (直連外部 JSON，繞過 Nitro 代理)
-const { data: blogData } = await useFetch('https://blog.liu-yucheng.com/content.json', {
+// 從 API 獲取部落格文章 (透過 Nitro Proxy 以避免 CORS)
+const { data: blogData } = await useFetch('/api/blog', {
   server: true,
   lazy: false,
 })

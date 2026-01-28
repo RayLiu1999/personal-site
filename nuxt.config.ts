@@ -104,6 +104,12 @@ export default defineNuxtConfig({
       contactResponseTime: '通常於 24 小時內回覆您的訊息'
     }
   },
+  nitro: {
+    // 設定代理路由，將 /api/blog 的請求轉發到外部部落格 API，避免 CORS 問題
+    routeRules: {
+      '/api/blog': { proxy: 'https://blog.liu-yucheng.com/content.json' }
+    }
+  },
   umami: {
     host: 'https://gcp-umami.liu-yucheng.com',    // Umami 公開網址
     id: 'b7893dc1-fc3b-4858-a403-e374971638b3',   // Umami 後台拿到的 ID
