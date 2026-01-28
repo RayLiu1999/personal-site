@@ -43,7 +43,7 @@ spec:
     browserXssFilter: true
     contentTypeNosniff: true
     frameDeny: true
-    sslRedirect: true
+    sslRedirect: false
     stsIncludeSubdomains: true
     stsPreload: true
     stsSeconds: 31536000
