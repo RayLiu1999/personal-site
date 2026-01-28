@@ -32,8 +32,8 @@ argocd/github-ssh-secret.yaml
 argocd-key
 argocd-key.pub
 
-# Documentation
-/docs
+# 本地 Backup 用
+/backup
 
 # vscode
-.vscode/*
+# .vscode/ 不再排除

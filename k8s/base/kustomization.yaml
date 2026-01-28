@@ -6,8 +6,3 @@ resources:
   - service.yaml
   - ingress.yaml
   - configmap.yaml
-  - sealed-secret.yaml
-
-images:
-  - name: ghcr.io/rayliu1999/personal-site
-    newTag: latest
