@@ -10,7 +10,6 @@ on:
       - "argocd/**"
       - ".github/**"
       - ".vscode/**"
-      - "k8s/**"
       - ".gitignore"
       - ".dockerignore"
       - ".env.example"
