@@ -77,31 +77,38 @@ jobs:
 
       - name: Update Kubernetes resources
         run: |
-          # 取得剛剛構建的動態 Tag (YYYYMMDD-sha)
-          # 注意：這裡假設 metadata-action 產生的第二個 tag 是我們要的 sha tag
-          # 更好的做法是明確定義環境變數，這裡使用這行指令提取：
-          NEW_TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -oP '(?<=:)\d{8}-.*' | head -n 1)
+          # 從 tags 中提取 YYYYMMDD-sha 格式的標籤
+          # 使用 sed 替代 grep -P 以確保跨平台兼容性
+          NEW_TAG=$(echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n' | grep -E '[0-9]{8}-[0-9a-f]{7}' | head -n 1 | cut -d':' -f2)
 
-          # 如果沒有找到 (例如是 git tag 觸發)，嘗試用 git tag
+          # 如果沒找到，使用 git sha 的前 7 位
           if [ -z "$NEW_TAG" ]; then
-             NEW_TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -v ":latest" | head -n 1 | awk -F: '{print $2}')
+            NEW_TAG="${{ github.sha }}"
+            NEW_TAG=${NEW_TAG:0:7}
           fi
 
           echo "Updating image tag to: $NEW_TAG"
 
           cd k8s/overlays/prod
-          kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$NEW_TAG
+          kustomize edit set image ghcr.io/rayliu1999/personal-site=ghcr.io/rayliu1999/personal-site:$NEW_TAG
 
       - name: Commit & Push changes
         run: |
+          # 從上一步驟重新提取 NEW_TAG（因為不同的 run 區塊不共享變數）
+          NEW_TAG=$(echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n' | grep -E '[0-9]{8}-[0-9a-f]{7}' | head -n 1 | cut -d':' -f2)
+          if [ -z "$NEW_TAG" ]; then
+            NEW_TAG="${{ github.sha }}"
+            NEW_TAG=${NEW_TAG:0:7}
+          fi
+
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add k8s/overlays/prod/kustomization.yaml
 
-          # 只有當有變更時才 commit
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "ci: update k8s image tag to ${{ steps.build.outputs.version }}"
-            git push
+            git commit -m "ci: update k8s image tag to $NEW_TAG"
+            git pull --rebase origin main
+            git push origin main
           fi
