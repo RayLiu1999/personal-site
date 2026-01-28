@@ -6,18 +6,18 @@ metadata:
   labels:
     app: personal-site
 spec:
-  # entryPoints:
-  #   - web # HTTP (port 80)
-  #   - websecure # HTTPS (port 443)
+  entryPoints:
+    - web # HTTP (port 80)
+    - websecure # HTTPS (port 443)
   routes:
     - match: Host(`liu-yucheng.com`) || Host(`www.liu-yucheng.com`)
       kind: Rule
       services:
         - name: personal-site
           port: 80
-      # middlewares:
-      #   - name: secure-headers
-      #   - name: real-ip
+      middlewares:
+        - name: secure-headers
+        - name: real-ip
 
 ---
 # 中間件：HTTP 重定向到 HTTPS

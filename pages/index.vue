@@ -288,14 +288,14 @@ onMounted(() => {
   }, 100)
 })
 
-// 從 API 獲取部落格文章
-const { data: blogData } = await useFetch(`${siteUrl}/api/blog`, {
+// 從 API 獲取部落格文章 (改用相對路徑，讓 Nitro 內部處理)
+const { data: blogData } = await useFetch('/api/blog', {
   server: true,
   lazy: false,
 })
 
 const blogPosts = computed(() => {
-  if (!blogData.value) return []
+  if (!blogData.value || !Array.isArray(blogData.value)) return []
 
   return blogData.value.slice(0, 3).map((post, index) => ({
     id: index + 1,
