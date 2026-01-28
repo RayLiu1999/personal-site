@@ -9,8 +9,11 @@ data:
   PORT: "3002"
 
   # URLs
-  SITE_URL: "https://liu-yucheng.com" # 替換成你的域名
-  BLOG_URL: "https://blog.liu-yucheng.com" # 替換成你的域名
+  SITE_URL: "https://liu-yucheng.com"
+  NUXT_PUBLIC_SITE_URL: "https://liu-yucheng.com"
+  BLOG_URL: "https://blog.liu-yucheng.com"
+  NUXT_PUBLIC_BLOG_URL: "https://blog.liu-yucheng.com"
 
   # reCAPTCHA (public key)
-  RECAPTCHA_SITE_KEY: "6LcfSIErAAAAAMegzyPzQD69Gj79psfNcY0tWO22" # 替換成實際的 site key
+  RECAPTCHA_SITE_KEY: "6LcfSIErAAAAAMegzyPzQD69Gj79psfNcY0tWO22"
+  NUXT_PUBLIC_RECAPTCHA_SITE_KEY: "6LcfSIErAAAAAMegzyPzQD69Gj79psfNcY0tWO22"
