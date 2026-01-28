@@ -5,11 +5,13 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'README.md'
-      - 'K8S_DEPLOYMENT.md'
-      - 'project_docs/**'
-      - '.github/**'
-  workflow_dispatch:  # 允許手動觸發
+      - "README.md"
+      - "K8S_DEPLOYMENT.md"
+      - "project_docs/**"
+      - ".github/**"
+    tags:
+      - "v*"
+  workflow_dispatch: # 允許手動觸發
 
 env:
   REGISTRY: ghcr.io
@@ -21,7 +23,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
