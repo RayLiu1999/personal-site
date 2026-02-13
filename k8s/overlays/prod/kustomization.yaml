@@ -8,4 +8,4 @@ resources:
 images:
 - name: ghcr.io/rayliu1999/personal-site
   newName: ghcr.io/rayliu1999/personal-site
-  newTag: 20260128-0416eb1
+  newTag: 20260213-d7d223c
