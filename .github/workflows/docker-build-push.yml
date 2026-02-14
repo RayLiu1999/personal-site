@@ -72,43 +72,43 @@ jobs:
       - name: Image digest
         run: echo "Image pushed with digest ${{ steps.build.outputs.digest }}"
 
-      - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v2
+      - name: Checkout Ops Repo
+        uses: actions/checkout@v4
+        with:
+          repository: rayliu1999/side_project_ops
+          token: ${{ secrets.OPS_REPO_PAT }}
+          path: ops-repo
 
-      - name: Update Kubernetes resources
+      - name: Update Image Tag in Ops Repo
         run: |
-          # 從 tags 中提取 YYYYMMDD-sha 格式的標籤
-          # 使用 sed 替代 grep -P 以確保跨平台兼容性
-          NEW_TAG=$(echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n' | grep -E '[0-9]{8}-[0-9a-f]{7}' | head -n 1 | cut -d':' -f2)
+          cd ops-repo/projects/personal-site
 
-          # 如果沒找到，使用 git sha 的前 7 位
-          if [ -z "$NEW_TAG" ]; then
-            NEW_TAG="${{ github.sha }}"
-            NEW_TAG=${NEW_TAG:0:7}
+          # Update image tag
+          # Using sed to update the tag in kustomization.yaml
+          # Assuming kustomization.yaml has structure:
+          # images:
+          #   - name: ghcr.io/rayliu1999/personal-site
+          #     newTag: <tag>
+          # OR if it's a simple deployment.yaml update (which we are doing here)
+
+          # Since existing template uses explicit deployment.yaml update
+          if [ -f deployment.yaml ]; then
+            sed -i "s|image: ghcr.io/rayliu1999/personal-site:.*|image: ghcr.io/rayliu1999/personal-site:${{ steps.meta.outputs.version }}|g" deployment.yaml
+            
+            # Update timestamp to trigger rollout
+            TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            sed -i "s/deploy-timestamp:.*/deploy-timestamp: \"$TIMESTAMP\"/g" deployment.yaml
           fi
 
-          echo "Updating image tag to: $NEW_TAG"
+          # Configure git
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
 
-          cd k8s/overlays/prod
-          kustomize edit set image ghcr.io/rayliu1999/personal-site=ghcr.io/rayliu1999/personal-site:$NEW_TAG
-
-      - name: Commit & Push changes
-        run: |
-          # 從上一步驟重新提取 NEW_TAG（因為不同的 run 區塊不共享變數）
-          NEW_TAG=$(echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n' | grep -E '[0-9]{8}-[0-9a-f]{7}' | head -n 1 | cut -d':' -f2)
-          if [ -z "$NEW_TAG" ]; then
-            NEW_TAG="${{ github.sha }}"
-            NEW_TAG=${NEW_TAG:0:7}
-          fi
-
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add k8s/overlays/prod/kustomization.yaml
-
-          if git diff --staged --quiet; then
+          # Commit and push
+          git add .
+          if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "ci: update k8s image tag to $NEW_TAG"
-            git pull --rebase origin main
-            git push origin main
+            git commit -m "ci(personal-site): update image tag to ${{ steps.meta.outputs.version }}"
+            git push
           fi
