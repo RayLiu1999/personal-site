@@ -8,7 +8,6 @@ on:
       - "README.md"
       - "docs/**"
       - "argocd/**"
-      - ".github/**"
       - ".vscode/**"
       - "k8s/**"
       - ".gitignore"
