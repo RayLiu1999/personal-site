@@ -156,7 +156,10 @@
       "frontend": "Frontend",
       "extension": "Browser Extension",
       "discord_bot": "Discord Bot",
-      "php": "PHP"
+      "php": "PHP",
+      "mobile": "Mobile App",
+      "devops": "DevOps / Infrastructure",
+      "knowledge_base": "Knowledge Base"
     },
     "tags": {
       "game_dev": "Game Dev",
@@ -178,40 +181,57 @@
       "crawler_tech": "Crawler Tech",
       "deployment_management": "Deployment Management",
       "tools": "Tools",
-      "dev_tools": "Dev Tools"
+      "dev_tools": "Dev Tools",
+      "mobile_framework": "Mobile Framework",
+      "audio_playback": "Audio & Playback",
+      "local_database": "Local Database",
+      "media_processing": "Media Processing",
+      "container_orchestration": "Container Orchestration",
+      "networking": "Networking",
+      "monitoring": "Monitoring & Observability",
+      "log_management": "Log Management",
+      "backup": "Backup & Storage",
+      "gitops": "GitOps & CD",
+      "secret_management": "Secret Management",
+      "data_analysis": "Data Analysis",
+      "financial_data": "Financial Data",
+      "state_management": "State Management",
+      "visualization": "Visualization",
+      "content": "Content",
+      "search_filter": "Search & Filter"
     },
     "items": {
       "p1": {
         "title": "Discord-style Chat App",
         "description": "A real-time chat application mimicking Discord architecture, supporting servers, channels, direct messages, and friend systems, built with Vue 3 + Go.",
-        "overview": "This is a real-time chat application modeled after Discord, consisting of a frontend (Vue 3) and backend (Go). It supports complete features including servers (Guilds), channels (Rooms), direct messages (DM), and a specific friend system. It uses WebSocket for real-time communication, MongoDB for data storage, and Redis for caching.",
-        "architectureDescription": "The frontend uses Vue 3 + TypeScript, while the backend adopts Go + Gin framework with a three-layer architecture (Controller → Service → Repository). WebSocket provides real-time communication, MongoDB stores chat records, and Redis handles data caching.",
-        "learnings": "Through this project, I deeply learned WebSocket real-time communication technology, mastered Go language details with Gin framework, and Vue 3 Composition API usage. I gained valuable experience especially in handling complex state management and real-time message broadcasting.",
+        "overview": "A real-time chat application modeled after Discord, with a Vue 3 frontend and a Go backend. Supports servers (Guilds), channels, direct messages (DM), and a friend system. Uses WebSocket for real-time communication, MongoDB for persistence, Redis for caching, and MinIO for file storage. The backend achieves ~40% overall test coverage with 151 test functions across 21 test files, and integrates Prometheus metrics for observability.",
+        "architectureDescription": "Frontend: Vue 3 + TypeScript + Pinia + Element Plus. Backend: Go 1.24 + Gin, three-layer architecture (Controller → Service → Repository) with manual Dependency Injection. WebSocket hub manages all rooms and clients. MinIO handles file uploads. Redis caches hot data, MongoDB stores all records. Air provides hot-reload for development.",
+        "learnings": "This project sharpened my Go backend skills enormously — from MVC architecture and DI patterns to JWT rolling strategies, WebSocket connection management, and writing testable code with mocks. Achieving 94.8% middleware coverage and running K6 load tests gave me hands-on experience with production-grade quality assurance.",
         "challenges": [
           {
             "title": "Backend Architecture",
-            "problem": "This was my first Golang project. With only PHP experience, I was unfamiliar with Golang's ecosystem and best practices, yet I aimed for a high-performance architecture.",
-            "solution": "I spent significant time understanding and refactoring. Considering that real-world scenarios prioritize balance between maintainability and performance over raw speed, I chose an MVC architecture and used Dependency Injection (DI) to reduce coupling, making code easier to test and maintain."
+            "problem": "This was my first Golang project. Coming from PHP, I was unfamiliar with Go's ecosystem and best practices, yet aimed for a maintainable, high-performance architecture.",
+            "solution": "After research and iteration I chose a three-layer MVC architecture with manual Dependency Injection to decouple modules, making the code easy to test and maintain. The result: 21 test files, 151 test functions, 519 scenarios — all passing."
           },
           {
-            "title": "Member System",
-            "problem": "Implementing a secure member system for an SPA.",
-            "solution": "Adopted JWT Access/Refresh Token double verification. The refresh token is stored in an httpOnly cookie to prevent XSS attacks. The backend database also stores the refresh token to ensure its validity."
+            "title": "JWT Auth & Security",
+            "problem": "Implementing a secure, stateless auth system for an SPA that also handles token rotation and revocation.",
+            "solution": "Adopted a JWT Access/Refresh Token rolling strategy. The refresh token is stored in an httpOnly cookie (XSS-proof) and also persisted in MongoDB so it can be invalidated server-side. CSRF middleware provides additional protection."
           },
           {
             "title": "WebSocket Real-time Communication",
-            "problem": "Needed to implement a high-performance and stable real-time communication system.",
-            "solution": "Used Go's Gorilla WebSocket library to handle connections. Designed Hub, Client, and Room structures to manage connections and message passing:<ul><li><strong>Hub</strong> manages all Clients and Rooms</li><li><strong>Client</strong> handles individual user connections</li><li><strong>Room</strong> manages message broadcasting within a chat room</li></ul>"
+            "problem": "Building a high-performance, scalable real-time messaging layer that supports both group channels and private DMs.",
+            "solution": "Built a Hub/Client/Room architecture using gorilla/websocket. Hub manages all rooms and clients; Client wraps each user connection; Room handles message broadcasting. Both Channel and DM share the same Room structure, distinguished by a Type field, enabling clean code reuse."
           },
           {
-            "title": "Chat Room Design",
-            "problem": "Handling different types of chat rooms (Channel vs DM).",
-            "solution": "Although they are different tables in the DB, in the in-memory Room structure, both are just a type of Room. So I used a single Room structure with a Type field to distinguish them."
+            "title": "File Upload & Storage",
+            "problem": "Supporting reliable file uploads without coupling the backend to local disk storage.",
+            "solution": "Integrated MinIO as an S3-compatible object store. Files are streamed from the client, uploaded to MinIO, and served via static URLs — keeping the backend stateless and storage independently scalable."
           },
           {
-            "title": "Frontend Vue State Management",
-            "problem": "Effectively managing multiple chat rooms, user states, and real-time messages.",
-            "solution": "Used Pinia for global state management to centralize user data, chat lists, and messages, ensuring all components update synchronously."
+            "title": "Observability & Load Testing",
+            "problem": "Ensuring the system is measurable and can handle real-world concurrent load.",
+            "solution": "Integrated go-gin-prometheus to expose a /metrics endpoint. Wrote K6 load test scripts to simulate concurrent WebSocket connections, identifying and fixing bottlenecks before production."
           }
         ],
         "githubs": {
@@ -220,21 +240,26 @@
         }
       },
       "p2": {
-        "title": "Green Fragrance Handmade Soap Site",
-        "description": "A handmade soap image platform built with Nuxt.js 3, including frontend, backend management, and RESTful API.",
-        "overview": "A simple image website built mainly with Vibe Coding plus manual fine-tuning. It includes a frontend site developed with Nuxt 3, a Vue 3 admin panel, and a RESTful API developed with Express.js. Supports dynamic content management, SEO optimization, and product management.",
-        "architectureDescription": "Frontend uses Nuxt.js 3 for SSG (Static Site Generation), admin panel uses Vue.js SPA, backend API uses Node.js + Express.js framework with MySQL database, integrated with Google reCAPTCHA for security.",
-        "learnings": "Through this project, I mastered the modern frontend development workflow and deeply understood the advantages of SSG and SEO optimization techniques. I also improved my full-stack development skills and learned how to design user-friendly management interfaces.",
+        "title": "Green Fragrance Handmade Soap Brand Site",
+        "description": "A comprehensive brand platform built with Nuxt.js 3, migrated from PM2 to k3s/ArgoCD GitOps architecture, featuring Drizzle ORM, PostgreSQL, and MinIO storage.",
+        "overview": "Originally a simple image website, Green Fragrance has evolved into a production-grade cloud-native platform. It consists of a Nuxt 3 SSG frontend, a Vue 3 admin panel, and a Node.js Express backend. The entire infrastructure was modernized from a single-node PM2 setup to a k3s cluster managed by ArgoCD (GitOps). Data persistence was migrated from MySQL to PostgreSQL using Drizzle ORM for type-safety, and all media assets are now stored in S3-compatible MinIO. The system also includes comprehensive Prometheus/Grafana monitoring for HTTP metrics and database performance.",
+        "architectureDescription": "Frontend: Nuxt 3 (SSG) + Tailwind CSS. Backend: Node.js (ESM) + Express + Drizzle ORM + PostgreSQL. Storage: MinIO (S3-compatible) via aws-sdk client-s3. Infrastructure: k3s (Kubernetes) + ArgoCD (GitOps) + GitHub Actions CI/CD. Observability: Prometheus (prom-client) + Grafana, custom metrics for request duration and S3 operations. Security: Helmet, Express Rate Limit, and CSRF protection.",
+        "learnings": "This project was a masterclass in infrastructure modernization. Migrating a live system from PM2 to Kubernetes taught me how to handle containerization, secret management, and zero-downtime database migrations using ArgoCD Hooks. I also gained deep experience in S3-compatible storage and type-safe database access with Drizzle ORM, moving away from legacy MySQL patterns.",
         "challenges": [
           {
-            "title": "SEO Optimization",
-            "problem": "Image websites need good search engine rankings, which traditional SPAs struggle to satisfy.",
-            "solution": "Adopted Nuxt 3's SSG mode to automatically generate Sitemaps and implement dynamic meta tags and structured data."
+            "title": "Zero-Downtime Infrastructure Migration",
+            "problem": "Transitioning from a traditional PM2 process manager on a single VM to a containerized k3s cluster without disrupting the production site.",
+            "solution": "Implemented a GitOps workflow using ArgoCD and specialized K8s Jobs for database migrations. Automated the CI/CD pipeline to build Docker images and update deployment manifests in a separate 'Side Project Ops' repository, enabling predictable, rollable updates."
           },
           {
-            "title": "Content Management System",
-            "problem": "Needed to allow non-technical staff to easily manage website content and product information.",
-            "solution": "Developed an intuitive admin panel supporting WYSIWYG editors, image uploads, and product management."
+            "title": "Storage & Database Modernization",
+            "problem": "The original MySQL + local disk storage was not scalable and difficult to backup across nodes.",
+            "solution": "Migrated to PostgreSQL for better performance and ACID compliance, utilizing Drizzle ORM for type-safe schema management. Replaced local file uploads with a centralized MinIO S3-compatible service, abstracting storage access behind a service layer."
+          },
+          {
+            "title": "Observability Implementation",
+            "problem": "Lack of visibility into backend performance, specifically S3 latency and database query bottlenecks.",
+            "solution": "Integrated 'prom-client' into the Express backend to expose a /metrics endpoint for Prometheus. Created custom dashboards in Grafana to monitor HTTP request volume, error rates, and the duration of S3/DB operations."
           }
         ]
       },
@@ -278,25 +303,25 @@
       },
       "p5": {
         "title": "YouTube Discord Bot",
-        "description": "Discord Bot that automatically crawls the latest videos and live streams from YouTube channels and pushes them to specified channels.",
-        "overview": "An automated Discord bot dedicated to crawling the latest videos and live content from YouTube channels and pushing them to specified Discord channels. Supports automated scheduling (checks every hour/half-hour) and manual triggers, with complete channel management to avoid duplicate pushes.",
-        "architectureDescription": "Developed with Node.js + Discord.js, supporting both Fetch API and Puppeteer crawling modes. Managed by PM2 for stability and scheduled tasks.",
-        "learnings": "I deeply learned Discord bot development, web crawling techniques, and automated task design. Gained valuable experience in handling anti-crawling mechanisms and ensuring service stability.",
+        "description": "Discord Bot that automatically tracks YouTube channels for new videos and live streams and pushes notifications to designated channels.",
+        "overview": "An automated Discord bot built with discord.js v14 (ES Modules) and Node.js that monitors subscribed YouTube channels and pushes new video and live stream notifications to designated Discord channels. Supports scheduled crawling (every hour on the hour and half-hour), manual triggers, upcoming stream alerts with user mentions, and full slash command management. MongoDB records pushed history to prevent duplicate notifications.",
+        "architectureDescription": "Pure ES Module Node.js architecture using discord.js v14 slash commands. A dual-crawler strategy combines node-fetch + Cheerio (primary fast crawl) with Puppeteer (fallback for JS-rendered pages). PM2 manages the process lifecycle and scheduled restarts. MongoDB (Mongoose ODM) stores push history per channel. Docker is available for containerized deployment.",
+        "learnings": "This project deepened my understanding of Discord bot development with the modern slash command API (discord.js v14), web scraping strategies for JavaScript-heavy sites, and reliable scheduled task design. Handling deduplication across restarts and building a maintainable command structure were particularly valuable lessons.",
         "challenges": [
           {
-            "title": "YouTube Crawler Implementation",
-            "problem": "Needed to stably crawl YouTube channel content and handle anti-crawling mechanisms.",
-            "solution": "Implemented a dual crawler strategy: Fetch API as the primary method, and Puppeteer as a backup to ensure stability."
+            "title": "YouTube Crawler Reliability",
+            "problem": "YouTube's page structure is rendered by JavaScript, making simple HTTP crawling unreliable, while heavy Puppeteer usage is slow and resource-intensive.",
+            "solution": "Implemented a dual-crawler strategy: node-fetch + Cheerio for fast primary crawls, with Puppeteer as a fallback for cases where the page requires JS rendering. This keeps performance high while ensuring reliability."
           },
           {
-            "title": "Duplicate Content Avoidance",
-            "problem": "Tracking pushed videos to avoid notifying users repeatedly.",
-            "solution": "Established a local cache mechanism to record pushed content IDs and implemented smart filtering algorithms."
+            "title": "Duplicate Push Prevention",
+            "problem": "The bot must not re-notify users about content already pushed, even after service restarts.",
+            "solution": "Stored each notified video/stream ID in MongoDB with Mongoose. On every crawl cycle, pushed IDs are queried and compared before sending any Discord messages."
           },
           {
-            "title": "Scheduled Task Management",
-            "problem": "Ensuring the bot executes scheduled checks regardless of service restarts.",
-            "solution": "Used PM2 for process management with automatic restart and error handling configuration."
+            "title": "Upcoming Stream Alerts",
+            "problem": "Users wanted advance notice before a live stream starts, not just a notification when it goes live.",
+            "solution": "Added a scheduled pre-stream check that reads the stream's scheduled start time and sends a tagged mention to subscribed users a configurable interval before the stream begins."
           }
         ]
       },
@@ -335,6 +360,240 @@
             "title": "Data Statistics",
             "problem": "Providing meaningful focus time statistics and analysis for users.",
             "solution": "Designed statistical algorithms to provide daily, weekly, and monthly focus time reports and trend analysis."
+          }
+        ]
+      },
+      "p8": {
+        "title": "Muon Music Player",
+        "description": "A cross-platform mobile music player app built with Flutter, streaming and downloading YouTube audio/video ad-free with offline playback support.",
+        "overview": "Muon is a minimalist, ad-free mobile music player for iOS and Android that streams and downloads YouTube content. Users can search YouTube, play audio in the background with lock-screen controls, download audio (m4a) or full video (H.264/mp4), and manage offline playlists. The FastAPI backend handles download tasks asynchronously via a task queue with status polling, serves static media files, and runs a TTL-based disk cleanup service.",
+        "architectureDescription": "Flutter frontend uses Riverpod (code-gen) for state management, just_audio + audio_service for background playback, Drift (SQLite) for local offline storage, and Dio for HTTP. FastAPI backend wraps yt-dlp + ffmpeg in an async task system, exposes a /api/status/{task_id} polling endpoint, and serves downloaded files via StaticFiles. Deployed via Docker Compose.",
+        "learnings": "Building Muon gave me deep experience with Flutter's audio ecosystem (just_audio, audio_service) and the complexity of background media sessions across iOS and Android. Designing an async task queue on FastAPI with status polling was a valuable pattern for handling long-running jobs without blocking the API response cycle.",
+        "challenges": [
+          {
+            "title": "Background Audio on iOS & Android",
+            "problem": "Maintaining uninterrupted audio playback when the app is backgrounded or the screen is locked on both platforms.",
+            "solution": "Integrated audio_service to register as a background audio service, implementing the required platform callbacks for play/pause/skip. Combined with just_audio for actual playback, this gives native lock-screen controls and Bluetooth headset support."
+          },
+          {
+            "title": "Async Download Task System",
+            "problem": "YouTube downloads via yt-dlp can take 10–60+ seconds. A synchronous API would time out and leave the client hanging.",
+            "solution": "Implemented an async task queue on the FastAPI backend: the POST /api/download endpoint immediately returns a task_id, while the Flutter client polls GET /api/status/{task_id} until the status is 'completed', then fetches the media URL."
+          },
+          {
+            "title": "Offline Storage & Playlist Management",
+            "problem": "Managing downloaded tracks and user playlists reliably in a local SQLite database on the device.",
+            "solution": "Used Drift (type-safe SQLite ORM for Flutter) with code generation to define strongly-typed tables for tracks and playlists, ensuring safe migrations and compile-time query correctness."
+          }
+        ]
+      },
+      "p10": {
+        "title": "OVH Dual-Node VPS Infrastructure",
+        "description": "A fully automated setup toolkit for a dual-node OVH VPS Kubernetes environment with K3s, Tailscale, Cloudflare Tunnel, and a complete observability stack.",
+        "overview": "A production-ready, fully scripted infrastructure for two OVH VPS nodes running K3s Kubernetes. VPS-1 (master) hosts the K3s control plane, ArgoCD, Prometheus, Grafana, Loki, Traefik ingress, and Cloudflared tunnel. VPS-2 (worker) runs K3s agent, Node Exporter, and Promtail. Databases (PostgreSQL 16, MongoDB 8, Redis 7) deliberately run in Docker outside K3s to avoid StatefulSet complexity. Tailscale provides the internal VPN mesh between nodes, and rclone backs up data to OVH S3 and Google Drive.",
+        "architectureDescription": "Node-to-node communication via Tailscale (VPN mesh, replacing OVH vRack). External HTTPS via Cloudflare Tunnel (zero open inbound ports). Workloads deployed to K3s via ArgoCD GitOps. Traefik handles ingress routing. Observability: Prometheus + Grafana (metrics), Loki + Promtail (logs), Node Exporter (host metrics). Automated setup via numbered Bash scripts (00–06) run once per node.",
+        "learnings": "Designing this infrastructure taught me how to compose enterprise-grade reliability patterns on a budget: using Tailscale instead of vRack, Cloudflare Tunnel instead of load balancers, and intentionally keeping stateful workloads outside Kubernetes. The result is a resilient, observable, and cost-effective self-hosted platform.",
+        "challenges": [
+          {
+            "title": "Secure Node-to-Node Networking",
+            "problem": "OVH's private network (vRack) requires additional configuration and cost. Needed a secure private channel between the two VPS nodes for K3s cluster traffic.",
+            "solution": "Installed Tailscale on both nodes to create an encrypted WireGuard mesh network. K3s uses Tailscale IP addresses for control plane and agent communication, with zero exposure to the public internet."
+          },
+          {
+            "title": "Zero-Exposure External Access",
+            "problem": "Exposing Kubernetes services via public NodePort or LoadBalancer opens attack surface. Needed HTTPS access without opening inbound firewall ports.",
+            "solution": "Used Cloudflare Tunnel (cloudflared) — the VPS initiates an outbound connection to Cloudflare, which proxies traffic inward. No inbound ports are open; Cloudflare handles TLS termination and DDoS protection."
+          },
+          {
+            "title": "Database Stability Outside K3s",
+            "problem": "Running stateful databases in Kubernetes StatefulSets adds scheduling complexity and risk of data loss during node failures.",
+            "solution": "Kept PostgreSQL, MongoDB, and Redis in Docker Compose on VPS-1 (the more stable master node), outside the K3s cluster. This isolates database stability from Kubernetes scheduling decisions while still enabling K3s pods to reach them via Tailscale IPs."
+          }
+        ]
+      },
+      "p11": {
+        "title": "Side Project Ops (GitOps Platform)",
+        "description": "An ArgoCD App-of-Apps GitOps repository that centrally manages Kubernetes deployments for all side projects via automated CI/CD pipelines.",
+        "overview": "A GitOps monorepo that serves as the single source of truth for all Kubernetes deployments across multiple side projects. Uses ArgoCD's App-of-Apps pattern: a single root application bootstraps all child application definitions, which in turn manage their namespace, Kustomize manifests, and Sealed Secrets. Projects currently managed include chat-app, gf-soap (frontend/backend/admin), lazybacktest (frontend/backend), personal-site, and hexo-blog. CI pipelines in source repos build Docker images, push to GHCR, then commit the new image tag here to trigger ArgoCD auto-sync.",
+        "architectureDescription": "Repository structure: apps/ (ArgoCD Application YAMLs), projects/<name>/<component>/ (Kustomize manifests). Root app (root-app.yaml) watches the apps/ directory. kubeseal encrypts secrets into SealedSecret objects safe to commit. Private GHCR images use a shared ghcr-pull-secret. A _template/ directory enables rapid onboarding of new projects.",
+        "learnings": "Building this GitOps platform gave me a practical understanding of the ArgoCD App-of-Apps pattern and the full GitOps workflow cycle: code push → Docker build → GHCR push → tag commit → ArgoCD sync → rolling update. Managing secrets with kubeseal made me appreciate the importance of keeping encrypted secrets in Git for auditability.",
+        "challenges": [
+          {
+            "title": "App-of-Apps Bootstrap",
+            "problem": "Managing dozens of ArgoCD Application manifests individually becomes unwieldy. Needed a scalable pattern for adding new projects without manual ArgoCD UI interaction.",
+            "solution": "Implemented the App-of-Apps pattern: a single root ArgoCD Application watches the apps/ directory and automatically creates/updates child Applications. Adding a new project requires only adding an Application YAML to apps/ and committing — ArgoCD handles the rest."
+          },
+          {
+            "title": "Secret Management in Git",
+            "problem": "Storing Kubernetes Secrets (database passwords, API keys) in a Git repository is a security risk.",
+            "solution": "Used kubeseal (Bitnami Sealed Secrets) to encrypt secrets with the cluster's public key before committing. The encrypted SealedSecret YAML is safe to store publicly; only the cluster's controller can decrypt it at deploy time."
+          },
+          {
+            "title": "Private Registry Image Pulls",
+            "problem": "K3s pods need to pull Docker images from private GHCR repositories across all namespaces.",
+            "solution": "Created a shared ghcr-pull-secret Kubernetes Secret (sealed) and configured it as imagePullSecrets in each deployment's Kustomize patch, allowing all projects to pull from private GHCR without storing credentials in plain text."
+          }
+        ]
+      },
+      "p12": {
+        "title": "LazyBacktest",
+        "description": "A lightweight Taiwan stock market backtesting system with a React web UI, supporting 6 technical strategies, parameter optimization via grid search, and 9 performance metrics.",
+        "overview": "LazyBacktest is a full-stack web application for backtesting Taiwan Stock Exchange (TWSE) trading strategies. The React frontend lets users select a ticker, date range, strategy, and parameters, then visualizes results as an equity curve, annual/monthly return heatmap, and 9 key metrics (CAGR, Max Drawdown, Sharpe, Sortino, etc.). The FastAPI backend fetches historical price data (local DB cache → yfinance → CSV fallback), runs backtests, and supports grid search parameter optimization ranked by Sharpe Ratio.",
+        "architectureDescription": "Frontend: React 18 + TypeScript + Vite + TailwindCSS + Recharts, served via Docker + Nginx. Backend: Python 3.11+ + FastAPI + SQLAlchemy (ORM) + Alembic migrations + Pandas/NumPy for computation + yfinance for market data + PostgreSQL (prod) / SQLite (test) + Redis for caching. One-command start with docker-compose up --build.",
+        "learnings": "Building LazyBacktest deepened my quantitative finance knowledge and Python data-processing skills. Designing the strategy abstraction layer with decoupled entry/exit logic made adding new strategies straightforward. TDD with pytest and strict Mypy type checking caught edge cases early and made the financial calculation logic reliable.",
+        "challenges": [
+          {
+            "title": "Strategy Abstraction",
+            "problem": "Each strategy (SMA, RSI, MACD, KD, Bollinger Bands, Price Breakout) has different signal logic, but the backtesting engine needs a unified interface.",
+            "solution": "Designed a Strategy base class with abstract generate_signals() that each strategy implements. The backtesting engine calls generate_signals() and applies position sizing and capital management uniformly, making it trivial to add new strategies."
+          },
+          {
+            "title": "Grid Search Parameter Optimization",
+            "problem": "Finding the best parameter combination (e.g., SMA fast/slow period) via manual trial-and-error is tedious and unreliable.",
+            "solution": "Implemented a grid search engine that exhaustively tests all parameter combinations within user-defined ranges, runs a full backtest for each, and ranks results by Sharpe Ratio. The top N combinations are returned to the frontend for comparison."
+          },
+          {
+            "title": "Historical Data Reliability",
+            "problem": "yfinance API calls can fail or return incomplete data, especially for delisted TWSE tickers.",
+            "solution": "Implemented a three-tier data sourcing strategy: first query the local PostgreSQL cache, fall back to yfinance on cache miss, and finally fall back to local CSV files for tickers with known API issues. Results are written back to the cache to speed up future queries."
+          }
+        ]
+      },
+      "p13": {
+        "title": "Algorithm Guide Website",
+        "description": "An interactive LeetCode algorithm study guide web app with Markdown-rendered problem explanations, flashcard mode, and progress tracking across 16 algorithm categories.",
+        "overview": "A React + TypeScript SPA that serves as a comprehensive algorithm study guide. Covers 159 LeetCode problems across 16 categories (Array & Hashing, Two Pointers, Sliding Window, Stack, Binary Search, Linked List, Trees, Heaps, Backtracking, Graphs, Dynamic Programming, Greedy, Intervals, Bit Manipulation, Design, Appendix). Problem content is loaded from Markdown files at runtime. Features a flashcard mode for active recall, a dashboard for progress overview, and per-problem status tracking (not started / in progress / mastered) persisted via Zustand.",
+        "architectureDescription": "React 19 + TypeScript + Vite 7 + TailwindCSS 4. Zustand for lightweight client state (problem progress). react-markdown + rehype-highlight + highlight.js for syntax-highlighted code blocks. react-router-dom 7 for SPA routing. framer-motion for page transitions. Content fully decoupled in public/data/ Markdown files. Dockerized with Nginx for production serving.",
+        "learnings": "This project reinforced my skills in building content-rich SPAs with dynamic Markdown rendering. Designing the Zustand store for progress tracking taught me how to keep client state minimal and localStorage-persisted. Building the flashcard mode gave me insight into spaced repetition UX patterns.",
+        "challenges": [
+          {
+            "title": "Dynamic Markdown Content Loading",
+            "problem": "159 problem pages need to render Markdown with syntax-highlighted code blocks without pre-baking each page at build time.",
+            "solution": "Stored all problem content as raw Markdown files in public/data/. At runtime, the React component fetches the relevant .md file, passes it through react-markdown with rehype-highlight, and renders it. This keeps the content editable without needing a rebuild."
+          },
+          {
+            "title": "Progress Persistence Without a Backend",
+            "problem": "Users need their problem status (not started / in progress / mastered) to persist across sessions without requiring login or a server.",
+            "solution": "Used Zustand with a localStorage persistence middleware. Problem status is stored as a flat map of (problemId → status) in localStorage, restored on app load, and updated in real time as users change status — zero backend required."
+          }
+        ]
+      },
+      "p14": {
+        "title": "Guitar Learning Website",
+        "description": "A full-stack electric guitar learning platform with a Markdown knowledge base, interactive fretboard, D3 knowledge graph, and GitHub-style practice heatmap.",
+        "overview": "A personal guitar learning platform and practice tracker. The Markdown-based knowledge base covers technique articles, music theory, and chord/scale references. A D3-powered knowledge graph visualizes relationships between topics. The interactive fretboard lets users explore scale and chord fingerings. A GitHub-style heatmap tracks daily practice sessions per article. The backend (Node.js + Express + MongoDB) auto-scans the Markdown directory to generate a table of contents and backlink suggestions.",
+        "architectureDescription": "Frontend: React 19 + TypeScript + Vite + TailwindCSS (dark glassmorphism), react-force-graph-2d (D3 knowledge graph), react-activity-calendar (heatmap), Recharts, Nginx reverse proxy. Backend: Node.js + Express + TypeScript + MongoDB (Mongoose), pnpm workspaces monorepo. Backend auto-scans Markdown files, generates TOC and backlink index, and exposes REST API. Deployed via Docker Compose; backend port not exposed externally (Nginx proxies /api/*).",
+        "learnings": "This project was a rewarding exploration of unconventional UI components: integrating react-force-graph-2d for a D3 knowledge graph taught me about force simulation and graph data modeling. Building the backlink parsing system (WikiLink + standard Markdown links) gave me experience with AST traversal and static site generator patterns.",
+        "challenges": [
+          {
+            "title": "Knowledge Graph Generation",
+            "problem": "Manually maintaining a graph of relationships between guitar topics is tedious and error-prone.",
+            "solution": "Built a backend parser that scans all Markdown files for WikiLink ([[Article Name]]) and standard Markdown links, then builds a directed graph of article relationships. The frontend renders this graph with react-force-graph-2d using D3 force simulation for interactive exploration."
+          },
+          {
+            "title": "Interactive Fretboard Rendering",
+            "problem": "Displaying note positions across a guitar fretboard with hover previews requires mapping musical theory to a precise 2D grid layout.",
+            "solution": "Modeled the 24-fret × 6-string fretboard as a 2D array, calculated note names from chromatic intervals per string tuning, and rendered clickable SVG cells with note-name tooltips on hover. Scale/chord highlighting overlays a filtered note set on the full grid."
+          },
+          {
+            "title": "Practice Progress Tracking",
+            "problem": "Users want to see which articles they have practiced and how consistently, similar to GitHub's contribution heatmap.",
+            "solution": "On each article read/practice event, the frontend POSTs a completion record to the backend, which stores it in MongoDB with a timestamp. The heatmap aggregates daily counts and feeds them to react-activity-calendar for a visual calendar view."
+          }
+        ]
+      },
+      "p15": {
+        "title": "Senior Backend Engineer Interview Guide",
+        "description": "A comprehensive, open-source senior backend engineer interview preparation knowledge base covering CS fundamentals, system design, infrastructure, and 160+ structured topic files.",
+        "overview": "A Markdown knowledge repository designed as a structured interview prep guide for senior backend engineers. Covers 6 major areas: CS Fundamentals (data structures, algorithms, OS, networking), Backend Development (API design, databases, caching, message queues), System Design & Architecture (design patterns, microservices, large-scale case studies), Infrastructure & DevOps (cloud, containers, CI/CD, observability), Specialized Topics (security, testing), and Frontend Development. Each topic file includes a difficulty rating (1–10), tags, detailed theory explanation, and optional Go code examples. A QUIZ directory enables self-assessment.",
+        "architectureDescription": "Markdown knowledge base organized into topic directories with a strict content template per file (difficulty, tags, theory, code examples). Go is the standard language for all code examples. Contribution guidelines enforce one-PR-per-question discipline. Hosted as a public GitHub repository for community contributions.",
+        "learnings": "Creating and curating this guide systematically forced me to articulate knowledge I had applied intuitively — especially in system design, database internals, and distributed systems. The process of writing clear, accurate explanations for 160+ topics significantly sharpened my own understanding and my ability to communicate technical concepts.",
+        "challenges": [
+          {
+            "title": "Content Depth vs. Breadth Balance",
+            "problem": "Interview guides often go too broad (surface-level bullet points) or too deep (textbook-level) — neither is useful for targeted interview prep.",
+            "solution": "Established a content ratio guideline: 90% theory explanation, 10% code examples. Each file has a difficulty rating and prerequisite tags, so readers can self-assess readiness and follow a progressive learning path rather than reading linearly."
+          },
+          {
+            "title": "Consistent Knowledge Structure",
+            "problem": "With 160+ topic files contributed over time, inconsistency in format and depth degrades the guide's usefulness.",
+            "solution": "Defined a strict Markdown template for every topic file (difficulty, tags, overview, detailed explanation, code examples section). Contribution guidelines require all PRs to follow the template, with review enforcing consistency."
+          }
+        ]
+      },
+      "p16": {
+        "title": "GCP Free Stack — Zero-Cost Self-Hosted Infrastructure",
+        "description": "A zero-cost self-hosted infrastructure stack on GCP's free-tier e2-micro VM, using IPv6-only networking, Cloudflare Tunnel, WARP proxy, and Socat to eliminate a $3.65/month IPv4 charge while running 6 production Docker services.",
+        "overview": "gcp-free-stack is a personal infrastructure project and engineering journal documenting how to run multiple production-grade Docker services on GCP's e2-micro free tier at $0/month. When GCP started billing for external IPv4 addresses (~$3.65/month in 2024), the project systematically evaluated alternatives (Cloud NAT at $4.67/month was worse) before landing on a definitive solution: IPv6-only VM + Cloudflare Tunnel for public ingress + Cloudflare WARP in SOCKS5 proxy mode to bridge IPv4 gap for Docker image pulls + Socat TCP forwarder to expose the WARP proxy to containers + Cloudflare Worker as a serverless IPv4 relay for notifications. Six services — Portainer, Uptime Kuma, Umami (analytics), IT-Tools, Homer (dashboard), and Dash. (system monitor) — all run in Docker Compose on a 1 vCPU / 1 GB RAM VM.",
+        "architectureDescription": "Public ingress: Cloudflare Tunnel (cloudflared, QUIC/HTTP2) terminates TLS and routes to local container ports. VM networking: GCP dual-stack subnet, external IPv6 only (no IPv4), accessed via GCP IAP tunnel for SSH. IPv4 bridge: Cloudflare WARP in proxy mode (SOCKS5 :4000) — not VPN mode, to avoid disrupting system routing. Container proxy: Socat systemd service (TCP 0.0.0.0:4001 → 127.0.0.1:4000) exposes WARP to Docker containers. Notification relay: Cloudflare Worker proxies IPv6-origin webhook calls to IPv4 Discord/Slack endpoints. Containers: Docker Compose, Uptime Kuma uses host networking for native IPv6 stack + WARP SOCKS5 access. OS tuning: kernel socket buffer parameters enlarged for QUIC on 1 GB RAM.",
+        "learnings": "This project deepened my understanding of cloud networking trade-offs at the infrastructure cost boundary. Diagnosing why docker pull fails on IPv6-only hosts (registries are IPv4-only) and solving it with a WireGuard-based SOCKS5 proxy gave me hands-on experience with multi-layer network bridging. I also learned that WARP proxy mode is critical on servers — full VPN mode changes the system routing table and locks you out of SSH. Using a Cloudflare Worker as a serverless IPv4/IPv6 translation layer for notification webhooks was an elegant and free architectural decision.",
+        "challenges": [
+          {
+            "title": "Docker Image Pulls Fail on IPv6-Only Host",
+            "problem": "After removing the external IPv4 address to eliminate the $3.65/month charge, docker pull commands failed because Docker Hub, GHCR, and other registries are IPv4-only — the VM has no route to reach them.",
+            "solution": "Installed Cloudflare WARP in proxy mode (SOCKS5 on 127.0.0.1:4000) rather than VPN mode. Configured the Docker daemon to use the WARP SOCKS5 proxy via daemon.json. Used Socat (systemd service) to forward TCP 0.0.0.0:4001 → 127.0.0.1:4000, making the proxy reachable by containers on the Docker bridge network."
+          },
+          {
+            "title": "Uptime Kuma Cannot Reach Monitoring Targets or Send Notifications",
+            "problem": "Uptime Kuma runs in a container and needs to both connect to IPv4 monitoring targets (external websites) and send alerts to Discord webhooks — but all those endpoints are IPv4 and the VM has no direct IPv4 egress.",
+            "solution": "Ran Uptime Kuma with network_mode: host so it uses the host network stack directly (giving access to WARP on 127.0.0.1:4000 and native IPv6). For notification webhooks (Discord is IPv4-only), deployed a Cloudflare Worker that receives the webhook from Uptime Kuma over IPv6 and forwards it to the IPv4 Discord endpoint."
+          },
+          {
+            "title": "SSH Access Without a Public IP",
+            "problem": "Removing the external IPv4 address also removes the standard SSH entry point — how to manage the VM remotely without paying for a public address?",
+            "solution": "Used GCP Identity-Aware Proxy (IAP) tunnel with gcloud compute ssh --tunnel-through-iap. IAP tunnels SSH traffic through Google's infrastructure without requiring a public IP, at no additional cost. Documented the complete macOS gcloud CLI setup in a dedicated guide."
+          }
+        ]
+      },
+      "p17": {
+        "title": "Cryptocurrency Exchange — ECS Architecture Roadmap",
+        "description": "An evolutionary architecture backend built from scratch to handle high-concurrency cryptocurrency trading, focusing on AWS ECS, Redis caching, Kafka message queuing, and stress testing.",
+        "overview": "This is a backend project that evolves its architecture driven by stress test data, designed to master distributed architecture and AWS deployment/operations. By continuously pushing the system to its breaking point using k6 to identify performance bottlenecks, it progressively adopts monolith containerization (ECS), a caching layer (Redis), horizontal scaling (ALB), an asynchronous architecture (Kafka), and a comprehensive observability stack (Prometheus / Grafana / CloudWatch).",
+        "architectureDescription": "The API server is implemented in Go (Gin), containerized via Docker, and deployed on AWS ECS. To address bottlenecks at different phases, PostgreSQL is used for core state storage, Redis acts as a read cache for the Orderbook (Cache-Aside Pattern) and supports WebSocket broadcasting, and Kafka is utilized for load leveling to handle order requests asynchronously. The system integrates Prometheus/Grafana and CloudWatch for comprehensive request tracing and real-time operational metrics.",
+        "learnings": "This project deeply reinforced the concept that 'there is no absolutely correct architecture, only architectures that fit current data and bottlenecks.' Witnessing latencies spike from 50ms to 1500ms using k6, and then dropping back to 10ms after introducing Redis caching, provided immense satisfaction. This data-driven refactoring process has equipped me with strong engineering intuition for navigating highly concurrent microservices based on actual traffic.",
+        "challenges": [
+          {
+            "title": "Monolith DB Connection Pool and Read Hotspot Bottlenecks",
+            "problem": "At 100 VUs, the GET /orderbook endpoint accounted for 70% of traffic. Every request directly queried the DB, causing CPU spikes, ballooning P95 latency, and eventually leading to `too many clients` errors.",
+            "solution": "Implemented Cache-Aside logic and deployed Redis in the same ECS/Docker network as the API. Data is fetched from Redis first; on a cache miss, it queries the DB and writes back to Redis. This offloaded the primary read workload to memory, successfully stabilizing latency from 200ms down to under 10ms."
+          },
+          {
+            "title": "Single-Node Resource Saturation and Global WebSocket Broadcasting",
+            "problem": "As traffic continued to rise, CPU usage on a single ECS task surpassed 70%. Introducing ALB for horizontal scaling across multiple instances disrupted the initially in-memory sticky WebSocket connections.",
+            "solution": "Increased the ECS Service Desired Count and bound it to an Application Load Balancer. To solve the WebSocket scaling issue, Redis Pub/Sub was introduced, enabling multiple backend API servers to subscribe to and publish events with one another. This ensured that system updates received by any single instance could be broadcast globally across all instances to the clients."
+          },
+          {
+            "title": "Write Bottlenecks and Traffic Spike Leveling",
+            "problem": "During order placement QPS surges, synchronous processing resulted in the matching engine and DB write speeds becoming immediate, non-scalable bottlenecks (causing system blocking).",
+            "solution": "Refactored the synchronous architecture into an asynchronous, event-driven model. Upon receiving a request, the system pushes the event to Kafka and immediately returns an HTTP 202 Accepted. Background workers (Consumers) asynchronously process the orders from Kafka for matching and DB writing, eventually notifying the client via WebSocket. This effectively smoothed out instantaneous high-concurrency write pressure."
+          }
+        ],
+        "githubs": {
+          "frontend": "Frontend Source",
+          "backend": "Backend Source"
+        }
+      },
+      "p18": {
+        "title": "YouTube Real-Time Bilingual Subtitles",
+        "description": "A Chrome Extension and Go WebSocket backend system that seamlessly intercepts video audio and overlays real-time bilingual subtitles leveraging Deepgram STT and a Google/DeepL API failover mechanism.",
+        "overview": "This project is a decoupled real-time subtitle translation system designed to break down language barriers during YouTube videos and livestreams. It intercepts video audio seamlessly using the Web Audio API within a Chrome Extension, streams chunks via WebSockets to a Go backend for ultra-low-latency Speech-to-Text (STT) via Deepgram, and implements load-balancing/failover strategies across Google Translate and DeepL APIs. The translated dual-language subtitles are then rendered dynamically over the player.",
+        "architectureDescription": "The frontend (Manifest V3 extension) handles audio interception, WebSocket communication, and draggable, flicker-free subtitle rendering. The Go backend establishes a low-latency WebSocket connection, processes audio streams with Deepgram, and wraps multiple translation APIs using Round-Robin pooling for continuous language translation. The front-end persistently stores all translation histories.",
+        "learnings": "Developing this system thoroughly deepened my understanding of streaming media processing and the architectural difficulties of real-time applications. From solving sample rate conversions when intercepting YouTube's <video> tracks via the Web Audio API, to tuning the stability of WebSocket communication, and designing an auto-failover mechanism independent of a single translation provider. Successfully building a tool that adds lag-free bilingual subtitles to live streams was immensely rewarding.",
+        "challenges": [
+          {
+            "title": "Frontend Dynamic Audio Interception and Buffered WebSocket Streaming",
+            "problem": "To achieve 'real-time' performance, the system must losslessly intercept the audio track from YouTube's HTML5 <video> tag and continuously transmit audio chunks to the backend, which is prone to memory leaks and stream stuttering.",
+            "solution": "Leveraged the Web Audio API to parse AudioContext and create bypass audio nodes. Used ScriptProcessor/AudioWorklet to capture and dynamically downsample Float32 audio into 16-bit PCM format before streaming seamlessly via WebSocket to the Go backend."
+          },
+          {
+            "title": "Multi-Translation API Load Balancing and Failover",
+            "problem": "Free tiers of machine translation services (like Google Translate/DeepL) can easily hit rate limits when flooded with high-frequency short-sentence requests, causing immediate translation failures.",
+            "solution": "Implemented an interface-driven translation engine in the Go backend utilizing a Round-Robin load balancing strategy. The system automatically rotates through multiple API keys or providers; if one engine gets rate-limited, the failover engine instantly takes over to guarantee uninterrupted stream subtitles."
+          },
+          {
+            "title": "Dynamic Flicker-Free Subtitle Rendering",
+            "problem": "Because speech recognition results (STT) can continuously update mid-sentence (interim results), frequent DOM repainting causes severe subtitle flickering, ruining the viewing experience.",
+            "solution": "Defined a structured message protocol between the frontend and backend to distinguish between Final and Interim results. By maintaining an active subtitle state alongside CSS Transforms, the frontend smoothly updates targeted text nodes, optimizing repaint costs, and enabling fluid user-draggable subtitle positioning to prevent view occlusion."
           }
         ]
       }

@@ -3,89 +3,156 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="text-center mb-12 scroll-reveal">
-        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">{{ $t('portfolio.title') }}</h1>
+        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">
+          {{ $t("portfolio.title") }}
+        </h1>
         <p class="text-coffee-600 dark:text-gray-400 max-w-2xl mx-auto">
-          {{ $t('portfolio.subtitle') }}
+          {{ $t("portfolio.subtitle") }}
         </p>
       </div>
 
       <!-- Filter -->
-      <div class="mb-8 scroll-reveal" style="transition-delay: 100ms;">
+      <div class="mb-8 scroll-reveal" style="transition-delay: 100ms">
         <div class="flex flex-wrap justify-center gap-4">
-          <button v-for="tag in allTags" :key="tag" @click="toggleTag(tag)" :class="[
-            'px-6 py-2 rounded-full font-semibold transition-colors duration-300',
-            selectedTags.includes(tag)
-              ? 'bg-coffee-600 dark:bg-blue-600 text-white shadow-lg transform scale-105'
-              : 'bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 hover:bg-coffee-200 dark:hover:bg-gray-600'
-          ]">
+          <button
+            v-for="tag in allTags"
+            :key="tag"
+            @click="toggleTag(tag)"
+            :class="[
+              'px-6 py-2 rounded-full font-semibold transition-colors duration-300',
+              selectedTags.includes(tag)
+                ? 'bg-coffee-600 dark:bg-blue-600 text-white shadow-lg transform scale-105'
+                : 'bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 hover:bg-coffee-200 dark:hover:bg-gray-600',
+            ]"
+          >
             {{ tag }}
           </button>
         </div>
         <div v-if="selectedTags.length > 0" class="text-center mt-4">
-          <button @click="selectedTags = []" class="text-sm text-coffee-600 dark:text-blue-400 hover:underline">
-            {{ $t('portfolio.filter.clear') }}
+          <button
+            @click="selectedTags = []"
+            class="text-sm text-coffee-600 dark:text-blue-400 hover:underline"
+          >
+            {{ $t("portfolio.filter.clear") }}
           </button>
         </div>
       </div>
 
       <!-- Projects Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div v-for="(project, index) in filteredProjects" :key="project.id"
+        <div
+          v-for="(project, index) in filteredProjects"
+          :key="project.id"
           class="scroll-reveal bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-          :style="{ transitionDelay: `${index * 100}ms` }">
-          <NuxtLink :to="localePath(`/portfolio/${project.id}`)" class="block relative group">
-            <img :src="project.image" :alt="project.title"
-              class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-            <div class="absolute inset-0 bg-coffee-900/0 group-hover:bg-coffee-900/10 transition-colors duration-300">
-            </div>
+          :style="{ transitionDelay: `${index * 100}ms` }"
+        >
+          <NuxtLink
+            :to="localePath(`/portfolio/${project.id}`)"
+            class="block relative group"
+          >
+            <img
+              :src="project.image"
+              :alt="project.title"
+              class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div
+              class="absolute inset-0 bg-coffee-900/0 group-hover:bg-coffee-900/10 transition-colors duration-300"
+            ></div>
           </NuxtLink>
           <div class="p-6">
             <div class="flex items-center justify-between mb-2">
               <span
-                class="px-3 py-1 bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 text-sm rounded-full">
+                class="px-3 py-1 bg-coffee-100 dark:bg-gray-700 text-coffee-700 dark:text-gray-300 text-sm rounded-full"
+              >
                 {{ project.category }}
               </span>
-              <span class="text-coffee-500 dark:text-gray-400 text-sm">{{ project.year }}</span>
+              <span class="text-coffee-500 dark:text-gray-400 text-sm">{{
+                project.year
+              }}</span>
             </div>
-            <h3 class="text-xl font-semibold text-coffee-800 dark:text-white mb-2">{{ project.title }}</h3>
-            <p class="text-coffee-600 dark:text-gray-300 mb-4">{{ project.description }}</p>
+            <h3
+              class="text-xl font-semibold text-coffee-800 dark:text-white mb-2"
+            >
+              {{ project.title }}
+            </h3>
+            <p class="text-coffee-600 dark:text-gray-300 mb-4">
+              {{ project.description }}
+            </p>
             <div class="flex flex-wrap gap-2 mb-4">
-              <span v-for="tech in project.technologies" :key="tech"
-                class="px-2 py-1 bg-coffee-50 dark:bg-gray-700 text-coffee-600 dark:text-gray-300 text-xs rounded">
+              <span
+                v-for="tech in project.technologies"
+                :key="tech"
+                class="px-2 py-1 bg-coffee-50 dark:bg-gray-700 text-coffee-600 dark:text-gray-300 text-xs rounded"
+              >
                 {{ tech }}
               </span>
             </div>
             <div class="flex justify-between items-center">
-              <NuxtLink :to="localePath(`/portfolio/${project.id}`)"
-                class="text-coffee-600 dark:text-blue-400 hover:text-coffee-800 dark:hover:text-blue-300 font-semibold flex items-center group/link">
-                {{ $t('portfolio.project.viewDetails') }}
-                <span class="inline-block transition-transform duration-300 group-hover/link:translate-x-1">→</span>
+              <NuxtLink
+                :to="localePath(`/portfolio/${project.id}`)"
+                class="text-coffee-600 dark:text-blue-400 hover:text-coffee-800 dark:hover:text-blue-300 font-semibold flex items-center group/link"
+              >
+                {{ $t("portfolio.project.viewDetails") }}
+                <span
+                  class="inline-block transition-transform duration-300 group-hover/link:translate-x-1"
+                  >→</span
+                >
               </NuxtLink>
               <div class="flex gap-2">
-                <a v-if="project.github" :href="project.github" target="_blank"
-                  class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors">
+                <a
+                  v-if="project.github"
+                  :href="project.github"
+                  target="_blank"
+                  class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors"
+                >
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
+                    <path
+                      fill-rule="evenodd"
                       d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                      clip-rule="evenodd"></path>
+                      clip-rule="evenodd"
+                    ></path>
                   </svg>
                 </a>
                 <template v-if="project.githubs">
-                  <a v-for="(github, index) in project.githubs" :key="index" :href="github.url" target="_blank"
+                  <a
+                    v-for="(github, index) in project.githubs"
+                    :key="index"
+                    :href="github.url"
+                    target="_blank"
                     class="relative group text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors"
-                    :title="github.name">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
+                    :title="github.name"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
                         d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                        clip-rule="evenodd"></path>
+                        clip-rule="evenodd"
+                      ></path>
                     </svg>
                   </a>
                 </template>
-                <a v-if="project.demo" :href="project.demo" target="_blank"
-                  class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                <a
+                  v-if="project.demo"
+                  :href="project.demo"
+                  target="_blank"
+                  class="text-coffee-500 dark:text-gray-400 hover:text-coffee-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    ></path>
                   </svg>
                 </a>
               </div>
@@ -98,171 +165,439 @@
 </template>
 
 <script setup>
-const config = useRuntimeConfig()
-const siteUrl = config.public.siteUrl
-const { t } = useI18n()
-const localePath = useLocalePath()
+const config = useRuntimeConfig();
+const siteUrl = config.public.siteUrl;
+const { t } = useI18n();
+const localePath = useLocalePath();
 
-const selectedTags = ref([])
+const selectedTags = ref([]);
 
-const projects = computed(() => [
-  {
-    id: 1,
-    title: t('portfolio.items.p1.title'),
-    description: t('portfolio.items.p1.description'),
-    image: '/project1.png',
-    category: t('portfolio.categories.fullstack'),
-    year: '2024',
-    tags: ['Vue', 'Go', 'WebSocket'],
-    technologies: ['Vue 3', 'TypeScript', 'Go', 'Gin', 'MongoDB', 'Redis', 'WebSocket', 'JWT', 'Element Plus'],
-    demo: 'https://chat-app.liu-yucheng.com',
-    githubs: [
-      { name: '前端', url: 'https://github.com/RayLiu1999/chat_app_frontend' },
-      { name: '後端', url: 'https://github.com/RayLiu1999/chat_app_backend' }
-    ],
-  },
-  {
-    id: 2,
-    title: t('portfolio.items.p2.title'),
-    description: t('portfolio.items.p2.description'),
-    image: '/project3.png',
-    category: t('portfolio.categories.fullstack'),
-    year: '2025',
-    tags: ['Nuxt.js', 'Node.js', 'Express.js'],
-    technologies: ['Nuxt.js 3', 'Tailwind CSS', 'TypeScript', 'Express.js', 'Gin', 'MySQL', 'JWT', 'reCAPTCHA'],
-    demo: 'https://gf-soap.com',
-  },
-  {
-    id: 3,
-    title: t('portfolio.items.p3.title'),
-    description: t('portfolio.items.p3.description'),
-    image: '/project2.png',
-    category: t('portfolio.categories.frontend'),
-    year: '2024',
-    tags: ['Vue', t('portfolio.tags.game_dev')],
-    technologies: ['Vue 3', 'Vuex', 'Vite', 'Stockfish.js', 'Docker'],
-    demo: 'https://chess.liu-yucheng.com',
-    github: 'https://github.com/RayLiu1999/chess-in-vue',
-  },
-  {
-    id: 4,
-    title: t('portfolio.items.p4.title'),
-    description: t('portfolio.items.p4.description'),
-    image: '/project4.png',
-    category: t('portfolio.categories.extension'),
-    year: '2025',
-    tags: [t('portfolio.categories.extension'), t('portfolio.tags.tools'), 'n8n'],
-    technologies: ['JavaScript', 'Chrome Extension API', 'n8n', 'yt-dlp', 'Docker Compose', 'Webhook'],
-    github: 'https://github.com/RayLiu1999/youtube-extension',
-  },
-  {
-    id: 5,
-    title: t('portfolio.items.p5.title'),
-    description: t('portfolio.items.p5.description'),
-    image: '/project7.png',
-    category: t('portfolio.categories.discord_bot'),
-    year: '2023',
-    tags: [t('portfolio.categories.discord_bot'), 'Node.js', t('portfolio.tags.tools')],
-    technologies: ['Node.js', 'Discord.js', 'PM2', 'YouTube API', 'Puppeteer', 'JavaScript'],
-    github: 'https://github.com/RayLiu1999/yt_discord_bot',
-  },
-  {
-    id: 6,
-    title: t('portfolio.items.p6.title'),
-    description: t('portfolio.items.p6.description'),
-    image: '/project5.png',
-    category: t('portfolio.categories.php'),
-    year: '2022',
-    tags: ['PHP', 'MySQL'],
-    technologies: ['PHP', 'MySQL', 'Composer', 'Apache'],
-    github: 'https://github.com/RayLiu1999/e-commerce-cart',
-    demo: 'https://e-commerce-cart.liu-yucheng.com',
-    features: ['MVC 架構', '購物車系統', '用戶管理', '商品管理', 'Session 管理']
-  },
-  {
-    id: 7,
-    title: t('portfolio.items.p7.title'),
-    description: t('portfolio.items.p7.description'),
-    image: '/project6.png',
-    category: t('portfolio.categories.php'),
-    year: '2022',
-    tags: ['PHP', 'MySQL'],
-    technologies: ['PHP', 'MySQL', 'JavaScript', 'Gulp', 'Prepros'],
-    demo: 'https://pomodoro.liu-yucheng.com',
-    github: 'https://github.com/RayLiu1999/tomato-clock',
-  },
-])
+const projects = computed(() => {
+  const list = [
+    {
+      id: 17,
+      pinned: true,
+      title: t("portfolio.items.p17.title"),
+      description: t("portfolio.items.p17.description"),
+      // As it was missing, we use a placeholder image for now
+      image: "/logos/project17.png",
+      category: t("portfolio.categories.devops"),
+      year: "2026",
+      tags: ["Go", "DevOps"],
+      technologies: [
+        "Go",
+        "PostgreSQL",
+        "Redis",
+        "Kafka",
+        "AWS ECS",
+        "AWS ALB",
+        "WebSocket",
+        "k6",
+      ],
+      demo: "https://crypto-exchange.liu-yucheng.com",
+      githubs: [
+        {
+          name: "前端",
+          url: "https://github.com/RayLiu1999/cyptocurrency-exchange-frontend",
+        },
+        {
+          name: "後端",
+          url: "https://github.com/RayLiu1999/cyptocurrency-exchange-backend",
+        },
+      ],
+    },
+    {
+      id: 8,
+      pinned: false,
+      title: t("portfolio.items.p8.title"),
+      description: t("portfolio.items.p8.description"),
+      image: "/logos/project8.png",
+      category: t("portfolio.categories.mobile"),
+      year: "2026",
+      tags: ["Mobile", "Python"],
+      technologies: [
+        "Flutter",
+        "Dart",
+        "Riverpod",
+        "just_audio",
+        "Drift",
+        "FastAPI",
+        "yt-dlp",
+        "Docker",
+      ],
+      github: "https://github.com/RayLiu1999/muon",
+    },
+    {
+      id: 18,
+      pinned: false,
+      title: t("portfolio.items.p18.title"),
+      description: t("portfolio.items.p18.description"),
+      // As it was missing, we use a placeholder image for now
+      image: "/logos/project18.png",
+      category: t("portfolio.categories.extension"),
+      year: "2026",
+      tags: ["Go", "Extension"],
+      technologies: [
+        "JavaScript",
+        "Chrome Extension API",
+        "Web Audio API",
+        "Go",
+        "WebSocket",
+        "Deepgram STT API",
+        "Google Translate API",
+        "DeepL API",
+      ],
+      github: "https://github.com/RayLiu1999/yt-realtime-subtitles",
+    },
+    {
+      id: 10,
+      pinned: false,
+      title: t("portfolio.items.p10.title"),
+      description: t("portfolio.items.p10.description"),
+      image: "/logos/project10.png",
+      category: t("portfolio.categories.devops"),
+      year: "2026",
+      tags: ["DevOps"],
+      technologies: [
+        "K3s",
+        "Tailscale",
+        "Cloudflare Tunnel",
+        "ArgoCD",
+        "Prometheus",
+        "Grafana",
+        "Loki",
+        "rclone",
+      ],
+    },
+    {
+      id: 11,
+      pinned: false,
+      title: t("portfolio.items.p11.title"),
+      description: t("portfolio.items.p11.description"),
+      image: "/logos/project11.png",
+      category: t("portfolio.categories.devops"),
+      year: "2026",
+      tags: ["DevOps"],
+      technologies: [
+        "ArgoCD",
+        "Kustomize",
+        "kubeseal",
+        "GitHub Actions",
+        "GHCR",
+        "K3s",
+      ],
+    },
+    {
+      id: 16,
+      pinned: false,
+      title: t("portfolio.items.p16.title"),
+      description: t("portfolio.items.p16.description"),
+      image: "/logos/project16.png",
+      category: t("portfolio.categories.devops"),
+      year: "2026",
+      tags: ["DevOps"],
+      technologies: [
+        "GCP",
+        "Docker Compose",
+        "Cloudflare Tunnel",
+        "WARP",
+        "Socat",
+        "Ubuntu",
+      ],
+      github: "https://github.com/RayLiu1999/gcp-free-stack",
+    },
+    {
+      id: 12,
+      pinned: false,
+      title: t("portfolio.items.p12.title"),
+      description: t("portfolio.items.p12.description"),
+      image: "/logos/project12.png",
+      category: t("portfolio.categories.fullstack"),
+      year: "2026",
+      tags: ["React", "Python"],
+      technologies: [
+        "React 18",
+        "TypeScript",
+        "Vite",
+        "TailwindCSS",
+        "Recharts",
+        "FastAPI",
+        "PostgreSQL",
+        "Redis",
+      ],
+      demo: "https://lazybacktest.liu-yucheng.com/",
+    },
+    {
+      id: 13,
+      pinned: false,
+      title: t("portfolio.items.p13.title"),
+      description: t("portfolio.items.p13.description"),
+      image: "/logos/project13.png",
+      category: t("portfolio.categories.frontend"),
+      year: "2026",
+      tags: ["React"],
+      technologies: [
+        "React 19",
+        "TypeScript",
+        "Vite",
+        "TailwindCSS",
+        "Zustand",
+        "framer-motion",
+        "Docker",
+      ],
+      demo: "https://leetcode.liu-yucheng.com/",
+    },
+    {
+      id: 14,
+      pinned: false,
+      title: t("portfolio.items.p14.title"),
+      description: t("portfolio.items.p14.description"),
+      image: "/logos/project14.png",
+      category: t("portfolio.categories.fullstack"),
+      year: "2026",
+      tags: ["React", "Node.js"],
+      technologies: [
+        "React 19",
+        "TypeScript",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "D3",
+        "Docker",
+      ],
+      demo: "https://guitar.liu-yucheng.com/",
+    },
+    {
+      id: 15,
+      pinned: false,
+      title: t("portfolio.items.p15.title"),
+      description: t("portfolio.items.p15.description"),
+      image: "/logos/project15.png",
+      category: t("portfolio.categories.knowledge_base"),
+      year: "2026",
+      tags: ["Go"],
+      technologies: ["Markdown", "Go", "GitHub"],
+      github: "https://github.com/RayLiu1999/senior_interview",
+    },
+    {
+      id: 4,
+      pinned: false,
+      title: t("portfolio.items.p4.title"),
+      description: t("portfolio.items.p4.description"),
+      image: "/logos/project4.png",
+      category: t("portfolio.categories.extension"),
+      year: "2025",
+      tags: ["Extension", "Node.js"],
+      technologies: [
+        "JavaScript",
+        "Chrome Extension API",
+        "n8n",
+        "yt-dlp",
+        "Docker Compose",
+        "Webhook",
+      ],
+      github: "https://github.com/RayLiu1999/youtube-extension",
+    },
+    {
+      id: 2,
+      pinned: false,
+      title: t("portfolio.items.p2.title"),
+      description: t("portfolio.items.p2.description"),
+      image: "/logos/project3.png",
+      category: t("portfolio.categories.fullstack"),
+      year: "2025",
+      tags: ["Vue / Nuxt", "Node.js"],
+      technologies: [
+        "Nuxt 3",
+        "Node.js (ESM)",
+        "PostgreSQL",
+        "Drizzle ORM",
+        "MinIO (S3)",
+        "ArgoCD",
+        "Prometheus",
+        "Grafana",
+      ],
+      demo: "https://gf-soap.com",
+    },
+    {
+      id: 1,
+      pinned: true,
+      title: t("portfolio.items.p1.title"),
+      description: t("portfolio.items.p1.description"),
+      image: "/logos/project1.png",
+      category: t("portfolio.categories.fullstack"),
+      year: "2024",
+      tags: ["Vue / Nuxt", "Go"],
+      technologies: [
+        "Vue 3",
+        "TypeScript",
+        "Go",
+        "Gin",
+        "MongoDB",
+        "Redis",
+        "WebSocket",
+        "MinIO",
+        "JWT",
+        "Prometheus",
+      ],
+      demo: "https://chat-app.liu-yucheng.com",
+      githubs: [
+        {
+          name: "前端",
+          url: "https://github.com/RayLiu1999/chat_app_frontend",
+        },
+        { name: "後端", url: "https://github.com/RayLiu1999/chat_app_backend" },
+      ],
+    },
+    {
+      id: 3,
+      pinned: false,
+      title: t("portfolio.items.p3.title"),
+      description: t("portfolio.items.p3.description"),
+      image: "/logos/project2.png",
+      category: t("portfolio.categories.frontend"),
+      year: "2024",
+      tags: ["Vue / Nuxt"],
+      technologies: ["Vue 3", "Vuex", "Vite", "Stockfish.js", "Docker"],
+      demo: "https://chess.liu-yucheng.com",
+      github: "https://github.com/RayLiu1999/chess-in-vue",
+    },
+    {
+      id: 5,
+      pinned: false,
+      title: t("portfolio.items.p5.title"),
+      description: t("portfolio.items.p5.description"),
+      image: "/logos/project7.png",
+      category: t("portfolio.categories.discord_bot"),
+      year: "2023",
+      tags: ["Bot", "Node.js"],
+      technologies: [
+        "Node.js",
+        "Discord.js v14",
+        "MongoDB",
+        "Cheerio",
+        "Puppeteer",
+        "PM2",
+        "Docker",
+      ],
+      github: "https://github.com/RayLiu1999/yt_discord_bot",
+    },
+    {
+      id: 6,
+      pinned: false,
+      title: t("portfolio.items.p6.title"),
+      description: t("portfolio.items.p6.description"),
+      image: "/logos/project5.png",
+      category: t("portfolio.categories.php"),
+      year: "2022",
+      tags: ["PHP"],
+      technologies: ["PHP", "MySQL", "Composer", "Apache"],
+      github: "https://github.com/RayLiu1999/e-commerce-cart",
+      demo: "https://e-commerce-cart.liu-yucheng.com",
+      features: [
+        "MVC 架構",
+        "購物車系統",
+        "用戶管理",
+        "商品管理",
+        "Session 管理",
+      ],
+    },
+    {
+      id: 7,
+      pinned: false,
+      title: t("portfolio.items.p7.title"),
+      description: t("portfolio.items.p7.description"),
+      image: "/logos/project6.png",
+      category: t("portfolio.categories.php"),
+      year: "2022",
+      tags: ["PHP"],
+      technologies: ["PHP", "MySQL", "JavaScript", "Gulp", "Prepros"],
+      demo: "https://pomodoro.liu-yucheng.com",
+      github: "https://github.com/RayLiu1999/tomato-clock",
+    },
+  ];
+
+  return list.sort((a, b) => {
+    const aPinned = a.pinned || false;
+    const bPinned = b.pinned || false;
+    if (aPinned !== bPinned) {
+      return aPinned ? -1 : 1;
+    }
+    return parseInt(b.year) - parseInt(a.year);
+  });
+});
 
 const allTags = computed(() => {
-  const tags = new Set()
-  projects.value.forEach(p => {
-    p.tags.forEach(t => tags.add(t))
-  })
-  return [t('portfolio.filter.all'), ...Array.from(tags).sort()]
-})
+  const tags = new Set();
+  projects.value.forEach((p) => {
+    p.tags.forEach((t) => tags.add(t));
+  });
+  return [t("portfolio.filter.all"), ...Array.from(tags).sort()];
+});
 
 const toggleTag = (tag) => {
-  if (tag === t('portfolio.filter.all')) {
-    selectedTags.value = []
-    return
+  if (tag === t("portfolio.filter.all")) {
+    selectedTags.value = [];
+    return;
   }
-  const index = selectedTags.value.indexOf(tag)
+  const index = selectedTags.value.indexOf(tag);
   if (index > -1) {
-    selectedTags.value.splice(index, 1)
+    selectedTags.value.splice(index, 1);
   } else {
-    selectedTags.value.push(tag)
+    selectedTags.value.push(tag);
   }
-}
+};
 
 const filteredProjects = computed(() => {
   if (selectedTags.value.length === 0) {
-    return projects.value
+    return projects.value;
   }
-  return projects.value.filter(project =>
-    selectedTags.value.every(tag => project.tags.includes(tag))
-  )
-})
+  return projects.value.filter((project) =>
+    selectedTags.value.every((tag) => project.tags.includes(tag)),
+  );
+});
 
 // Scroll Animation
-const { observe } = useScrollAnimation()
+const { observe } = useScrollAnimation();
 
 onMounted(() => {
   // Initialize scroll observer
   setTimeout(() => {
-    const elements = document.querySelectorAll('.scroll-reveal')
-    observe(elements)
-  }, 100)
-})
+    const elements = document.querySelectorAll(".scroll-reveal");
+    observe(elements);
+  }, 100);
+});
 
 // SEO Meta 設定
 useHead({
-  title: t('portfolio.title') + ' - Ray Liu | 後端工程師專案展示',
+  title: t("portfolio.title") + " - Ray Liu | 後端工程師專案展示",
   meta: [
     {
-      name: 'description',
-      content: t('portfolio.subtitle')
+      name: "description",
+      content: t("portfolio.subtitle"),
     },
     {
-      name: 'keywords',
-      content: 'Ray Liu 作品集, 程式設計專案, 全端開發, 後端系統, Node.js 專案, Python 應用, Vue.js 開發, DevOps 自動化'
+      name: "keywords",
+      content:
+        "Ray Liu 作品集, 程式設計專案, 全端開發, 後端系統, Node.js 專案, Python 應用, Vue.js 開發, DevOps 自動化",
     },
     // Open Graph
     {
-      property: 'og:title',
-      content: t('portfolio.title') + ' - Ray Liu 後端工程師'
+      property: "og:title",
+      content: t("portfolio.title") + " - Ray Liu 後端工程師",
     },
     {
-      property: 'og:description',
-      content: t('portfolio.subtitle')
+      property: "og:description",
+      content: t("portfolio.subtitle"),
     },
     {
-      property: 'og:type',
-      content: 'website'
+      property: "og:type",
+      content: "website",
     },
     {
-      property: 'og:url',
-      content: `${siteUrl}/portfolio`
-    }
-  ]
-})
+      property: "og:url",
+      content: `${siteUrl}/portfolio`,
+    },
+  ],
+});
 </script>

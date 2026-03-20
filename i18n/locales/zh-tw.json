@@ -156,7 +156,10 @@
       "frontend": "前端",
       "extension": "瀏覽器擴充功能",
       "discord_bot": "Discord Bot",
-      "php": "PHP"
+      "php": "PHP",
+      "mobile": "行動應用",
+      "devops": "DevOps / 基礎設施",
+      "knowledge_base": "知識庫"
     },
     "tags": {
       "game_dev": "遊戲開發",
@@ -178,40 +181,57 @@
       "crawler_tech": "爬蟲技術",
       "deployment_management": "部署管理",
       "tools": "工具",
-      "dev_tools": "開發工具"
+      "dev_tools": "開發工具",
+      "mobile_framework": "行動框架",
+      "audio_playback": "音訊與播放",
+      "local_database": "本地資料庫",
+      "media_processing": "媒體處理",
+      "container_orchestration": "容器調度",
+      "networking": "網路層",
+      "monitoring": "監控與可觀測性",
+      "log_management": "日誌管理",
+      "backup": "備份與儲存",
+      "gitops": "GitOps & CD",
+      "secret_management": "機密管理",
+      "data_analysis": "資料分析",
+      "financial_data": "金融資料",
+      "state_management": "狀態管理",
+      "visualization": "資料視覺化",
+      "content": "內容",
+      "search_filter": "搜尋與篩選"
     },
     "items": {
       "p1": {
         "title": "Discord 風格聊天應用",
         "description": "模仿 Discord 架構的即時聊天應用，支援伺服器、頻道、私訊、好友系統，採用 Vue 3 + Go 開發",
-        "overview": "這是一個以 Discord 為樣板製作的即時聊天應用，包含前端（Vue 3）和後端（Go）兩個部分。支援伺服器（Server/Guild）、頻道（Channel/Room）、私訊（DM）、好友系統等完整功能。採用 WebSocket 實現即時通訊，MongoDB 儲存數據，Redis 處理部分資料快取。",
-        "architectureDescription": "前端使用 Vue 3 + TypeScript，後端採用 Go + Gin 框架，三層架構設計（Controller → Service → Repository），WebSocket 提供即時通訊，MongoDB 儲存聊天記錄，Redis 處理資料快取。",
-        "learnings": "通過這個專案深入學習了 WebSocket 即時通訊技術，掌握了 Go 語言的 Gin 框架開發，以及 Vue 3 Composition API 的使用。特別是在處理複雜的狀態管理和即時訊息推播方面積累了寶貴經驗。",
+        "overview": "以 Discord 為樣板製作的即時聊天應用，包含前端（Vue 3）和後端（Go）兩個部分。支援伺服器（Guild）、頻道（Channel）、私訊（DM）及好友系統等完整功能。採用 WebSocket 即時通訊、MongoDB 持久化儲存、Redis 快取，以及 MinIO 檔案儲存。後端整體測試覆蓋率約 40%，包含 21 個測試檔、151 個測試函式，並整合 Prometheus 指標端點提供可觀測性。",
+        "architectureDescription": "前端：Vue 3 + TypeScript + Pinia + Element Plus。後端：Go 1.24 + Gin，三層架構（Controller → Service → Repository），手動依賴注入 (DI)。WebSocket Hub 管理所有 Room 和 Client。MinIO 處理檔案上傳，Redis 快取熱資料，MongoDB 儲存所有記錄。Air 提供開發熱重整。",
+        "learnings": "這個專案大幅提升了我的 Go 後端開發能力——從 MVC 架構與 DI 模式，到 JWT 滾動策略、WebSocket 連線管理，以及如何撰寫可測試的程式碼。達成 94.8% 的 Middleware 覆蓋率，並運行 K6 負載測試，讓我獲得了生產級品質保證的實戰經驗。",
         "challenges": [
           {
             "title": "後端系統架構",
-            "problem": "這是我學習Golang的第一個專案，所以只有PHP經驗的我，對於Golang的生態和最佳實踐完全不懂，加上我原本預想是要直接朝向高效能架構設計。",
-            "solution": "花了不少時間了解與重構架構，最後考慮到真實情況通常不會直上最高效能，反而是要在可維護性和效能中取得平衡，所以我選擇了MVC架構，並且使用依賴注入（DI）來降低模組間的耦合度，讓程式碼更易於測試和維護。"
+            "problem": "這是我學習 Go 的第一個專案，只有 PHP 經驗的情況下，對 Go 的生態和最佳實踐完全陌生，同時又希望達到高可維護性的架構設計。",
+            "solution": "經過研究與迭代後，選擇了三層 MVC 架構搭配手動依賴注入，降低模組耦合度，使程式碼易於測試和維護。最終成果：21 個測試檔、151 個測試函式、519 個測試情境，全數通過。"
           },
           {
-            "title": "會員系統",
-            "problem": "要實現SPA的會員系統，並且確保安全性。",
-            "solution": "採用 JWT Access/Refresh Token 雙重驗證，refresh token存放在httpOnly cookie中，防止XSS攻擊。後端資料庫也有存放refresh token，確保token的有效性。"
+            "title": "JWT 驗證與安全性",
+            "problem": "需要為 SPA 實作安全的無狀態認證系統，同時支援 Token 輪換與撤銷機制。",
+            "solution": "採用 JWT Access/Refresh Token 滾動策略。Refresh Token 存放於 httpOnly Cookie（防 XSS），並同步持久化至 MongoDB，確保後端可主動撤銷，搭配 CSRF Middleware 提供額外防護。"
           },
           {
             "title": "WebSocket 即時通訊",
-            "problem": "需要實現高效能且穩定的即時通訊系統。",
-            "solution": "使用 Go 的 Gorilla WebSocket 庫來處理 WebSocket 連線，並且設計了 Hub、Client、Room 三個主要結構來管理連線和訊息傳遞：<ul><li><strong>Hub</strong> 負責管理所有 Client 和 Room</li><li><strong>Client</strong> 負責處理單一用戶的連線</li><li><strong>Room</strong> 負責管理聊天室內的訊息傳遞</li></ul>"
+            "problem": "需要建立高效能、可擴展的即時訊息層，同時支援群組頻道和私訊兩種模式。",
+            "solution": "使用 gorilla/websocket 建立 Hub/Client/Room 架構：Hub 管理所有 Room 和 Client；Client 封裝每個用戶連線；Room 負責訊息廣播。Channel 和 DM 共用同一個 Room 結構，以 Type 欄位區分，實現程式碼重用。"
           },
           {
-            "title": "聊天室設計",
-            "problem": "需要處理 Channel 與 DM 不同種類的聊天室。",
-            "solution": "雖然兩者是不同的資料表，但是在記憶體 Room 結構中，Channel 和 DM 都是 Room 的一種，所以在記憶體中只需要一個 Room 結構，並且用 Type 來區分是 Channel 還是 DM。"
+            "title": "檔案上傳與儲存",
+            "problem": "需要支援可靠的檔案上傳，同時避免後端耦合本地磁碟儲存。",
+            "solution": "整合 MinIO 作為 S3 相容的物件儲存。檔案從客戶端串流上傳至 MinIO，透過靜態 URL 提供存取，讓後端保持無狀態，儲存層可獨立擴展。"
           },
           {
-            "title": "前端Vue狀態管理",
-            "problem": "前端需要有效管理多個聊天室、用戶狀態和即時訊息。",
-            "solution": "使用 Pinia 進行全局狀態管理，將用戶資料、聊天室列表、訊息等狀態集中管理，確保各組件能夠同步更新。"
+            "title": "可觀測性與負載測試",
+            "problem": "需要確保系統可量測，並能承受真實世界的並發負載。",
+            "solution": "整合 go-gin-prometheus 暴露 /metrics 端點，並撰寫 K6 負載測試腳本模擬並發 WebSocket 連線，在上線前識別並修復效能瓶頸。"
           }
         ],
         "githubs": {
@@ -220,21 +240,26 @@
         }
       },
       "p2": {
-        "title": "綠芬芳手工皂形象網站",
-        "description": "使用 Nuxt.js 3 建構的手工皂形象平台，包含前台、後台管理和 RESTful API",
-        "overview": "以 Vibe Coding 為主加上手動微調製作的簡易形象網站，包含使用 Nuxt 3 開發的前台網站、Vue 3 管理後台，以及 Express.js 開發的 RESTful API。支援動態內容管理、SEO 最佳化、產品管理等功能。",
-        "architectureDescription": "前台使用 Nuxt.js 3 進行 SSG 靜態生成，管理後台採用 Vue.js SPA，後端 API 使用 Node.js + Express.js 框架，MySQL 資料庫，整合 Google reCAPTCHA 安全防護。",
-        "learnings": "通過這個專案掌握了現代化的前端開發工作流程，深入理解了 SSG 的優勢和 SEO 最佳化技巧。同時也提升了全端開發的能力，學會了如何設計易用的管理介面。",
+        "title": "綠芬芳手工皂品牌形象網站",
+        "description": "完整的品牌形象平台，從 PM2 遷移至 k3s/ArgoCD GitOps 架構，整合 Drizzle ORM、PostgreSQL 與 MinIO 儲存。",
+        "overview": "綠芬芳原本是簡易的形象網站，現已演進為生產級的雲原生平台。包含 Nuxt 3 SSG 前台、Vue 3 管理後台及 Node.js Express 後端。整個基礎設施從單機 PM2 遷移至由 ArgoCD (GitOps) 管理的 k3s 叢集。資料存取從 MySQL 遷移至 PostgreSQL，並採用 Drizzle ORM 提供型別安全；所有媒體資源均改存於 S3 相容的 MinIO 中。系統同時整合了 Prometheus/Grafana 監控，追蹤 HTTP 指標與資料庫效能。",
+        "architectureDescription": "前台：Nuxt 3 (SSG) + Tailwind CSS。後端：Node.js (ESM) + Express + Drizzle ORM + PostgreSQL。儲存：MinIO (S3 相容，透過 aws-sdk client-s3)。基礎設施：k3s (Kubernetes) + ArgoCD (GitOps) + GitHub Actions CI/CD。可觀測性：Prometheus (prom-client) + Grafana，包含請求延遲與 S3 操作自定義指標。安全：Helmet、Express Rate Limit 與 CSRF 防護。",
+        "learnings": "這個專案是一場基礎設施現代化的實戰課。將運行中的系統從 PM2 遷移到 Kubernetes，讓我學會處理容器化、Secret 管理，以及利用 ArgoCD Hooks 執行零停機資料庫遷移。我也獲得了 S3 相容儲存及 Drizzle ORM 型別安全資料存取的深部經驗，取代了舊有的 MySQL 模式。",
         "challenges": [
           {
-            "title": "SEO 最佳化",
-            "problem": "形象網站需要良好的搜尋引擎排名，傳統 SPA 難以滿足 SEO 需求。",
-            "solution": "採用 Nuxt 3 的 SSG 模式，自動生成 Sitemap，實作動態 meta 標籤和結構化資料。"
+            "title": "零停機基礎設施遷移",
+            "problem": "在不中斷生產環境的情況下，將傳統 VM 上的 PM2 程序管理遷移至容器化的 k3s 叢集。",
+            "solution": "實作 ArgoCD GitOps 工作流，利用 K8s Jobs 處理資料庫 Migration。自動化 CI/CD 流程：構建 Docker 映像後，同步更新「Side Project Ops」倉儲中的部署 manifest，確保更新過程可預測且可回滾。"
           },
           {
-            "title": "內容管理系統",
-            "problem": "需要讓非技術人員能夠輕鬆管理網站內容和產品資訊。",
-            "solution": "開發直觀的管理後台，支援所見即所得編輯器，圖片上傳，產品管理等功能。"
+            "title": "儲存與資料庫現化代",
+            "problem": "原有的 MySQL 搭配本地硬碟儲存不具備擴展性，且多節點備份困難。",
+            "solution": "遷移至 PostgreSQL 以獲得更好的效能與 ACID 遵循，並採用 Drizzle ORM 簡化 Schema 管理。將本地檔案上傳替換為中心化的 MinIO S3 服務，讓儲存層與應用層完全解耦。"
+          },
+          {
+            "title": "可觀測性整合",
+            "problem": "缺乏對後端效能的監控，特別是 S3 存取延遲和資料庫查詢瓶頸。",
+            "solution": "在 Express 後端整合 prom-client 暴露 /metrics 端點。在 Grafana 建立自定義儀表板，即時監控 HTTP 請求量、錯誤率，以及精確追蹤 S3/DB 的操作耗時。"
           }
         ]
       },
@@ -278,25 +303,25 @@
       },
       "p5": {
         "title": "YouTube Discord Bot",
-        "description": "Discord Bot，自動爬取 YouTube 頻道的最新影片和直播，並推送到指定頻道",
-        "overview": "這是一個自動化的 Discord 機器人，專門用於爬取 YouTube 頻道的最新影片和直播內容，並將其推送到指定的 Discord 頻道。機器人支援自動排程（每小時整點和半點檢查）和手動觸發，並具備完整的頻道管理功能，避免重複推送相同內容。",
-        "architectureDescription": "使用 Node.js + Discord.js 開發，支援 Fetch API 和 Puppeteer 兩種爬蟲模式，透過 PM2 進行程序管理，定時任務確保穩定運行。",
-        "learnings": "這個專案讓我深入學習了 Discord 機器人開發、網頁爬蟲技術，以及自動化任務的設計。特別是在處理反爬蟲機制和確保服務穩定性方面積累了寶貴經驗。",
+        "description": "Discord Bot，自動追蹤 YouTube 頻道的最新影片和直播，並推送通知到指定頻道",
+        "overview": "一個使用 discord.js v14（ES Modules）與 Node.js 開發的自動化 Discord 機器人，監控已訂閱的 YouTube 頻道並將新影片及直播通知推送到指定的 Discord 頻道。支援排程爬取（每小時整點和半點）、手動觸發、即將開播提前通知（附用戶 tag），以及完整的 Slash Command 管理介面。MongoDB 記錄推播歷史，防止重複通知。",
+        "architectureDescription": "純 ES Module 的 Node.js 架構，採用 discord.js v14 Slash Command API。雙爬蟲策略結合 node-fetch + Cheerio（主要快速爬蟲）和 Puppeteer（JS 渲染後備方案）。PM2 管理程序生命週期與排程重啟。MongoDB（Mongoose ODM）按頻道儲存推播歷史。支援 Docker 容器化部署。",
+        "learnings": "這個專案深化了我對 discord.js v14 現代 Slash Command API 的理解，以及針對 JavaScript 動態渲染頁面的多重爬蟲策略設計。處理跨重啟的重複推播去重，以及建立可維護的指令結構，都是非常有價值的學習。",
         "challenges": [
           {
-            "title": "YouTube 爬蟲實現",
-            "problem": "需要穩定地爬取 YouTube 頻道內容，並處理各種反爬蟲機制。",
-            "solution": "實作雙重爬蟲策略：Fetch API 作為主要方式，Puppeteer 作為備用方案，確保爬取穩定性。"
+            "title": "YouTube 爬蟲穩定性",
+            "problem": "YouTube 頁面由 JavaScript 渲染，純 HTTP 爬取不穩定；但重度使用 Puppeteer 又慢且耗資源。",
+            "solution": "實作雙重爬蟲策略：node-fetch + Cheerio 作為快速主要爬蟲，Puppeteer 作為需要 JS 渲染時的備用方案。在保持高效能的同時確保爬取可靠性。"
           },
           {
-            "title": "重複內容避免",
-            "problem": "需要追蹤已推送的影片，避免重複通知用戶。",
-            "solution": "建立本地快取機制，記錄已推送內容的 ID，並實作智能過濾算法。"
+            "title": "重複推播防止",
+            "problem": "機器人必須不重複通知已推播的內容，即使在服務重啟後也要有效。",
+            "solution": "使用 Mongoose 將每個已通知的影片/直播 ID 儲存至 MongoDB。每次爬取週期前先查詢已推播 ID，比對後才決定是否發送 Discord 訊息。"
           },
           {
-            "title": "定時任務管理",
-            "problem": "需要確保機器人能夠穩定地執行定時檢查任務，不受服務重啟影響。",
-            "solution": "使用 PM2 進行程序管理，配置自動重啟和錯誤處理機制。"
+            "title": "即將開播提前通知",
+            "problem": "用戶希望在直播開始前就收到預先通知，而不只是直播上線當下才推播。",
+            "solution": "新增排程預播前檢查功能，讀取直播的預定開始時間，在直播開始前的可設定時間間隔提前發送附有 tag 的 Discord 通知給訂閱用戶。"
           }
         ]
       },
@@ -335,6 +360,240 @@
             "title": "數據統計",
             "problem": "需要為用戶提供有意義的專注時間統計和分析。",
             "solution": "設計統計演算法，提供日、週、月的專注時間報表和趨勢分析。"
+          }
+        ]
+      },
+      "p8": {
+        "title": "Muon 音樂播放器",
+        "description": "跨平台行動音樂播放器，使用 Flutter 開發，可免廣告串流和下載 YouTube 音樂/影片，支援離線播放。",
+        "overview": "Muon 是一款簡約、無廣告的 iOS/Android 行動音樂播放器，可串流和下載 YouTube 內容。用戶可搜尋 YouTube、在背景播放音樂（含鎖定螢幕控制）、下載音頻（m4a）或完整影片（H.264/mp4），並管理離線播放清單。FastAPI 後端透過任務佇列非同步處理下載任務，支援狀態輪詢，並自動清理過期磁碟檔案。",
+        "architectureDescription": "Flutter 前端：Riverpod（程式碼生成）管理狀態、just_audio + audio_service 實現背景播放、Drift（SQLite）本地離線儲存、Dio 處理 HTTP 請求。FastAPI 後端：yt-dlp + ffmpeg 非同步任務系統、/api/status/{task_id} 輪詢端點、StaticFiles 提供媒體存取。使用 Docker Compose 部署。",
+        "learnings": "開發 Muon 讓我深入了解 Flutter 音訊生態（just_audio、audio_service）以及 iOS/Android 背景媒體播放的複雜性。在 FastAPI 上設計帶狀態輪詢的非同步任務佇列，是處理長時間執行任務而不阻塞 API 的寶貴模式。",
+        "challenges": [
+          {
+            "title": "iOS & Android 背景音頻播放",
+            "problem": "當 App 進入背景或畫面鎖定時，需要在兩個平台上維持不間斷的音頻播放。",
+            "solution": "整合 audio_service 將 App 註冊為背景音頻服務，實作所需的平台回呼（播放/暫停/跳過）。結合 just_audio 處理實際播放，實現原生鎖定螢幕控制和藍牙耳機支援。"
+          },
+          {
+            "title": "非同步下載任務系統",
+            "problem": "透過 yt-dlp 下載 YouTube 內容可能需要 10–60 秒以上。同步 API 會超時並讓客戶端無回應。",
+            "solution": "在 FastAPI 後端實作非同步任務佇列：POST /api/download 端點立即返回 task_id，Flutter 客戶端輪詢 GET /api/status/{task_id} 直到狀態為「completed」，再取得媒體 URL。"
+          },
+          {
+            "title": "離線儲存與播放清單管理",
+            "problem": "需要在裝置本地 SQLite 資料庫中可靠地管理下載曲目和用戶播放清單。",
+            "solution": "使用 Drift（Flutter 的型別安全 SQLite ORM，含程式碼生成）定義曲目和播放清單的強型別表格，確保安全的資料庫遷移和編譯期查詢正確性。"
+          }
+        ]
+      },
+      "p10": {
+        "title": "OVH 雙節點 VPS 基礎設施",
+        "description": "雙節點 OVH VPS Kubernetes 環境的全自動化設置工具包，整合 K3s、Tailscale、Cloudflare Tunnel 及完整可觀測性技術棧。",
+        "overview": "針對兩台 OVH VPS 節點的生產級、全腳本化基礎設施，運行 K3s Kubernetes。VPS-1（主節點）架設 K3s 控制平面、ArgoCD、Prometheus、Grafana、Loki、Traefik Ingress 及 Cloudflared Tunnel。VPS-2（工作節點）運行 K3s Agent、Node Exporter 和 Promtail。資料庫（PostgreSQL 16、MongoDB 8、Redis 7）刻意以 Docker 運行於 K3s 之外，避免 StatefulSet 複雜度。Tailscale 提供節點間 VPN mesh，rclone 備份資料至 OVH S3 和 Google Drive。",
+        "architectureDescription": "節點間通訊透過 Tailscale（WireGuard VPN mesh，取代 OVH vRack）。外部 HTTPS 透過 Cloudflare Tunnel（零開放入站 Port）。工作負載透過 ArgoCD GitOps 部署至 K3s，Traefik 處理 Ingress 路由。可觀測性：Prometheus + Grafana（指標）、Loki + Promtail（日誌）、Node Exporter（主機指標）。每節點一次性執行編號 Bash 腳本（00–06）完成自動化設置。",
+        "learnings": "設計這套基礎設施讓我學會如何以有限預算組合企業級可靠性模式：用 Tailscale 取代 vRack、Cloudflare Tunnel 取代負載均衡器，以及刻意將有狀態工作負載放在 Kubernetes 之外。結果是一個具韌性、可觀測且成本效益高的自託管平台。",
+        "challenges": [
+          {
+            "title": "安全的節點間網路",
+            "problem": "OVH 的私有網路（vRack）需要額外設定和費用。需要為兩台 VPS 節點的 K3s 叢集流量建立安全的私有通道。",
+            "solution": "在兩個節點上安裝 Tailscale，建立加密的 WireGuard mesh 網路。K3s 使用 Tailscale IP 進行控制平面和 Agent 通訊，完全不暴露於公網。"
+          },
+          {
+            "title": "零暴露外部存取",
+            "problem": "透過公開 NodePort 或 LoadBalancer 暴露 Kubernetes 服務會增加攻擊面，需要在不開放入站防火牆 Port 的情況下實現 HTTPS 存取。",
+            "solution": "使用 Cloudflare Tunnel（cloudflared）——VPS 主動向 Cloudflare 建立出站連線，Cloudflare 再將流量代理進來。無需開放任何入站 Port，Cloudflare 處理 TLS 終止和 DDoS 防護。"
+          },
+          {
+            "title": "資料庫穩定性與 K3s 分離",
+            "problem": "在 Kubernetes StatefulSet 中運行有狀態資料庫增加了排程複雜性和節點故障時的資料丟失風險。",
+            "solution": "將 PostgreSQL、MongoDB 和 Redis 保留在 Docker Compose 中，運行於較穩定的 VPS-1 主節點（K3s 叢集之外）。這樣可隔離資料庫穩定性與 Kubernetes 排程決策，同時讓 K3s Pod 仍可透過 Tailscale IP 存取資料庫。"
+          }
+        ]
+      },
+      "p11": {
+        "title": "Side Project Ops（GitOps 平台）",
+        "description": "ArgoCD App-of-Apps GitOps 倉庫，透過自動化 CI/CD 管道集中管理所有 Side Project 的 Kubernetes 部署。",
+        "overview": "一個 GitOps monorepo，作為所有 Side Project 跨多個元件 Kubernetes 部署的唯一事實來源。採用 ArgoCD 的 App-of-Apps 模式：單一 Root Application 引導所有子應用程式定義，子應用再管理各自的命名空間、Kustomize manifest 和 Sealed Secret。目前管理的專案包括 chat-app、gf-soap（前台/後端/後台）、lazybacktest（前端/後端）、personal-site 和 hexo-blog。各源碼倉庫的 CI 管道構建 Docker 映像、推送至 GHCR，然後在此提交新映像 Tag，觸發 ArgoCD 自動同步。",
+        "architectureDescription": "倉庫結構：apps/（ArgoCD Application YAML）、projects/<name>/<component>/（Kustomize manifest）。Root App（root-app.yaml）監聽 apps/ 目錄，kubeseal 將 Secret 加密為可安全提交的 SealedSecret 物件。私有 GHCR 映像使用共用的 ghcr-pull-secret。_template/ 目錄支援快速上線新專案。",
+        "learnings": "建立這個 GitOps 平台讓我實際掌握了 ArgoCD App-of-Apps 模式，以及完整的 GitOps 工作流循環：程式碼推送 → Docker 構建 → GHCR 推送 → Tag 提交 → ArgoCD 同步 → 滾動更新。用 kubeseal 管理 Secret 讓我深刻理解了將加密 Secret 保存在 Git 中以支援稽核追蹤的重要性。",
+        "challenges": [
+          {
+            "title": "App-of-Apps 引導",
+            "problem": "單獨管理幾十個 ArgoCD Application manifest 很難維護。需要一個可擴展的模式，讓新增專案不需要手動在 ArgoCD UI 操作。",
+            "solution": "實作 App-of-Apps 模式：單一 Root ArgoCD Application 監聽 apps/ 目錄，並自動建立/更新子 Application。新增專案只需在 apps/ 新增一個 Application YAML 並提交——ArgoCD 處理其餘事宜。"
+          },
+          {
+            "title": "Git 中的 Secret 管理",
+            "problem": "將 Kubernetes Secret（資料庫密碼、API 金鑰）儲存在 Git 倉庫是安全風險。",
+            "solution": "使用 kubeseal（Bitnami Sealed Secrets）以叢集公鑰加密 Secret 後才提交。加密的 SealedSecret YAML 可安全地公開存放；只有叢集的 Controller 才能在部署時解密。"
+          },
+          {
+            "title": "私有映像倉庫 Pull",
+            "problem": "K3s Pod 需要在所有命名空間拉取來自私有 GHCR 倉庫的 Docker 映像。",
+            "solution": "建立共用的 ghcr-pull-secret Kubernetes Secret（已 seal），並在每個部署的 Kustomize patch 中設定為 imagePullSecrets，讓所有專案無需以明文儲存憑證即可拉取私有 GHCR 映像。"
+          }
+        ]
+      },
+      "p12": {
+        "title": "LazyBacktest",
+        "description": "台股輕量回測系統，React 網頁介面整合 6 種技術指標策略、網格搜尋參數最佳化和 9 項績效指標分析。",
+        "overview": "LazyBacktest 是一個全端 Web 應用，用於回測台股（TWSE）交易策略。React 前端讓用戶選擇股票代號、日期範圍、策略和參數，並以資產曲線、年/月報酬率熱力圖和 9 項關鍵指標（CAGR、最大回撤、Sharpe、Sortino 等）視覺化結果。FastAPI 後端獲取歷史價格資料（本地 DB 快取 → yfinance → CSV 備援），執行回測，並支援以 Sharpe Ratio 排序的網格搜尋參數最佳化。",
+        "architectureDescription": "前端：React 18 + TypeScript + Vite + TailwindCSS + Recharts，Docker + Nginx 部署。後端：Python 3.11+ + FastAPI + SQLAlchemy（ORM）+ Alembic 遷移 + Pandas/NumPy 計算 + yfinance 市場資料 + PostgreSQL（正式）/ SQLite（測試）+ Redis 快取。一鍵啟動：docker-compose up --build。",
+        "learnings": "建立 LazyBacktest 深化了我的量化金融知識和 Python 資料處理技能。設計帶有解耦進出場邏輯的策略抽象層，讓新增策略變得直觀。使用 pytest TDD 和嚴格的 Mypy 型別檢查早期發現邊緣案例，讓金融計算邏輯更可靠。",
+        "challenges": [
+          {
+            "title": "策略抽象設計",
+            "problem": "各策略（SMA、RSI、MACD、KD、布林帶、價格突破）的信號邏輯不同，但回測引擎需要統一的介面。",
+            "solution": "設計帶有抽象 generate_signals() 方法的 Strategy 基類，各策略分別實作。回測引擎統一呼叫 generate_signals()，並套用倉位大小和資金管理，讓新增策略非常直觀。"
+          },
+          {
+            "title": "網格搜尋參數最佳化",
+            "problem": "透過手動試誤找到最佳參數組合（如 SMA 快/慢週期）既繁瑣又不可靠。",
+            "solution": "實作網格搜尋引擎，對用戶定義範圍內的所有參數組合進行窮舉測試，每種組合執行完整回測，並以 Sharpe Ratio 排序結果。前端顯示前 N 個組合供比較。"
+          },
+          {
+            "title": "歷史資料可靠性",
+            "problem": "yfinance API 呼叫可能失敗或返回不完整資料，尤其是已下市的台股代號。",
+            "solution": "實作三層資料來源策略：先查詢本地 PostgreSQL 快取，快取未命中時備援至 yfinance，對已知 API 問題的代號最終備援至本地 CSV 檔案。結果回寫快取以加速未來查詢。"
+          }
+        ]
+      },
+      "p13": {
+        "title": "演算法學習網站",
+        "description": "互動式 LeetCode 演算法學習指南網頁應用，含 Markdown 渲染題目說明、閃卡學習模式，涵蓋 16 個演算法類別共 159 題。",
+        "overview": "一個 React + TypeScript SPA，作為完整的演算法學習指南。涵蓋 16 個類別（陣列與雜湊、雙指標、滑動視窗、堆疊、二分搜尋、鏈結串列、樹、堆積、回溯、圖、動態規劃、貪心、區間、位元運算、設計、附錄）共 159 道 LeetCode 題目。題目內容從 Markdown 檔案即時載入。具備閃卡主動回想模式、Dashboard 進度總覽，以及以 Zustand 持久化的每題狀態追蹤（未開始 / 進行中 / 已掌握）。",
+        "architectureDescription": "React 19 + TypeScript + Vite 7 + TailwindCSS 4。Zustand 管理輕量客戶端狀態（題目進度）。react-markdown + rehype-highlight + highlight.js 渲染語法高亮程式碼區塊。react-router-dom 7 SPA 路由。framer-motion 頁面過渡動畫。內容完全解耦存放於 public/data/ Markdown 檔案。Docker + Nginx 生產部署。",
+        "learnings": "這個專案鞏固了我建立內容豐富 SPA 的技能，包括動態 Markdown 渲染。設計 Zustand store 管理進度追蹤讓我學會如何保持客戶端狀態精簡並持久化至 localStorage。建立閃卡模式讓我對間隔重複的 UX 設計有了深刻理解。",
+        "challenges": [
+          {
+            "title": "動態 Markdown 內容載入",
+            "problem": "159 個題目頁面需要渲染含語法高亮程式碼區塊的 Markdown，但不能在構建時預先生成每個頁面。",
+            "solution": "將所有題目內容以原始 Markdown 檔案存放於 public/data/。執行時，React 元件獲取對應的 .md 檔案，透過 react-markdown 加 rehype-highlight 渲染。無需重新構建即可編輯內容。"
+          },
+          {
+            "title": "無後端的進度持久化",
+            "problem": "用戶需要在 Session 之間保留題目狀態（未開始 / 進行中 / 已掌握），但不想要登入或伺服器。",
+            "solution": "使用帶有 localStorage 持久化中介件的 Zustand。題目狀態以 problemId → status 的平面 Map 儲存在 localStorage，App 載入時還原，用戶變更狀態時即時更新——零後端需求。"
+          }
+        ]
+      },
+      "p14": {
+        "title": "吉他學習網站",
+        "description": "全端電吉他學習平台，包含 Markdown 知識庫、互動式指板、D3 知識圖譜和 GitHub 風格練習打卡熱力圖。",
+        "overview": "個人吉他學習平台與練習記錄工具。以 Markdown 為基礎的知識庫涵蓋技巧文章、樂理和和弦/音階參考。D3 驅動的知識圖譜視覺化呈現主題間的關係。互動式指板讓用戶探索音階和和弦指法。GitHub 風格熱力圖追蹤每篇文章的每日練習 Session。後端（Node.js + Express + MongoDB）自動掃描 Markdown 目錄，生成目錄結構和反向連結建議。",
+        "architectureDescription": "前端：React 19 + TypeScript + Vite + TailwindCSS（深色玻璃擬態）、react-force-graph-2d（D3 知識圖譜）、react-activity-calendar（熱力圖）、Recharts、Nginx 反向代理。後端：Node.js + Express + TypeScript + MongoDB（Mongoose）、pnpm workspaces monorepo。後端自動掃描 Markdown 檔案、生成目錄和反向連結索引，並提供 REST API。Docker Compose 部署；後端 Port 不對外暴露（Nginx 代理 /api/*）。",
+        "learnings": "這個專案是對非典型 UI 元件的有趣探索：整合 react-force-graph-2d 實現 D3 知識圖譜，讓我學習了力模擬和圖形資料建模。建立反向連結解析系統（WikiLink + 標準 Markdown 連結）讓我實戰了 AST 遍歷和靜態網站生成器模式。",
+        "challenges": [
+          {
+            "title": "知識圖譜生成",
+            "problem": "手動維護吉他主題間的關係圖譜繁瑣且容易出錯。",
+            "solution": "建立後端解析器，掃描所有 Markdown 檔案中的 WikiLink（[[文章名稱]]）和標準 Markdown 連結，建立文章關係有向圖。前端用 react-force-graph-2d 的 D3 力模擬互動式渲染此圖。"
+          },
+          {
+            "title": "互動式指板渲染",
+            "problem": "在吉他指板上顯示音符位置並附帶懸停預覽，需要將樂理映射到精確的 2D 格線佈局。",
+            "solution": "將 24 格 × 6 弦指板建模為 2D 陣列，根據各弦調音的半音音程計算音符名稱，渲染可點擊的 SVG 格子並在懸停時顯示音符名稱提示。音階/和弦高亮在完整格線上疊加篩選後的音符。"
+          },
+          {
+            "title": "練習進度追蹤",
+            "problem": "用戶希望看到已練習的文章和練習一致性，類似 GitHub 的貢獻熱力圖。",
+            "solution": "每次閱讀/練習事件後，前端向後端 POST 完成記錄，後端以時間戳記儲存至 MongoDB。熱力圖彙總每日次數後送入 react-activity-calendar，呈現視覺日曆視圖。"
+          }
+        ]
+      },
+      "p15": {
+        "title": "資深後端工程師面試指南",
+        "description": "開源的資深後端工程師面試準備知識庫，涵蓋 CS 基礎、系統設計、基礎設施等 160+ 個結構化主題文件。",
+        "overview": "Markdown 知識庫，設計為資深後端工程師的系統化面試準備指南。涵蓋 6 大領域：CS 基礎（資料結構、演算法、作業系統、網路）、後端開發（API 設計、資料庫、快取、訊息佇列）、系統設計與架構（設計模式、微服務、大規模系統案例）、基礎設施與 DevOps（雲端、容器、CI/CD、可觀測性）、專項主題（安全、測試）和前端開發。每個主題文件包含難度評分（1–10）、標籤、詳細理論說明，以及選擇性的 Go 語言程式碼範例。QUIZ 目錄支援自我評估。",
+        "architectureDescription": "Markdown 知識庫，以嚴格的內容模板（難度、標籤、理論、程式碼範例）組織各主題目錄。Go 是所有程式碼範例的統一語言。貢獻指南執行每 PR 一題的規範。以公開 GitHub 倉庫形式托管，供社群貢獻。",
+        "learnings": "系統化地建立和策展這份指南，迫使我將過去憑直覺應用的知識明確表達出來——尤其是系統設計、資料庫底層原理和分散式系統。為 160+ 個主題撰寫清晰準確的說明，顯著強化了我自身的理解，以及傳達技術概念的能力。",
+        "challenges": [
+          {
+            "title": "內容深度與廣度的平衡",
+            "problem": "面試指南常常過於廣泛（表面列點）或過於深入（教科書級別）——兩者對於針對性面試備考都無用。",
+            "solution": "建立內容比例指南：90% 理論說明，10% 程式碼範例。每個文件有難度評分和前置知識標籤，讓讀者可以自我評估準備程度，按漸進式學習路徑而非線性閱讀。"
+          },
+          {
+            "title": "一致的知識結構",
+            "problem": "超過 160 個主題文件隨時間增長貢獻，格式和深度不一致會降低指南的實用性。",
+            "solution": "為每個主題文件定義嚴格的 Markdown 範本（難度、標籤、概述、詳細說明、程式碼範例區塊）。貢獻指南要求所有 PR 遵循此範本，審閱過程強制執行一致性。"
+          }
+        ]
+      },
+      "p16": {
+        "title": "GCP 零成本自架基礎設施",
+        "description": "在 GCP 免費方案 e2-micro VM 上以 $0/月運行 6 個生產 Docker 服務，透過 IPv6 專用網路、Cloudflare Tunnel、WARP 代理與 Socat 解決 $3.65/月的 IPv4 費用問題。",
+        "overview": "gcp-free-stack 是一個個人基礎設施專案兼工程日誌，記錄如何在 GCP e2-micro 免費方案上以 $0/月運行多個生產級 Docker 服務。2024 年 GCP 開始對外部 IPv4 地址收費（約 $3.65/月），本專案系統性評估各替代方案（Cloud NAT 要 $4.67/月，反而更貴），最終確立解決方案：IPv6 專用 VM + Cloudflare Tunnel 公開入口 + Cloudflare WARP SOCKS5 代理解決 Docker 拉取映像問題 + Socat TCP 轉發讓容器可存取 WARP 代理 + Cloudflare Worker 作為 IPv4 通知轉發閘道。六個服務——Portainer、Uptime Kuma、Umami（網站分析）、IT-Tools、Homer（服務儀表板）、Dash.（系統監控）——全部在 1 vCPU / 1 GB RAM VM 上以 Docker Compose 運行。",
+        "architectureDescription": "公開入口：Cloudflare Tunnel（cloudflared，QUIC/HTTP2）終止 TLS 並轉發至本地容器埠。VM 網路：GCP 雙棧子網路，僅外部 IPv6（無 IPv4），透過 GCP IAP 隧道 SSH 存取。IPv4 橋接：Cloudflare WARP 代理模式（SOCKS5 :4000）——使用代理模式而非 VPN 模式，避免影響系統路由表。容器代理：Socat systemd 服務（TCP 0.0.0.0:4001 → 127.0.0.1:4000）將 WARP 暴露給 Docker 容器。通知轉發：Cloudflare Worker 將 IPv6 來源的 Webhook 請求代理至 IPv4 的 Discord/Slack 端點。容器：Docker Compose，Uptime Kuma 使用 host 網路模式以獲得原生 IPv6 堆疊和 WARP SOCKS5 存取。OS 調優：針對 1 GB RAM 環境擴大 QUIC 所需的核心 Socket 緩衝區。",
+        "learnings": "這個專案深化了我對雲端網路在基礎設施成本邊界的取捨理解。診斷 docker pull 在 IPv6 專用主機上失敗的原因（映像倉庫僅支援 IPv4），並用 WireGuard 式 SOCKS5 代理解決問題，讓我獲得多層網路橋接的實戰經驗。我也學到 WARP 必須使用代理模式而非 VPN 模式——VPN 模式會修改系統路由表導致 SSH 斷線。使用 Cloudflare Worker 作為無伺服器 IPv4/IPv6 轉換層轉發通知 Webhook，是一個優雅且零成本的架構決策。",
+        "challenges": [
+          {
+            "title": "IPv6 專用主機無法拉取 Docker 映像",
+            "problem": "移除外部 IPv4 地址（消除 $3.65/月費用）後，docker pull 指令失敗，因為 Docker Hub、GHCR 等映像倉庫僅支援 IPv4，VM 無法路由到這些端點。",
+            "solution": "安裝 Cloudflare WARP 並設定為代理模式（SOCKS5 在 127.0.0.1:4000），而非 VPN 模式。透過 daemon.json 設定 Docker daemon 使用 WARP SOCKS5 代理。使用 Socat（systemd 服務）將 TCP 0.0.0.0:4001 轉發至 127.0.0.1:4000，讓 Docker bridge 網路上的容器也能存取代理。"
+          },
+          {
+            "title": "Uptime Kuma 無法連線監控目標或發送通知",
+            "problem": "Uptime Kuma 在容器中運行，需要連線 IPv4 監控目標（外部網站）並向 Discord Webhook 發送告警——但這些端點都是 IPv4，VM 沒有直接的 IPv4 出口。",
+            "solution": "以 network_mode: host 運行 Uptime Kuma，讓它直接使用主機網路堆疊（存取 127.0.0.1:4000 的 WARP 及原生 IPv6）。對於通知 Webhook（Discord 僅支援 IPv4），部署 Cloudflare Worker 接收 Uptime Kuma 透過 IPv6 發送的 Webhook，再轉發至 IPv4 的 Discord 端點。"
+          },
+          {
+            "title": "沒有公開 IP 的 SSH 存取",
+            "problem": "移除外部 IPv4 地址後，標準 SSH 入口也一併消失——如何在不付費取得公開地址的情況下遠端管理 VM？",
+            "solution": "使用 GCP Identity-Aware Proxy（IAP）隧道搭配 gcloud compute ssh --tunnel-through-iap。IAP 透過 Google 基礎設施隧道傳輸 SSH 流量，不需要公開 IP 且無額外費用。並撰寫了完整的 macOS gcloud CLI 設定指南。"
+          }
+        ]
+      },
+      "p17": {
+        "title": "加密貨幣交易所",
+        "description": "從 0 構建並部署高併發加密貨幣交易所的演進式架構，學習 AWS ECS、Redis 快取、Kafka 非同步處理與效能壓測。",
+        "overview": "這是一個以壓力測試數據驅動架構演進的後端專案，旨在從 0 構建學習分散式架構與 AWS 部署運維。透過 k6 不斷將系統推向瓶頸，找出效能弱點，並依序引入單體容器化 (ECS)、快取層 (Redis)、水平擴展 (ALB)、非同步架構 (Kafka) 與完整的可觀測性堆疊 (Prometheus/Grafana/CloudWatch)。",
+        "architectureDescription": "API 伺服器使用 Go (Gin) 實作並以 Docker 容器化，部署於 AWS ECS。針對不同階段的瓶頸，使用 PostgreSQL 儲存核心狀態，Redis 作為 Orderbook 的讀取快取 (Cache-Aside Pattern) 以及支援 WebSocket 廣播，Kafka 用作削峰填谷以非同步處理下單請求，並整合 Prometheus / Grafana 以及 CloudWatch 來提供完整的請求追蹤與即時監控指標。",
+        "learnings": "此專案讓我深刻體會到「沒有絕對正確的架構，只有符合當下數據與瓶頸的架構」。透過 k6 實際看見延遲從 50ms 飆升到 1500ms 的崩潰點，然後看著引入 Redis Cache 後降回 10ms，這種由數據引導重構的過程非常有成就感。這也為我奠定了未來規劃高併發微服務架構時，根據流量與數據做出決策的工程直覺。",
+        "challenges": [
+          {
+            "title": "單體資料庫連線池與讀取熱點瓶頸",
+            "problem": "當併發到達 100 VU 時，GET /orderbook 佔據 70% 的流量，每次皆直接叩擊 DB，導致 CPU 飆高且 P95 延遲暴增，最終出現 too many clients 錯誤。",
+            "solution": "實作 Cache-Aside 邏輯，並將 Redis 與 API 部署在相同的 ECS / Docker 網路中。讀取時先從 Redis 取資料，未命中才查詢 DB 並寫回 Redis。這使得主要讀取負載卸載至記憶體，成功將 200ms 的延遲穩定降至 10ms 以內。"
+          },
+          {
+            "title": "單機資源飽和與 WebSocket 全域廣播問題",
+            "problem": "隨著流量上升，單一 ECS 任務的 CPU 使用率超過 70%。需要引入 ALB 進行水平擴展（多個機器實例），但水平擴展會破壞原本 in-memory 的 WebSocket 黏性連線。",
+            "solution": "將 ECS Service 的 Desired Count 調高並綁定 Application Load Balancer。為解決 WebSocket 擴展問題，引入了 Redis Pub/Sub，讓多個後端 API 伺服器可以彼此訂閱與發佈事件，確保任何實例收到的系統更新皆可跨實例推播給用戶端。"
+          },
+          {
+            "title": "寫入瓶頸與峰值流量削峰",
+            "problem": "下單 QPS 暴增時，同步回傳處理導致交易引擎與 DB 的寫入速度成為無法立即擴展的瓶頸（系統阻塞）。",
+            "solution": "將原本的同步架構改寫為非同步驅動。客戶端送出請求後，系統先將事件推送至 Kafka 並立即回傳 202 Accepted。背景 Worker (Consumer) 非同步從 Kafka 取出訂單進行撮合寫庫。系統再透過 WebSocket 通知客戶端最終的處理結果，有效紓解了瞬間的高併發寫入壓力。"
+          }
+        ],
+        "githubs": {
+          "frontend": "前端源碼",
+          "backend": "後端源碼"
+        }
+      },
+      "p18": {
+        "title": "YouTube 即時翻譯字幕擴充功能",
+        "description": "結合 Chrome Extension 與 Go WebSocket 後端的雙語字幕系統。無感擷取影片音訊，透過 Deepgram 語音辨識與 Google/DeepL 輪詢備援機制呈現即時字幕。",
+        "overview": "這個專案為一個前後端分離的即時字幕翻譯系統，專為克服觀看 YouTube 外語影片或直播時的語言障礙而生。透過 Chrome 擴充功能的 Web Audio API 攔截音訊，並使用 WebSocket 動態將音訊串流至 Go 後端，隨後交由 Deepgram 進行超低延遲的語音辨識 (STT)，並實作 Google Translate 與 DeepL API 的失效備援 (Failover) 與負載平衡，最後將原文及翻譯雙語字幕動態呈現在影片播放器上。",
+        "architectureDescription": "前端擴充功能 (Manifest V3) 負責音訊攔截、WebSocket 通訊與懸浮防閃爍字幕渲染；Go 後端負責與前端建立 WebSocket 提供低延遲傳輸，對接 Deepgram 即時處理音軌流，並封裝了多個翻譯 API 以 Round-Robin 輪詢進行即時語言轉換。所有過往翻譯記錄皆透過前端自動儲存為歷史記錄。",
+        "learnings": "實作這個系統讓我徹底理解了影音串流處理與即時系統的架構難點。從解決前端 Web Audio API 攔截 <video> 音軌時的採樣率轉換，到後端調優 WebSocket 串流的穩定性，以及設計一套不依賴單一翻譯服務的失效備援(Failover)機制。親手做出一個能讓直播無延遲掛上雙語字幕的產品，成就感非常巨大。",
+        "challenges": [
+          {
+            "title": "前端動態音訊擷取與 WebSocket 緩衝串流",
+            "problem": "為了做到「即時」，必須從 YouTube 的 HTML5 <video> 標籤無損攔截音軌，並且連續不斷地傳送音訊碎塊(Chunks)給後端，這容易產生記憶體洩漏與串流卡頓的問題。",
+            "solution": "使用 Web Audio API 解析 AudioContext 建立旁路攔截，再透過 ScriptProcessor / AudioWorklet 收音，動態調整 Float32 的採樣並轉換成適合 API 的 16-bit PCM 格式後，再透過 WebSocket 源源不絕地串流至 Go 後端。"
+          },
+          {
+            "title": "多翻譯 API 輪詢備援機制 (Failover)",
+            "problem": "免費版本的機器翻譯服務 (如 Google Translate / DeepL) 很容易因為高頻短句的即時請求觸發 Rate Limit，導致翻譯瞬間中斷失效。",
+            "solution": "在 Go 後端實作了一套介面化的翻譯引擎整合，引入 Round-Robin 負載平衡策略。系統可以在多個 API Keys 或多個翻譯提供商之間自動切換；若單一引擎遇到限制，就立馬由備援引擎接手處理，保證直播字幕不中斷。"
+          },
+          {
+            "title": "動態防閃爍字幕渲染與狀態同步",
+            "problem": "由於語音辨識結果 (Transcript) 可能隨著句子講述的推進而動態修正(Interim Results)，DOM 的頻繁重繪容易造成字幕閃爍，嚴重影響觀看體驗。",
+            "solution": "在前端與後端定義了一套訊息結構 (Message Protocol)，區分最終結果 (Final) 與臨時結果 (Interim)。透過維護一份 Active Subtitle State，並搭配 CSS Transform，能夠流暢更新字幕畫面的文字節點，減少重繪成本，並允許使用者隨意拖曳字幕位置以避開遮擋。"
           }
         ]
       }
