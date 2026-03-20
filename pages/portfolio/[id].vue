@@ -44,12 +44,12 @@
           </p>
 
           <!-- Links -->
-          <div class="flex gap-4">
+          <div class="flex flex-wrap gap-4">
             <a
               v-if="project.github"
               :href="project.github"
               target="_blank"
-              class="inline-flex items-center px-6 py-3 bg-coffee-800 dark:bg-blue-600 text-white rounded-lg hover:bg-coffee-900 dark:hover:bg-blue-700 transition-colors"
+              class="inline-flex items-center justify-center px-6 py-3 bg-coffee-800 dark:bg-blue-600 text-white rounded-lg hover:bg-coffee-900 dark:hover:bg-blue-700 transition-colors w-full sm:w-auto"
             >
               <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -66,7 +66,7 @@
                 :key="index"
                 :href="github.url"
                 target="_blank"
-                class="relative group inline-flex items-center px-6 py-3 bg-coffee-800 dark:bg-blue-600 text-white rounded-lg hover:bg-coffee-900 dark:hover:bg-blue-700 transition-colors"
+                class="relative group inline-flex items-center justify-center px-6 py-3 bg-coffee-800 dark:bg-blue-600 text-white rounded-lg hover:bg-coffee-900 dark:hover:bg-blue-700 transition-colors w-full sm:w-auto"
                 :title="github.name"
               >
                 <svg
@@ -87,7 +87,7 @@
               v-if="project.demo"
               :href="project.demo"
               target="_blank"
-              class="inline-flex items-center px-6 py-3 border-2 border-coffee-600 dark:border-blue-400 text-coffee-600 dark:text-blue-400 rounded-lg hover:bg-coffee-600 dark:hover:bg-blue-600 hover:text-white transition-colors"
+              class="inline-flex items-center justify-center px-6 py-3 border-2 border-coffee-600 dark:border-blue-400 text-coffee-600 dark:text-blue-400 rounded-lg hover:bg-coffee-600 dark:hover:bg-blue-600 hover:text-white transition-colors w-full sm:w-auto"
             >
               <svg
                 class="w-5 h-5 mr-2"
