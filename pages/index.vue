@@ -477,9 +477,9 @@ const featuredProjects = computed(() => [
     title: t("portfolio.items.p17.title"),
     description: t("portfolio.items.p17.description"),
     image: "/logos/project17.png",
-    category: t("portfolio.categories.devops"),
+    category: t("portfolio.categories.backend"),
     year: "2026",
-    technologies: ["Go", "Redis", "Kafka", "AWS ECS"],
+    technologies: ["Go", "Kafka", "PostgreSQL", "Prometheus"],
     demo: "https://crypto-exchange.liu-yucheng.com",
     githubs: [
       "https://github.com/RayLiu1999/cyptocurrency-exchange-frontend",
@@ -493,7 +493,7 @@ const featuredProjects = computed(() => [
     image: "/logos/project1.png",
     category: t("portfolio.categories.fullstack"),
     year: "2024",
-    technologies: ["Vue 3", "Go", "WebSocket", "MongoDB"],
+    technologies: ["Vue 3", "Go", "Redis Pub/Sub", "K3s"],
     demo: "https://chat-app.liu-yucheng.com",
     githubs: [
       "https://github.com/RayLiu1999/chat_app_frontend",

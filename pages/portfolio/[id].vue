@@ -334,9 +334,26 @@ const project = computed(() => {
             url: "https://github.com/RayLiu1999/chat_app_backend",
           },
         ],
-        architecture: "/archs/project1-sa.png",
         categoryKey: "fullstack",
         challengesCount: 5,
+        mermaid: `graph TD
+  Client[Browser / SPA] -->|HTTP / WebSocket| LB[K3s Service / Ingress]
+  LB --> PodA[chat-app Pod A]
+  LB --> PodB[chat-app Pod B]
+  LB --> PodC[chat-app Pod C]
+  PodA <-->|Publish / Subscribe| Redis[(Redis Pub/Sub + Cache)]
+  PodB <-->|Publish / Subscribe| Redis
+  PodC <-->|Publish / Subscribe| Redis
+  PodA --> Mongo[(MongoDB)]
+  PodB --> Mongo
+  PodC --> Mongo
+  PodA --> Files[(Uploads / Object Storage Provider)]
+  PodB --> Files
+  PodC --> Files
+  Argo[ArgoCD + Kustomize] --> LB
+  HPA[HPA 2-10 Pods] --> PodA
+  HPA --> PodB
+  HPA --> PodC`,
         techStack: [
           {
             nameKey: "frontend",
@@ -350,10 +367,23 @@ const project = computed(() => {
           },
           {
             nameKey: "backend",
-            technologies: ["Go 1.24", "Gin", "WebSocket", "JWT", "Air"],
+            technologies: [
+              "Go 1.25",
+              "Gin",
+              "gorilla/websocket",
+              "JWT",
+              "Redis Pub/Sub",
+            ],
           },
           { nameKey: "database", technologies: ["MongoDB", "Redis"] },
-          { nameKey: "tools", technologies: ["MinIO", "Prometheus", "K6"] },
+          {
+            nameKey: "container_orchestration",
+            technologies: ["K3s", "HPA", "Kustomize", "ArgoCD"],
+          },
+          {
+            nameKey: "monitoring",
+            technologies: ["Prometheus", "pprof", "k6"],
+          },
         ],
       },
       2: {
@@ -689,18 +719,35 @@ const project = computed(() => {
             url: "https://github.com/RayLiu1999/cyptocurrency-exchange-backend",
           },
         ],
-        categoryKey: "devops",
-        challengesCount: 3,
-        mermaid: `graph TD\n  Client -->|HTTP/WebSocket| ALB[AWS ALB]\n  ALB --> API[API Server / ECS]\n  API -->|Read| Redis[(Redis Cache)]\n  Redis -.->|Miss| DB[(PostgreSQL)]\n  API -->|Write/Async| Kafka[Kafka]\n  Kafka --> Worker[Matching Engine Worker]\n  Worker --> DB\n  API -->|Push| WS[WebSocket Service]`,
+        categoryKey: "backend",
+        challengesCount: 5,
+        mermaid: `graph TD\n  Client[Frontend / Trader UI] -->|HTTP / WS| Gateway[gateway]\n  Gateway -->|REST / Idempotency / Rate Limit| Order[order-service]\n  Gateway <-->|WS Proxy| Market[market-data-service]\n  Order -->|TX1 Lock Funds + Create Order + Outbox| DB[(PostgreSQL)]\n  Order -->|Sliding Window / Idempotency Cache| Redis[(Redis)]\n  Order -->|Outbox Worker| Kafka[(Kafka / Redpanda)]\n  Kafka -->|exchange.orders| Matching[matching-engine]\n  Matching -->|Leader Election + Fencing| DB\n  Matching -->|Warm Start / Active Orders| DB\n  Matching -->|Orderbook Snapshot| Redis\n  Matching -->|settlements / trades / orderbook| Kafka\n  Kafka -->|exchange.settlements| Order\n  Kafka -->|orderbook / trades / order_updates| Market\n  Market -->|Realtime Push| Client`,
         techStack: [
           {
             nameKey: "backend",
-            technologies: ["Go", "Gin", "PostgreSQL", "WebSocket"],
+            technologies: [
+              "Go 1.25",
+              "Gin",
+              "Price-Time Priority",
+              "Leader Election",
+            ],
           },
-          { nameKey: "database", technologies: ["Redis", "Kafka"] },
+          {
+            nameKey: "database",
+            technologies: ["PostgreSQL", "Redis", "pgx v5"],
+          },
+          {
+            nameKey: "messaging",
+            technologies: [
+              "Kafka / Redpanda",
+              "Transactional Outbox",
+              "Atomic Settlement",
+              "Idempotency",
+            ],
+          },
           {
             nameKey: "deployment",
-            technologies: ["AWS ECS", "ALB", "ECR", "Docker"],
+            technologies: ["Docker", "AWS ECS", "Terraform", "ecspresso"],
           },
           {
             nameKey: "monitoring",

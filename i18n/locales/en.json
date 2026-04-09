@@ -153,6 +153,7 @@
     },
     "categories": {
       "fullstack": "Full Stack",
+      "backend": "Backend",
       "frontend": "Frontend",
       "extension": "Browser Extension",
       "discord_bot": "Discord Bot",
@@ -169,6 +170,7 @@
       "frontend": "Frontend",
       "backend": "Backend",
       "database": "Database",
+      "messaging": "Event Streaming & Reliability",
       "client_side": "Client Side",
       "admin_panel": "Admin Panel",
       "frontend_framework": "Frontend Framework",
@@ -203,35 +205,35 @@
     "items": {
       "p1": {
         "title": "Discord-style Chat App",
-        "description": "A real-time chat application mimicking Discord architecture, supporting servers, channels, direct messages, and friend systems, built with Vue 3 + Go.",
-        "overview": "A real-time chat application modeled after Discord, with a Vue 3 frontend and a Go backend. Supports servers (Guilds), channels, direct messages (DM), and a friend system. Uses WebSocket for real-time communication, MongoDB for persistence, Redis for caching, and MinIO for file storage. The backend achieves ~40% overall test coverage with 151 test functions across 21 test files, and integrates Prometheus metrics for observability.",
-        "architectureDescription": "Frontend: Vue 3 + TypeScript + Pinia + Element Plus. Backend: Go 1.24 + Gin, three-layer architecture (Controller → Service → Repository) with manual Dependency Injection. WebSocket hub manages all rooms and clients. MinIO handles file uploads. Redis caches hot data, MongoDB stores all records. Air provides hot-reload for development.",
-        "learnings": "This project sharpened my Go backend skills enormously — from MVC architecture and DI patterns to JWT rolling strategies, WebSocket connection management, and writing testable code with mocks. Achieving 94.8% middleware coverage and running K6 load tests gave me hands-on experience with production-grade quality assurance.",
+        "description": "A Discord-style real-time chat application with servers, channels, direct messages, and a friend system, built with Vue 3 + Go. The backend now supports K3s horizontal scaling and Redis Pub/Sub for cross-pod realtime broadcast.",
+        "overview": "A Discord-inspired real-time chat application with a Vue 3 frontend and a Go backend. It supports servers (guilds), channels, direct messages, friendship flows, file uploads, and WebSocket messaging. The original version centered on a single-instance in-memory WebSocket hub, then evolved toward a K3s-deployable realtime system: Redis Pub/Sub now propagates room events across pods so multiple chat-app replicas can preserve a consistent realtime experience under horizontal scaling. MongoDB, Redis, Prometheus, pprof, k6, and ArgoCD/GitOps complete the project by moving it beyond feature delivery into production-like deployment and validation.",
+        "architectureDescription": "Frontend: Vue 3 + TypeScript + Pinia + Element Plus. Backend: Go 1.25 + Gin + gorilla/websocket, organized with a Controller → Service → Repository layering and handwritten dependency injection. The realtime layer uses RoomManager to track rooms and local clients. After persisting messages, MessageHandler publishes events to Redis channels in the form room:<type>:<id>; each pod subscribes when a room is initialized and forwards incoming events only to its own local WebSocket clients, solving cross-instance broadcast after horizontal scaling. Deployment uses K3s, Deployments, HPA, Kustomize, and ArgoCD, while Prometheus, pprof, and k6 are used to observe and validate scaling behavior.",
+        "learnings": "This project pushed me beyond building a single-node realtime app toward designing a scalable realtime system. I not only learned Go backend development, JWT flows, and WebSocket lifecycle management, but also had to address the harder problem that appears after scaling out: once WebSocket connections are spread across multiple pods, in-memory broadcast is no longer enough. Implementing Redis Pub/Sub and validating the behavior on K3s with HPA made me understand how realtime data flow, stateless deployments, monitoring, and load testing need to be designed together.",
         "challenges": [
           {
-            "title": "Backend Architecture",
-            "problem": "This was my first Golang project. Coming from PHP, I was unfamiliar with Go's ecosystem and best practices, yet aimed for a maintainable, high-performance architecture.",
-            "solution": "After research and iteration I chose a three-layer MVC architecture with manual Dependency Injection to decouple modules, making the code easy to test and maintain. The result: 21 test files, 151 test functions, 519 scenarios — all passing."
+            "title": "Evolving from Single-instance WebSockets to Cross-pod Broadcast",
+            "problem": "The original realtime layer kept room state in a single process. Once the service runs across multiple pods, messages only reach the instance that owns the connection and cannot be broadcast across pods.",
+            "solution": "Kept the local RoomManager model, but after writing each message to MongoDB, published it through Redis Pub/Sub on room:<type>:<id> channels. Each pod subscribes to the relevant room channel during room initialization and fans the event out to its local clients, preserving a consistent chat experience after horizontal scaling."
           },
           {
             "title": "JWT Auth & Security",
-            "problem": "Implementing a secure, stateless auth system for an SPA that also handles token rotation and revocation.",
-            "solution": "Adopted a JWT Access/Refresh Token rolling strategy. The refresh token is stored in an httpOnly cookie (XSS-proof) and also persisted in MongoDB so it can be invalidated server-side. CSRF middleware provides additional protection."
+            "problem": "Implementing a secure, stateless auth system for an SPA while keeping login, refresh, and revocation flows consistent across multiple pods.",
+            "solution": "Adopted a JWT access/refresh token rolling strategy. The refresh token is stored in an httpOnly cookie and persisted in MongoDB so any replica can validate or revoke it. CSRF middleware adds an extra defense layer."
           },
           {
-            "title": "WebSocket Real-time Communication",
-            "problem": "Building a high-performance, scalable real-time messaging layer that supports both group channels and private DMs.",
-            "solution": "Built a Hub/Client/Room architecture using gorilla/websocket. Hub manages all rooms and clients; Client wraps each user connection; Room handles message broadcasting. Both Channel and DM share the same Room structure, distinguished by a Type field, enabling clean code reuse."
+            "title": "K3s Deployment and Horizontal Scaling Validation",
+            "problem": "Docker Compose can run the app, but it does not validate real multi-replica load balancing, readiness probes, rolling updates, or autoscaling behavior.",
+            "solution": "Added Kubernetes manifests, Kustomize overlays, and an ArgoCD Application so the system can run on K3s with Deployments and Services. HPA scales the app between 2 and 10 pods based on CPU and memory, and the project includes repeatable local K8s scaling commands for validation."
           },
           {
-            "title": "File Upload & Storage",
-            "problem": "Supporting reliable file uploads without coupling the backend to local disk storage.",
-            "solution": "Integrated MinIO as an S3-compatible object store. Files are streamed from the client, uploaded to MinIO, and served via static URLs — keeping the backend stateless and storage independently scalable."
+            "title": "File Storage Under Stateless Pods",
+            "problem": "Chat apps need avatars and server images, but K3s pods are stateless. A local uploads directory can disappear or diverge when pods restart or scale.",
+            "solution": "Abstracted file storage behind a provider layer. Development keeps fast local uploads, while the architecture preserves a clean switch path to MinIO or another object storage backend when the deployment environment requires shared persistent storage."
           },
           {
-            "title": "Observability & Load Testing",
-            "problem": "Ensuring the system is measurable and can handle real-world concurrent load.",
-            "solution": "Integrated go-gin-prometheus to expose a /metrics endpoint. Wrote K6 load test scripts to simulate concurrent WebSocket connections, identifying and fixing bottlenecks before production."
+            "title": "Observability and Scaling Validation",
+            "problem": "After scaling out, it becomes difficult to tell whether bottlenecks come from WebSockets, Redis, MongoDB, or pod resource limits unless the system is observable.",
+            "solution": "Integrated go-gin-prometheus for metrics, added pprof and monitoring guidance, and used k6 to validate single-instance, multi-instance Docker Compose, and Kubernetes scaling scenarios so performance tuning and HPA behavior are backed by data."
           }
         ],
         "githubs": {
@@ -546,26 +548,36 @@
         ]
       },
       "p17": {
-        "title": "Cryptocurrency Exchange — ECS Architecture Roadmap",
-        "description": "An evolutionary architecture backend built from scratch to handle high-concurrency cryptocurrency trading, focusing on AWS ECS, Redis caching, Kafka message queuing, and stress testing.",
-        "overview": "This is a backend project that evolves its architecture driven by stress test data, designed to master distributed architecture and AWS deployment/operations. By continuously pushing the system to its breaking point using k6 to identify performance bottlenecks, it progressively adopts monolith containerization (ECS), a caching layer (Redis), horizontal scaling (ALB), an asynchronous architecture (Kafka), and a comprehensive observability stack (Prometheus / Grafana / CloudWatch).",
-        "architectureDescription": "The API server is implemented in Go (Gin), containerized via Docker, and deployed on AWS ECS. To address bottlenecks at different phases, PostgreSQL is used for core state storage, Redis acts as a read cache for the Orderbook (Cache-Aside Pattern) and supports WebSocket broadcasting, and Kafka is utilized for load leveling to handle order requests asynchronously. The system integrates Prometheus/Grafana and CloudWatch for comprehensive request tracing and real-time operational metrics.",
-        "learnings": "This project deeply reinforced the concept that 'there is no absolutely correct architecture, only architectures that fit current data and bottlenecks.' Witnessing latencies spike from 50ms to 1500ms using k6, and then dropping back to 10ms after introducing Redis caching, provided immense satisfaction. This data-driven refactoring process has equipped me with strong engineering intuition for navigating highly concurrent microservices based on actual traffic.",
+        "title": "High-Performance Cryptocurrency Exchange Backend",
+        "description": "A distributed matching system built in Go, split into gateway, order-service, matching-engine, and market-data-service, with Transactional Outbox, leader election, batch ingestion, and architecture-level load validation.",
+        "overview": "This project is a high-performance exchange backend built from scratch in Go. The goal was not merely to expose order APIs, but to validate the hard parts of a trading system under load: consistency, failover, event flow, settlement correctness, and real-time market data delivery. The current system is split into four services, gateway, order-service, matching-engine, and market-data-service, connected through PostgreSQL, Redis, and Kafka/Redpanda to handle order intake, matching, settlement, order status updates, and WebSocket streaming. Beyond feature delivery, I also built Prometheus/Grafana observability, k6 architecture-level stress tests, and staging deployment automation on ECS so the project can be measured and operated like a production system.",
+        "architectureDescription": "The gateway is the single public entry point, responsible for Redis-based sliding-window rate limiting, Idempotency-Key protection, and reverse proxy routing. order-service handles HTTP APIs and TX1: lock funds, create orders, and persist outbox records before publishing exchange.orders in the background. matching-engine runs in Active-Standby mode using PostgreSQL leader election with fencing tokens, restores live limit orders from the database on cold start, executes in-memory price-time-priority matching, and publishes settlement, trade, and orderbook events. market-data-service focuses only on Kafka consumption and high-fanout WebSocket delivery. Locally the stack runs with Docker Compose; staging is deployed as microservices on AWS ECS via Terraform and ecspresso.",
+        "learnings": "This rewrite moved me from building APIs to designing a trading system. I had to solve dual-write consistency, asynchronous settlement, split-brain prevention, batch ingestion, deadlock avoidance, slow WebSocket consumer isolation, and, just as importantly, how to prove the system works under pressure with metrics and load tests. The biggest takeaway was that throughput alone is not enough for high-concurrency systems; the real bar is whether the data stays correct, the failure modes remain understandable, and the system is still operable when parts degrade.",
         "challenges": [
           {
-            "title": "Monolith DB Connection Pool and Read Hotspot Bottlenecks",
-            "problem": "At 100 VUs, the GET /orderbook endpoint accounted for 70% of traffic. Every request directly queried the DB, causing CPU spikes, ballooning P95 latency, and eventually leading to `too many clients` errors.",
-            "solution": "Implemented Cache-Aside logic and deployed Redis in the same ECS/Docker network as the API. Data is fetched from Redis first; on a cache miss, it queries the DB and writes back to Redis. This offloaded the primary read workload to memory, successfully stabilizing latency from 200ms down to under 10ms."
+            "title": "Dual-write Consistency and Reliable Event Delivery",
+            "problem": "Placing an order must lock funds, create the order row, and publish a Kafka event. If the database commit succeeds but message publication fails, the system can end up with inconsistent trading and accounting state.",
+            "solution": "Wrote the order row and outbox message inside the same PostgreSQL transaction. A background outbox worker polls records in batches with SKIP LOCKED and publishes to exchange.orders with at-least-once semantics. Downstream settlement then adds idempotency checks on Trade ID and status transitions, eliminating the classic DB + MQ dual-write gap."
           },
           {
-            "title": "Single-Node Resource Saturation and Global WebSocket Broadcasting",
-            "problem": "As traffic continued to rise, CPU usage on a single ECS task surpassed 70%. Introducing ALB for horizontal scaling across multiple instances disrupted the initially in-memory sticky WebSocket connections.",
-            "solution": "Increased the ECS Service Desired Count and bound it to an Application Load Balancer. To solve the WebSocket scaling issue, Redis Pub/Sub was introduced, enabling multiple backend API servers to subscribe to and publish events with one another. This ensured that system updates received by any single instance could be broadcast globally across all instances to the clients."
+            "title": "High Availability Without Split-Brain",
+            "problem": "The matching engine needs standby replicas for failover, but if two replicas consume the same partition at once, duplicate trades and broken balances become possible.",
+            "solution": "Implemented PostgreSQL-backed leader election with a partition_leader_locks table, atomic upsert + where updates, and monotonically increasing fencing tokens. Only the current leader can process partition events, and stale leaders are rejected on subsequent writes."
           },
           {
-            "title": "Write Bottlenecks and Traffic Spike Leveling",
-            "problem": "During order placement QPS surges, synchronous processing resulted in the matching engine and DB write speeds becoming immediate, non-scalable bottlenecks (causing system blocking).",
-            "solution": "Refactored the synchronous architecture into an asynchronous, event-driven model. Upon receiving a request, the system pushes the event to Kafka and immediately returns an HTTP 202 Accepted. Background workers (Consumers) asynchronously process the orders from Kafka for matching and DB writing, eventually notifying the client via WebSocket. This effectively smoothed out instantaneous high-concurrency write pressure."
+            "title": "Deadlocks and Idempotency in Asynchronous Settlement",
+            "problem": "TX2 settlement updates maker and taker orders, balances, locked funds, and trade records in one path. Under high concurrency, row lock contention and duplicate Kafka delivery can lead to deadlocks or double settlement.",
+            "solution": "Separated settlement into an atomic transaction, acquired Order and Account locks in deterministic order, and added multiple idempotency layers: unique Trade ID constraints, in-transaction rechecks, and skip logic for already-finalized paths. Remaining locked funds for market orders are also unlocked as part of settlement."
+          },
+          {
+            "title": "High-frequency Batch Ingestion for Market Makers",
+            "problem": "Market makers and arbitrage bots can submit large bursts of orders. Per-request HTTP overhead and row-by-row inserts quickly cap throughput.",
+            "solution": "Added a dedicated /orders/batch ingestion path backed by pgx.CopyFrom. Before touching PostgreSQL, the service performs two-dimensional in-memory sorting by UserID and Currency to reduce conflicting lock acquisition order and dramatically increase burst-write throughput."
+          },
+          {
+            "title": "Real-time Fanout and Observable Performance Validation",
+            "problem": "Trade events must reach large WebSocket audiences without slowing the order path, and without end-to-end metrics it is hard to locate whether bottlenecks live in HTTP, Kafka, matching, or push delivery.",
+            "solution": "Split WebSocket fanout into a dedicated market-data-service that consumes exchange.orderbook, exchange.trades, and exchange.order_updates, isolating slow clients from the core trading path. Added Prometheus metrics and Grafana dashboards, then validated the design with k6 scenarios such as E2E latency, Market Storm, and spike testing."
           }
         ],
         "githubs": {

@@ -153,6 +153,7 @@
     },
     "categories": {
       "fullstack": "全端開發",
+      "backend": "後端",
       "frontend": "前端",
       "extension": "瀏覽器擴充功能",
       "discord_bot": "Discord Bot",
@@ -169,6 +170,7 @@
       "frontend": "前端",
       "backend": "後端",
       "database": "資料庫",
+      "messaging": "事件流與可靠性",
       "client_side": "前台",
       "admin_panel": "後台",
       "frontend_framework": "前端框架",
@@ -203,35 +205,35 @@
     "items": {
       "p1": {
         "title": "Discord 風格聊天應用",
-        "description": "模仿 Discord 架構的即時聊天應用，支援伺服器、頻道、私訊、好友系統，採用 Vue 3 + Go 開發",
-        "overview": "以 Discord 為樣板製作的即時聊天應用，包含前端（Vue 3）和後端（Go）兩個部分。支援伺服器（Guild）、頻道（Channel）、私訊（DM）及好友系統等完整功能。採用 WebSocket 即時通訊、MongoDB 持久化儲存、Redis 快取，以及 MinIO 檔案儲存。後端整體測試覆蓋率約 40%，包含 21 個測試檔、151 個測試函式，並整合 Prometheus 指標端點提供可觀測性。",
-        "architectureDescription": "前端：Vue 3 + TypeScript + Pinia + Element Plus。後端：Go 1.24 + Gin，三層架構（Controller → Service → Repository），手動依賴注入 (DI)。WebSocket Hub 管理所有 Room 和 Client。MinIO 處理檔案上傳，Redis 快取熱資料，MongoDB 儲存所有記錄。Air 提供開發熱重整。",
-        "learnings": "這個專案大幅提升了我的 Go 後端開發能力——從 MVC 架構與 DI 模式，到 JWT 滾動策略、WebSocket 連線管理，以及如何撰寫可測試的程式碼。達成 94.8% 的 Middleware 覆蓋率，並運行 K6 負載測試，讓我獲得了生產級品質保證的實戰經驗。",
+        "description": "模仿 Discord 架構的即時聊天應用，支援伺服器、頻道、私訊與好友系統，前後端採 Vue 3 + Go 開發，後端現已支援 K3s 水平擴展與 Redis Pub/Sub 跨 Pod 廣播。",
+        "overview": "以 Discord 為樣板製作的即時聊天應用，包含前端（Vue 3）和後端（Go）兩個部分。支援伺服器（Guild）、頻道（Channel）、私訊（DM）、好友系統、檔案上傳與 WebSocket 即時訊息。專案初版以單實例 WebSocket Hub 為核心，後續逐步演進為可部署於 K3s 的即時系統：透過 Redis Pub/Sub 將 room 事件跨 Pod 傳播，讓多個 chat-app 實例在水平擴展後仍能維持一致的即時推播體驗；同時搭配 MongoDB、Redis、Prometheus、pprof、k6 與 ArgoCD/GitOps，將聊天室從功能實作推進到接近生產環境的部署與驗證模式。",
+        "architectureDescription": "前端：Vue 3 + TypeScript + Pinia + Element Plus。後端：Go 1.25 + Gin + gorilla/websocket，維持 Controller → Service → Repository 三層架構與手寫依賴注入。即時層以 RoomManager 管理房間與本機 Client，MessageHandler 在訊息入庫後透過 Redis Publish 發送到 room:<type>:<id> channel，各 Pod 在 InitRoom 時訂閱對應 channel，收到事件後只轉發給本機 WebSocket 連線，解決水平擴展後的跨實例廣播問題。部署層使用 K3s、Deployment、HPA、Kustomize 與 ArgoCD 管理多 Pod 環境，並以 Prometheus、pprof 和 k6 觀察效能與擴展行為。",
+        "learnings": "這個專案讓我從單機即時聊天應用，往真正可擴展的即時系統多走了一步。我不只學會 Go 後端、JWT 與 WebSocket 連線管理，也實際面對了水平擴展後最麻煩的狀態同步問題：當 WebSocket 連線分散到多個 Pod，訊息就不能只靠記憶體廣播。我透過 Redis Pub/Sub、K3s/HPA 與壓測驗證，理解了即時系統在多實例環境中的資料流、無狀態部署限制，以及部署、監控與負載測試必須一起設計。",
         "challenges": [
           {
-            "title": "後端系統架構",
-            "problem": "這是我學習 Go 的第一個專案，只有 PHP 經驗的情況下，對 Go 的生態和最佳實踐完全陌生，同時又希望達到高可維護性的架構設計。",
-            "solution": "經過研究與迭代後，選擇了三層 MVC 架構搭配手動依賴注入，降低模組耦合度，使程式碼易於測試和維護。最終成果：21 個測試檔、151 個測試函式、519 個測試情境，全數通過。"
+            "title": "從單實例 WebSocket 演進到跨 Pod 廣播",
+            "problem": "原本的聊天室即時層以單程序記憶體內的 Room / Client 結構為核心，當服務部署到多個 Pod 時，訊息只會送到連線所在的單一實例，無法跨 Pod 廣播。",
+            "solution": "保留本地 RoomManager 模型，但在訊息寫入 MongoDB 後，透過 Redis Pub/Sub 對 room:<type>:<id> 發布事件。每個 Pod 在動態初始化房間時訂閱對應 channel，收到訊息後再轉發給本機連線，讓 K3s 水平擴展後仍能維持一致的即時聊天體驗。"
           },
           {
             "title": "JWT 驗證與安全性",
-            "problem": "需要為 SPA 實作安全的無狀態認證系統，同時支援 Token 輪換與撤銷機制。",
-            "solution": "採用 JWT Access/Refresh Token 滾動策略。Refresh Token 存放於 httpOnly Cookie（防 XSS），並同步持久化至 MongoDB，確保後端可主動撤銷，搭配 CSRF Middleware 提供額外防護。"
+            "problem": "需要為 SPA 實作安全的無狀態認證系統，同時在多 Pod 部署下仍維持登入、刷新與撤銷流程一致。",
+            "solution": "採用 JWT Access/Refresh Token 滾動策略。Refresh Token 存放於 httpOnly Cookie（防 XSS），並同步持久化至 MongoDB，確保任一實例都能驗證與撤銷；再搭配 CSRF Middleware 提供額外防護。"
           },
           {
-            "title": "WebSocket 即時通訊",
-            "problem": "需要建立高效能、可擴展的即時訊息層，同時支援群組頻道和私訊兩種模式。",
-            "solution": "使用 gorilla/websocket 建立 Hub/Client/Room 架構：Hub 管理所有 Room 和 Client；Client 封裝每個用戶連線；Room 負責訊息廣播。Channel 和 DM 共用同一個 Room 結構，以 Type 欄位區分，實現程式碼重用。"
+            "title": "K3s 部署與水平擴展驗證",
+            "problem": "Docker Compose 可以跑起來，但無法驗證真實的多副本負載均衡、Probe、滾動更新與資源擴縮行為。",
+            "solution": "補上 K8s manifest、Kustomize overlays 與 ArgoCD Application，讓系統能在 K3s 中以 Deployment + Service 運行，並透過 HPA 依 CPU / Memory 自動在 2 到 10 個 Pod 間擴縮；本地也可用 make k8s-deploy / make k8s-scale 反覆驗證。"
           },
           {
-            "title": "檔案上傳與儲存",
-            "problem": "需要支援可靠的檔案上傳，同時避免後端耦合本地磁碟儲存。",
-            "solution": "整合 MinIO 作為 S3 相容的物件儲存。檔案從客戶端串流上傳至 MinIO，透過靜態 URL 提供存取，讓後端保持無狀態，儲存層可獨立擴展。"
+            "title": "檔案儲存與無狀態 Pod 限制",
+            "problem": "聊天應用需要頭像、伺服器圖片等檔案上傳，但 K3s Pod 是無狀態的，本地 uploads 目錄在重建或擴容後可能遺失或不一致。",
+            "solution": "將檔案層抽象為 provider，開發環境維持本地 uploads，加快迭代；同時保留 MinIO / 物件儲存的切換能力，讓架構能在需要時平滑改接外部儲存服務，而不是把檔案邏輯綁死在單一 Pod 的本地磁碟。"
           },
           {
-            "title": "可觀測性與負載測試",
-            "problem": "需要確保系統可量測，並能承受真實世界的並發負載。",
-            "solution": "整合 go-gin-prometheus 暴露 /metrics 端點，並撰寫 K6 負載測試腳本模擬並發 WebSocket 連線，在上線前識別並修復效能瓶頸。"
+            "title": "可觀測性與擴展行為驗證",
+            "problem": "水平擴展後如果沒有指標與壓測資料，很難判斷瓶頸究竟在 WebSocket、Redis、MongoDB 還是 Pod 資源配額。",
+            "solution": "整合 go-gin-prometheus 暴露 /metrics，並補上 pprof、Grafana/Prometheus 監控設計與 k6 壓測腳本，分別驗證單機、Docker Compose 多實例與 K8s 水平擴展情境，讓效能調校與 HPA 行為有具體數據可依據。"
           }
         ],
         "githubs": {
@@ -546,26 +548,36 @@
         ]
       },
       "p17": {
-        "title": "加密貨幣交易所",
-        "description": "從 0 構建並部署高併發加密貨幣交易所的演進式架構，學習 AWS ECS、Redis 快取、Kafka 非同步處理與效能壓測。",
-        "overview": "這是一個以壓力測試數據驅動架構演進的後端專案，旨在從 0 構建學習分散式架構與 AWS 部署運維。透過 k6 不斷將系統推向瓶頸，找出效能弱點，並依序引入單體容器化 (ECS)、快取層 (Redis)、水平擴展 (ALB)、非同步架構 (Kafka) 與完整的可觀測性堆疊 (Prometheus/Grafana/CloudWatch)。",
-        "architectureDescription": "API 伺服器使用 Go (Gin) 實作並以 Docker 容器化，部署於 AWS ECS。針對不同階段的瓶頸，使用 PostgreSQL 儲存核心狀態，Redis 作為 Orderbook 的讀取快取 (Cache-Aside Pattern) 以及支援 WebSocket 廣播，Kafka 用作削峰填谷以非同步處理下單請求，並整合 Prometheus / Grafana 以及 CloudWatch 來提供完整的請求追蹤與即時監控指標。",
-        "learnings": "此專案讓我深刻體會到「沒有絕對正確的架構，只有符合當下數據與瓶頸的架構」。透過 k6 實際看見延遲從 50ms 飆升到 1500ms 的崩潰點，然後看著引入 Redis Cache 後降回 10ms，這種由數據引導重構的過程非常有成就感。這也為我奠定了未來規劃高併發微服務架構時，根據流量與數據做出決策的工程直覺。",
+        "title": "高效能加密貨幣交易所後端",
+        "description": "以 Go 打造的分散式撮合系統，拆分 gateway、order-service、matching-engine、market-data-service，並實作 Transactional Outbox、Leader Election、批次寫入與架構級壓測驗證。",
+        "overview": "這是一個以 Go 從零打造的高效能交易所後端，核心目標不是只做出下單 API，而是完整驗證高併發交易系統在一致性、高可用、事件流、結算正確性與即時行情推播上的工程難題。系統目前拆分為 gateway、order-service、matching-engine、market-data-service 四個微服務，透過 PostgreSQL、Redis 與 Kafka/Redpanda 串起下單、撮合、結算、訂單狀態更新與 WebSocket 行情推播。除了功能實作，我也為它補上 Prometheus/Grafana 指標、k6 架構級壓測與 staging/ECS 部署腳本，讓這個專案更接近可驗證、可維運的生產級系統。",
+        "architectureDescription": "gateway 負責統一入口、Redis Sliding Window 限流、Idempotency-Key 防重複送單與反向代理；order-service 處理 HTTP API 與 TX1，完成鎖資金、建單與寫入 outbox，並在背景批次投遞 exchange.orders；matching-engine 透過 PostgreSQL leader election 與 fencing token 維持 Active-Standby，冷啟動時從 DB 還原活動訂單，在記憶體中執行 Price-Time Priority 撮合，再發布 settlements、trades 與 orderbook 事件；market-data-service 專注消費 Kafka 並扇出 WebSocket 即時資料。整體部署以 Docker Compose 做本地整合，以 AWS ECS、Terraform 與 ecspresso 管理 staging 微服務環境。",
+        "learnings": "這次重構讓我從「會做 API」進一步走到「能設計交易系統」。我實際處理了雙寫一致性、非同步結算、split-brain 防護、批次寫入、防死鎖、慢速 WebSocket consumer 影響隔離，以及如何用壓測與監控去證明系統不是看起來能跑，而是真的在高併發下仍可解釋、可觀測、可恢復。這也讓我更確定，高流量系統的價值不只在吞吐量，更在於失敗時是否仍能維持資料正確性與可操作性。",
         "challenges": [
           {
-            "title": "單體資料庫連線池與讀取熱點瓶頸",
-            "problem": "當併發到達 100 VU 時，GET /orderbook 佔據 70% 的流量，每次皆直接叩擊 DB，導致 CPU 飆高且 P95 延遲暴增，最終出現 too many clients 錯誤。",
-            "solution": "實作 Cache-Aside 邏輯，並將 Redis 與 API 部署在相同的 ECS / Docker 網路中。讀取時先從 Redis 取資料，未命中才查詢 DB 並寫回 Redis。這使得主要讀取負載卸載至記憶體，成功將 200ms 的延遲穩定降至 10ms 以內。"
+            "title": "雙寫一致性與事件可靠投遞",
+            "problem": "下單流程同時需要鎖資金、建立訂單與發布 Kafka 事件；若資料庫提交成功但訊息未送出，系統就會出現帳務與撮合狀態不一致的雙寫風險。",
+            "solution": "在 PlaceOrder 的同一個 PostgreSQL transaction 內同時寫入 order 與 outbox message。背景 Outbox Worker 以批次輪詢加上 SKIP LOCKED 發送至 exchange.orders，提供 at-least-once 語意；下游結算再配合 Trade ID 與狀態檢查做冪等防禦，消除傳統 DB + MQ 雙寫缺口。"
           },
           {
-            "title": "單機資源飽和與 WebSocket 全域廣播問題",
-            "problem": "隨著流量上升，單一 ECS 任務的 CPU 使用率超過 70%。需要引入 ALB 進行水平擴展（多個機器實例），但水平擴展會破壞原本 in-memory 的 WebSocket 黏性連線。",
-            "solution": "將 ECS Service 的 Desired Count 調高並綁定 Application Load Balancer。為解決 WebSocket 擴展問題，引入了 Redis Pub/Sub，讓多個後端 API 伺服器可以彼此訂閱與發佈事件，確保任何實例收到的系統更新皆可跨實例推播給用戶端。"
+            "title": "撮合引擎高可用與防腦裂",
+            "problem": "matching-engine 需要支援多副本待命，但同一交易對若被兩個實例同時消費，會造成重複成交與帳務災難。",
+            "solution": "使用 PostgreSQL 的 partition_leader_locks 表實作 leader election，透過 upsert + where 的原子更新與單調遞增 fencing token，確保只有當前 Leader 能處理分區事件。舊 Leader 即使短暫復活，後續寫入也會因過期 token 被拒絕，避免 split-brain。"
           },
           {
-            "title": "寫入瓶頸與峰值流量削峰",
-            "problem": "下單 QPS 暴增時，同步回傳處理導致交易引擎與 DB 的寫入速度成為無法立即擴展的瓶頸（系統阻塞）。",
-            "solution": "將原本的同步架構改寫為非同步驅動。客戶端送出請求後，系統先將事件推送至 Kafka 並立即回傳 202 Accepted。背景 Worker (Consumer) 非同步從 Kafka 取出訂單進行撮合寫庫。系統再透過 WebSocket 通知客戶端最終的處理結果，有效紓解了瞬間的高併發寫入壓力。"
+            "title": "非同步結算中的死結與冪等性",
+            "problem": "撮合後的 TX2 需要同時更新 maker / taker 訂單、帳戶餘額、locked 資金與成交紀錄；Kafka 重複投遞或高併發 row lock 競爭都可能造成重複結算或死結。",
+            "solution": "將結算獨立為 atomic settlement transaction，對 Order / Account 以固定排序取得鎖，並以 Trade ID 唯一鍵、TX 內二次確認與已完成路徑跳過機制實作多層冪等防線。對市價單剩餘保證金則在結算流程中一併解鎖退款，確保帳務最終一致。"
+          },
+          {
+            "title": "造市商批次下單與高頻寫入吞吐",
+            "problem": "造市商與套利機器人會在極短時間內送出大量訂單，逐筆 HTTP 與 INSERT 會被連線往返與 row lock 成本拖垮。",
+            "solution": "額外提供 /orders/batch 給高頻寫入場景，底層使用 pgx.CopyFrom 做批次寫入，並在 Go 應用層先依 UserID / Currency 做雙重記憶體排序，降低資料庫 row lock 交錯順序造成的死結風險，讓批次模式在壓測中能明顯拉高吞吐量。"
+          },
+          {
+            "title": "即時行情扇出與可觀測性驗證",
+            "problem": "交易事件不只要寫得快，還要能穩定推到大量 WebSocket 用戶端；若缺少跨服務指標，也很難判斷瓶頸是在 HTTP、Kafka、撮合還是推播層。",
+            "solution": "將 WebSocket 扇出獨立為 market-data-service，專職消費 exchange.orderbook、exchange.trades、exchange.order_updates 事件，避免慢速連線反壓主交易鏈路。並補齊 Prometheus 指標與 Grafana dashboard，配合 k6 執行 E2E latency、Market Storm、Spike 等場景，從 golden signals 與業務延遲兩個角度驗證系統。"
           }
         ],
         "githubs": {
