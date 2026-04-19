@@ -50,6 +50,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.sha }}
             type=sha,prefix={{date 'YYYYMMDD'}}-
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -92,7 +93,7 @@ jobs:
 
           # Since existing template uses explicit deployment.yaml update
           if [ -f deployment.yaml ]; then
-            sed -i "s|image: ghcr.io/rayliu1999/personal-site:.*|image: ghcr.io/rayliu1999/personal-site:${{ steps.meta.outputs.version }}|g" deployment.yaml
+            sed -i "s|image: ghcr.io/rayliu1999/personal-site:.*|image: ghcr.io/rayliu1999/personal-site:${{ github.sha }}|g" deployment.yaml
             
             # Update timestamp to trigger rollout
             TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -108,6 +109,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "ci(personal-site): update image tag to ${{ steps.meta.outputs.version }}"
+            git commit -m "ci(personal-site): update image tag to ${{ github.sha }}"
             git push
           fi
