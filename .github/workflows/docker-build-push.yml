@@ -75,7 +75,7 @@ jobs:
       - name: Checkout Ops Repo
         uses: actions/checkout@v4
         with:
-          repository: rayliu1999/side_project_ops
+          repository: rayliu1999/ovh-k3s-gitops
           token: ${{ secrets.OPS_REPO_PAT }}
           path: ops-repo
 
