@@ -1,6 +1,7 @@
 import { shallowRef } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import type { IslandEngine, ViewId } from '~/island/engine'
+import type { BlockType, BuildTool } from '~/island/blocks'
 
 export type LandmarkId = 'factory' | 'library' | 'cabin' | 'signpost'
 export type MachineId = 'm17' | 'm1' | 'm11' | 'm16'
@@ -62,6 +63,12 @@ export function useIsland() {
     noWebgl: useState('island-no-webgl', () => false),
     /** Island sound effects and ambience; off until the visitor turns them on. */
     sound: useState('island-sound', () => false),
+    /** Build mode: the visitor places and breaks blocks on the island overview. */
+    creative: useState('island-creative', () => false),
+    buildType: useState<BlockType>('island-build-type', () => 'grass'),
+    buildTool: useState<BuildTool>('island-build-tool', () => 'place'),
+    /** How many blocks the visitor has placed. */
+    blockCount: useState('island-block-count', () => 0),
     view: computed(() => viewFromRoute(route)),
     go(id: ViewId) {
       const r = routeForView(id)

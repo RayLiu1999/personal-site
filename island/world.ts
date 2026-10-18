@@ -1,20 +1,12 @@
 import * as THREE from 'three'
 import { hash2, noise2 } from './rand'
+import { BT } from './blocks'
 
-/* ---------- block types ---------- */
-type MatKind = 'solid' | 'cut' | 'glow' | 'water'
-const BT: Record<string, { f: number | number[]; m?: MatKind }> = {
-  grass: { f: [1, 1, 0, 2, 1, 1] }, dirt: { f: 2 }, stone: { f: 3 }, cobble: { f: 4 }, log: { f: [5, 5, 6, 6, 5, 5] },
-  planks: { f: 7 }, spruce: { f: 21 }, leaves: { f: 8, m: 'cut' }, brick: { f: 9 }, shelf: { f: [10, 10, 7, 7, 10, 10] },
-  lamp: { f: 11, m: 'glow' }, dark: { f: 12 }, server: { f: [13, 13, 12, 12, 13, 13], m: 'glow' }, iron: { f: 14 },
-  path: { f: [16, 16, 15, 2, 16, 16] }, water: { f: 17, m: 'water' }, title: { f: 18 }, redstone: { f: 19 },
-  glass: { f: 20, m: 'cut' }, piston: { f: [24, 4, 23, 23, 23, 23] }, dispenser: { f: [4, 4, 4, 4, 25, 4] }
-}
 const occludes = (t: string) => !BT[t].m || BT[t].m === 'glow'
 
 /** A unit cube whose six faces are mapped onto atlas tiles (order: +x −x +y −y +z −z). */
-export function blockGeo(faces: number | number[]) {
-  const f = Array.isArray(faces) ? faces : [faces, faces, faces, faces, faces, faces]
+export function blockGeo(tiles: number | number[]) {
+  const f = Array.isArray(tiles) ? tiles : [tiles, tiles, tiles, tiles, tiles, tiles]
   const g = new THREE.BoxGeometry(1, 1, 1), uv = g.attributes.uv as THREE.BufferAttribute, e = 0.4 / 128, s = 1 / 8
   for (let k = 0; k < 6; k++) {
     const t = f[k], col = t % 8, row = Math.floor(t / 8)
@@ -244,5 +236,5 @@ export function buildIslandMeshes(world: ReturnType<typeof buildWorld>, MAT: Mat
   function dispose() {
     for (const d of meshes) { d.mesh.geometry.dispose(); d.mesh.dispose() }
   }
-  return { introEnd, landTimes, applyIntro, dispose }
+  return { introEnd, landTimes, meshes: meshes.map(d => d.mesh), applyIntro, dispose }
 }

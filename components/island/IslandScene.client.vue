@@ -35,6 +35,7 @@ const mqMobile = import.meta.client ? window.matchMedia('(max-width: 720px)') : 
 let engine: IslandEngine | null = null
 let disposed = false
 
+const BLOCKS_KEY = 'island.blocks'
 const store = {
   get: (k: string) => { try { return localStorage.getItem(k) } catch { return null } },
   set: (k: string, v: string) => { try { localStorage.setItem(k, v) } catch { /* storage blocked */ } }
@@ -75,6 +76,7 @@ onMounted(async () => {
     night: isDark.value,
     reduceMotion,
     sound: island.sound.value,
+    blocks: (() => { try { return JSON.parse(store.get(BLOCKS_KEY) ?? 'null') } catch { return null } })(),
     onNavigate: id => {
       umTrackEvent('island-landmark', { id })
       island.go(id)
@@ -88,8 +90,16 @@ onMounted(async () => {
     onLookAroundChange: id => {
       island.lookAround.value = id
       if (id) umTrackEvent('island-look-around', { id })
+    },
+    onBlocksChange: blocks => {
+      island.blockCount.value = blocks.length
+      store.set(BLOCKS_KEY, JSON.stringify(blocks))
     }
   })
+  island.blockCount.value = engine.blockCount()
+  engine.setCreative(island.creative.value)
+  engine.setBuildType(island.buildType.value)
+  engine.setBuildTool(island.buildTool.value)
   island.engine.value = engine
   // The sign is painted onto a canvas, so repaint once the pixel font has arrived.
   document.fonts?.load('54px "Cubic 11"').then(() => engine?.refreshText()).catch(() => {})
@@ -98,6 +108,9 @@ onMounted(async () => {
 watch(island.view, v => engine?.setView(v))
 watch(isDark, v => engine?.setNight(v))
 watch(island.sound, v => engine?.setSound(v))
+watch(island.creative, v => engine?.setCreative(v))
+watch(island.buildType, v => engine?.setBuildType(v))
+watch(island.buildTool, v => engine?.setBuildTool(v))
 watch(locale, () => nextTick(() => engine?.refreshText()))
 
 onBeforeUnmount(() => {

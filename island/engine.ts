@@ -8,6 +8,8 @@ import { buildIslandMeshes, buildWorld, createMaterials, pk } from './world'
 import { buildProps } from './props'
 import { buildIslanders, type Talker } from './islanders'
 import { createSound } from './sound'
+import { buildBuilder } from './build'
+import type { BlockType, BuildTool, Placed } from './blocks'
 import { angLerp, clamp, easeInOut, lerp, mulberry32 } from './rand'
 
 export type ViewId = 'home' | 'factory' | 'library' | 'cabin' | 'signpost' | 'm17' | 'm1' | 'm11' | 'm16'
@@ -42,10 +44,13 @@ export interface IslandOptions {
   reduceMotion: boolean
   /** Sound effects and ambience; off unless the visitor switched them on. */
   sound: boolean
+  /** Blocks the visitor placed in build mode on an earlier visit (validated before use). */
+  blocks: unknown
   onNavigate(id: ViewId): void
   onReady(): void
   onIntroSkipped(): void
   onLookAroundChange(id: ViewId | null): void
+  onBlocksChange(blocks: Placed[]): void
 }
 
 /* ---------- camera framings ---------- */
@@ -122,6 +127,12 @@ export function createIsland(o: IslandOptions) {
   const people = buildIslanders(props, P.box, groundY, reduceMotion)
   const sfx = createSound()
   sfx.setEnabled(o.sound)
+  const builder = buildBuilder(scene, MAT, {
+    ground: island.meshes,
+    solid: (x, y, z) => world.W.has(world.key(x, y, z)),
+    keepClear: Object.values(HIT) as [[number, number, number], [number, number, number]][]
+  })
+  builder.load(o.blocks)
 
   /* ---------- sky dressing ---------- */
   // The sky gradient is drawn by WebGL (same colours as the CSS sky shown before the engine loads), so the canvas
@@ -230,10 +241,14 @@ export function createIsland(o: IslandOptions) {
   let hoverId: string | null = null
 
   const inFactory = () => view === 'factory' || isMachine(view)
-  function pick(cx: number, cy: number): string | null {
+  function aimAt(cx: number, cy: number) {
     const r = canvas.getBoundingClientRect()
     ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1)
     ray.setFromCamera(ndc, camera)
+    return ray
+  }
+  function pick(cx: number, cy: number): string | null {
+    aimAt(cx, cy)
     const hits = ray.intersectObjects(hitMeshes, false), nh = ray.intersectObjects(people.hits, false)[0]
     if (nh && (!hits.length || nh.distance < hits[0].distance)) return 'npc:' + nh.object.userData.n
     if (!hits.length) return null
@@ -321,6 +336,31 @@ export function createIsland(o: IslandOptions) {
     fpPitch = clamp(fpPitch + dPitch, -1.1, 1.1)
   }
 
+  /* ---------- build mode ---------- */
+  let creative = false, buildType: BlockType = 'grass', buildTool: BuildTool = 'place', zoom = 1, zoomT = 1
+  const breaking = (e: PointerEvent) => buildTool === 'remove' || e.button === 2 || e.shiftKey
+  function build(e: PointerEvent) {
+    const r = builder.act(aimAt(e.clientX, e.clientY), breaking(e), buildType)
+    if (r === 'placed' || r === 'removed') {
+      sfx.cue(r === 'placed' ? 'place' : 'break')
+      o.onBlocksChange(builder.list())
+    } else if (r) sfx.cue('deny')
+    if (e.pointerType === 'mouse') builder.hover(aimAt(e.clientX, e.clientY), breaking(e))
+  }
+  function setCreative(on: boolean) {
+    if (on === creative) return
+    if (on && fpId) exitLookAround()
+    creative = on
+    setHover(null)
+    builder.setGhost(false)
+    if (!on) {
+      zoomT = 1
+      // Unwind any full turns so the camera eases back the short way.
+      dragAz = Math.atan2(Math.sin(dragAz), Math.cos(dragAz))
+      if (ready) tweenTo(view, false)
+    }
+  }
+
   /* ---------- input ---------- */
   let down: { x: number; y: number; lx: number; ly: number; drag: boolean; id: number } | null = null
   const onDown = (e: PointerEvent) => {
@@ -335,13 +375,21 @@ export function createIsland(o: IslandOptions) {
         try { canvas.setPointerCapture(e.pointerId) } catch { /* pointer already released */ }
       }
       if (down.drag && fpId) lookAround((e.clientX - down.lx) * 0.005, (e.clientY - down.ly) * 0.004)
-      else if (down.drag) {
+      else if (down.drag && creative) {
+        // Build mode turns all the way round, so you can build on every side.
+        builder.setGhost(false)
+        dragAz -= (e.clientX - down.lx) * 0.005
+        dragEl = clamp(dragEl + (e.clientY - down.ly) * 0.003, -0.3, 0.75)
+      } else if (down.drag) {
         dragAz = clamp(dragAz - (e.clientX - down.lx) * 0.004, -0.6, 0.6)
         dragEl = clamp(dragEl + (e.clientY - down.ly) * 0.003, -0.22, 0.3)
       }
       down.lx = e.clientX
       down.ly = e.clientY
-    } else if (ready && e.target === canvas && e.pointerType === 'mouse') setHover(pick(e.clientX, e.clientY))
+    } else if (ready && e.target === canvas && e.pointerType === 'mouse') {
+      if (creative) builder.hover(aimAt(e.clientX, e.clientY), breaking(e))
+      else setHover(pick(e.clientX, e.clientY))
+    }
   }
   const onUp = (e: PointerEvent) => {
     if (!down || e.pointerId !== down.id) return
@@ -349,14 +397,21 @@ export function createIsland(o: IslandOptions) {
     down = null
     canvas.classList.remove('dragging')
     if (wasDrag || e.target !== canvas) return
+    if (creative) { build(e); return }
     const id = pick(e.clientX, e.clientY)
     if (!id) return
     if (id.startsWith('npc:')) talk(+id.slice(4))
     else if (id === view && SPOTS[id as ViewId]) enterLookAround(id as ViewId)
     else o.onNavigate(id as ViewId)
   }
-  const onLeave = () => { if (!down) setHover(null) }
-  const onWheel = () => { if (!ready) skipIntro() }
+  const onLeave = () => { if (!down) { setHover(null); builder.setGhost(false) } }
+  const onWheel = (e: WheelEvent) => {
+    if (!ready) skipIntro()
+    else if (creative && e.target === canvas) zoomT = clamp(zoomT * Math.exp(e.deltaY * 0.0012), 0.3, 1.25)
+  }
+  // Right-click breaks blocks in build mode, so keep the browser menu out of the way there.
+  const onMenu = (e: MouseEvent) => { if (creative) e.preventDefault() }
+  canvas.addEventListener('contextmenu', onMenu)
   canvas.addEventListener('pointerdown', onDown)
   window.addEventListener('pointermove', onMove)
   window.addEventListener('pointerup', onUp)
@@ -374,6 +429,9 @@ export function createIsland(o: IslandOptions) {
     ready = true
     island.applyIntro(1e9)
     props.visible = true
+    builder.group.visible = true
+    // Blocks have settled, so size the bounds build mode raycasts against.
+    island.meshes.forEach(m => m.computeBoundingSphere())
     if (o.veil) { o.veil.style.opacity = '0'; setTimeout(() => o.veil && (o.veil.hidden = true), 900) }
     o.onReady()
     tweenTo(view, false)
@@ -442,7 +500,7 @@ export function createIsland(o: IslandOptions) {
     if (blockersAt < 0 || clock - blockersAt > 0.25) { blockers = o.obstacles(); blockersAt = clock }
     for (const id of Object.keys(tags) as ViewId[]) {
       const tg = tags[id]!
-      let show = ready && id !== view && (isMachine(id) ? inFactory() : !(inFactory() && id === 'factory'))
+      let show = ready && !creative && id !== view && (isMachine(id) ? inFactory() : !(inFactory() && id === 'factory'))
       if (show) {
         V.copy(tg.p).project(camera)
         show = V.z < 1 && tagFits(tg, (V.x * 0.5 + 0.5) * vw, (-V.y * 0.5 + 0.5) * vh)
@@ -487,9 +545,10 @@ export function createIsland(o: IslandOptions) {
       if (p >= 1) tw = null
     }
 
-    const sway = view === 'home' && !reduceMotion ? Math.sin(clock * 0.18) * 0.07 : 0
+    zoom += (zoomT - zoom) * Math.min(1, dt * 8)
+    const sway = view === 'home' && !reduceMotion && !creative ? Math.sin(clock * 0.18) * 0.07 : 0
     const az = cam.az + dragAz + sway, el = clamp(cam.el + dragEl, 0.04, 1.25)
-    camPos.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(cam.d).add(cam.t)
+    camPos.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(cam.d * zoom).add(cam.t)
     camera.position.copy(camPos)
     camera.lookAt(cam.t)
 
@@ -591,6 +650,16 @@ export function createIsland(o: IslandOptions) {
       night = on
     },
     setSound(on: boolean) { sfx.setEnabled(on) },
+    setCreative,
+    blockCount: () => builder.count(),
+    setBuildType(t: BlockType) { buildType = t },
+    setBuildTool(t: BuildTool) { buildTool = t },
+    zoomBy(f: number) { zoomT = clamp(zoomT * f, 0.3, 1.25) },
+    clearBlocks() {
+      builder.clear()
+      sfx.cue('break')
+      o.onBlocksChange([])
+    },
     enterLookAround,
     exitLookAround,
     lookAround,
@@ -603,6 +672,7 @@ export function createIsland(o: IslandOptions) {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
       canvas.removeEventListener('pointerleave', onLeave)
+      canvas.removeEventListener('contextmenu', onMenu)
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('resize', resize)
       for (const t of Object.values(tags)) t?.el.remove()
