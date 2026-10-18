@@ -26,7 +26,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 變更為 write 以允許提交代碼
+      contents: read
       packages: write
 
     steps:
@@ -71,44 +71,3 @@ jobs:
 
       - name: Image digest
         run: echo "Image pushed with digest ${{ steps.build.outputs.digest }}"
-
-      - name: Checkout Ops Repo
-        uses: actions/checkout@v4
-        with:
-          repository: rayliu1999/ovh-k3s-gitops
-          token: ${{ secrets.OPS_REPO_PAT }}
-          path: ops-repo
-
-      - name: Update Image Tag in Ops Repo
-        run: |
-          cd ops-repo/projects/personal-site
-
-          # Update image tag
-          # Using sed to update the tag in kustomization.yaml
-          # Assuming kustomization.yaml has structure:
-          # images:
-          #   - name: ghcr.io/rayliu1999/personal-site
-          #     newTag: <tag>
-          # OR if it's a simple deployment.yaml update (which we are doing here)
-
-          # Since existing template uses explicit deployment.yaml update
-          if [ -f deployment.yaml ]; then
-            sed -i "s|image: ghcr.io/rayliu1999/personal-site:.*|image: ghcr.io/rayliu1999/personal-site:${{ github.sha }}|g" deployment.yaml
-            
-            # Update timestamp to trigger rollout
-            TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-            sed -i "s/deploy-timestamp:.*/deploy-timestamp: \"$TIMESTAMP\"/g" deployment.yaml
-          fi
-
-          # Configure git
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
-
-          # Commit and push
-          git add .
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "ci(personal-site): update image tag to ${{ github.sha }}"
-            git push
-          fi
