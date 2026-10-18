@@ -651,13 +651,21 @@
     "contactMe": "Contact me",
     "hint": "Drag to look around · Keys 1–4 jump to landmarks · Click islanders to chat · Esc to go back",
     "toDay": "Switch to day",
+    "aim": {
+      "talk": "Right-click · talk to {name}",
+      "open": "Right-click · open {name}",
+      "ride": "Right-click · ride the {name}",
+      "dismount": "Shift · get off"
+    },
     "build": {
       "btn": "Build",
+      "fpTitle": "First person",
+      "fpBtn": "First person",
       "title": "Build mode",
       "hint": "Click to place · Right-click to break · Drag to turn · Scroll to zoom",
       "hintTouch": "Tap to place · Drag to turn",
-      "hintFly": "WASD to move · Space up · Shift down · Left-click breaks · Right-click places · Scroll for blocks",
-      "resume": "Click to start building",
+      "hintFly": "WASD move · Space jump (double-tap to fly) · Left-click break · Right-click use or place · Scroll for blocks",
+      "resume": "Click to continue",
       "resumeSub": "Esc pauses; press it again to leave",
       "done": "Done",
       "place": "Place",
@@ -734,6 +742,7 @@
       "enter": "Step inside",
       "ride": "Ride the minecart",
       "enterHint": "Look around in first person. Clicking the building again works too.",
+      "enterHintFree": "Walk in freely: talk to islanders, open things, build. Esc pauses.",
       "rideHint": "Hop in and follow a message around the loop.",
       "where": {
         "factory": "Inside the factory",

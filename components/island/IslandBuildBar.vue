@@ -1,12 +1,12 @@
 <template>
   <div class="fp-hud build-hud">
-    <span>{{ t('island.build.title') }}</span>
+    <span>{{ buildFly ? t('island.build.fpTitle') : t('island.build.title') }}</span>
     <small>{{ buildFly ? t('island.build.hintFly') : coarse ? t('island.build.hintTouch') : t('island.build.hint') }}</small>
     <span class="build-count" :class="{ full: blockCount >= MAX_BLOCKS }">{{ blockCount }} / {{ MAX_BLOCKS }}</span>
     <button ref="done" class="mc-btn small" type="button" @click="creative = false">{{ t('island.build.done') }}</button>
   </div>
 
-  <div v-if="buildFly && !buildLocked" class="build-paused">
+  <div v-if="buildFly && !buildLocked && view === 'home'" class="build-paused">
     <strong>{{ t('island.build.resume') }}</strong>
     <small>{{ t('island.build.resumeSub') }}</small>
   </div>
@@ -46,7 +46,7 @@ import { isoIcon } from '~/island/atlas'
 import { MAX_BLOCKS, PALETTE, faces, type BlockType } from '~/island/blocks'
 
 const { t } = useI18n()
-const { engine, creative, buildType, buildTool, buildFly, buildLocked, blockCount } = useIsland()
+const { engine, creative, buildType, buildTool, buildFly, buildLocked, blockCount, view } = useIsland()
 
 const coarse = ref(false)
 const icons = ref<Partial<Record<BlockType, string>>>({})

@@ -69,6 +69,8 @@ export function useIsland() {
     buildTool: useState<BuildTool>('island-build-tool', () => 'place'),
     /** Build in first person (mouse and pointer lock available) rather than on the overview. */
     buildFly: useState('island-build-fly', () => false),
+    /** Where first person starts: a look-around spot, or null for the middle of the island. */
+    fpSpawn: useState<ViewId | null>('island-fp-spawn', () => null),
     /** First-person building currently has the mouse captured. */
     buildLocked: useState('island-build-locked', () => false),
     /** How many blocks the visitor has placed. */

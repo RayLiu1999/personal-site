@@ -19,7 +19,7 @@
           </svg>
         </button>
         <button v-if="!flat" class="mc-btn small" type="button" :aria-pressed="creative" @click="toggleCreative">
-          {{ t('island.build.btn') }}
+          {{ buildFly ? t('island.build.fpBtn') : t('island.build.btn') }}
         </button>
         <button v-if="!noWebgl" class="mc-btn small" type="button" @click="toggleFlat">
           {{ flat ? t('island.islandBtn') : t('island.flatBtn') }}
@@ -59,7 +59,7 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const { isDark, toggleDarkMode } = useDarkMode()
-const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, buildFly, view, go } = useIsland()
+const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, buildFly, buildLocked, fpSpawn, view, go } = useIsland()
 
 const otherLocale = computed(() => (locale.value === 'en' ? 'zh-tw' : 'en'))
 const timeLabel = computed(() => (isDark.value ? t('island.toDay') : t('island.toNight')))
@@ -72,7 +72,7 @@ const rootClass = computed(() => ({
   creative: creative.value && !flat.value,
   fly: creative.value && buildFly.value && !flat.value,
   'at-home': view.value === 'home',
-  'panel-open': view.value !== 'home' && !lookAround.value
+  'panel-open': view.value !== 'home' && !lookAround.value && !(creative.value && buildFly.value && buildLocked.value)
 }))
 
 /* ---------- flat mode ---------- */
@@ -92,18 +92,26 @@ function toggleSound() {
 }
 
 /* ---------- build mode ---------- */
-// Building happens on the island overview, so turning it on flies home first; leaving home ends it.
+// With a mouse this is first person, starting inside the landmark you are at (if it has a spot) and carrying on
+// across pages. On touch screens it is the overview builder, which flies home first and ends when you leave home.
 async function toggleCreative() {
   if (creative.value) { creative.value = false; return }
-  if (view.value !== 'home') await go('home')
+  if (buildFly.value) fpSpawn.value = LOOK_AROUND_IDS.includes(view.value) ? view.value : null
+  else if (view.value !== 'home') await go('home')
   creative.value = true
-  umTrackEvent('island-build')
+  umTrackEvent('island-build', { firstPerson: buildFly.value })
 }
-watch([view, flat], ([v, f]) => { if (v !== 'home' || f) creative.value = false })
+watch([view, flat], ([v, f]) => { if ((v !== 'home' && !buildFly.value) || f) creative.value = false })
 
 function onBuildKey(e: KeyboardEvent) {
   const k = e.key
-  if (k === 'Escape') { e.preventDefault(); creative.value = false; return }
+  if (k === 'Escape') {
+    e.preventDefault()
+    // First person: Esc closes an open panel first, then leaves.
+    if (buildFly.value && view.value !== 'home') go('home')
+    else creative.value = false
+    return
+  }
   const n = parseInt(k, 10)
   if (n >= 1 && n <= PALETTE.length) { buildType.value = PALETTE[n - 1]; buildTool.value = 'place'; return }
   if (k === 'x' || k === 'X') buildTool.value = buildTool.value === 'remove' ? 'place' : 'remove'

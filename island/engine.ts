@@ -9,6 +9,7 @@ import { buildProps } from './props'
 import { buildIslanders, type Talker } from './islanders'
 import { createSound } from './sound'
 import { buildBuilder } from './build'
+import { createWalker } from './walker'
 import type { BlockType, BuildTool, Placed } from './blocks'
 import { angLerp, clamp, easeInOut, lerp, mulberry32 } from './rand'
 
@@ -21,6 +22,8 @@ export interface IslandText {
   tag(id: ViewId): { name: string; sub?: string }
   npc(key: string): { name: string; lines: string[] }
   sign(): [string, string]
+  /** Crosshair hint for what right-click does in first person, e.g. "Right-click · talk to Ada". */
+  aim(kind: 'talk' | 'open' | 'ride' | 'dismount', name: string): string
 }
 
 export interface IslandOptions {
@@ -28,6 +31,8 @@ export interface IslandOptions {
   /** Holds the landmark name tags. */
   tagLayer: HTMLElement
   bubble: HTMLElement
+  /** Shows what right-click would do in first person. */
+  aimHint: HTMLElement | null
   splash: HTMLElement | null
   veil: HTMLElement | null
   skyNight: HTMLElement | null
@@ -51,6 +56,10 @@ export interface IslandOptions {
   onIntroSkipped(): void
   onLookAroundChange(id: ViewId | null): void
   onBlocksChange(blocks: Placed[]): void
+  /** Whether look-around should become free-roaming first person (a mouse and pointer lock are available). */
+  freeRoam(): boolean
+  /** A look-around spot was entered with free roaming available; the page turns first person on there. */
+  onFirstPerson(at: ViewId): void
   /** First-person building has captured (true) or released (false) the mouse. */
   onBuildLock(locked: boolean): void
   /** The mouse wheel stepped through the block hotbar while building in first person. */
@@ -319,7 +328,8 @@ export function createIsland(o: IslandOptions) {
   let fpId: ViewId | null = null, spot: Spot | null = null, fpK = 0, fpYaw = 0, fpPitch = 0, rideYaw = 0, lastFov = 40
   const fpEye = new THREE.Vector3(), fpDir = new THREE.Vector3(), orbDir = new THREE.Vector3()
   function enterLookAround(id: ViewId) {
-    if (!SPOTS[id] || !ready || view !== id || fpId) return
+    if (!SPOTS[id] || !ready || view !== id || fpId || walk) return
+    if (o.freeRoam()) { o.onFirstPerson(id); return }
     spot = SPOTS[id]!
     fpId = id
     fpYaw = 0; fpPitch = 0
@@ -354,59 +364,87 @@ export function createIsland(o: IslandOptions) {
     if (e.pointerType === 'mouse') builder.hover(aimAt(e.clientX, e.clientY), breaking(e))
   }
 
-  /* ---------- build mode in first person ---------- */
-  // With a mouse, building happens in first person: fly with WASD, Space and Shift, look around with the pointer
-  // locked, break with the left button and place with the right, like Minecraft. Touch screens keep the overview.
-  const EYE = 1.62, HALF = 0.3, HEAD = 0.18, REACH = 8, SPEED = 6, EPS = 1e-4
-  let fly = false, flyK = 0, locked = false, flyYaw = PI, flyPitch = -0.3, outlineAt = 0, cycleAt = 0
-  const flyEye = new THREE.Vector3(), flyVel = new THREE.Vector3(), flyWish = new THREE.Vector3(), flyDir = new THREE.Vector3()
-  const keys = new Set<string>()
-  const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight']
-  const solidAt = (x: number, y: number, z: number) => {
+  /* ---------- first person ---------- */
+  // With a mouse, first person is one free-roaming mode, Minecraft style: walk, jump and fly around the island,
+  // break blocks with the left button, and with the right button talk to islanders, open a landmark or machine,
+  // ride the minecart, or place a block. Touch screens keep the fixed look-around spots and the overview builder.
+  const REACH = 8
+  const walker = createWalker((x, y, z) => {
     if (builder.has(x, y, z)) return true
     const t = world.W.get(world.key(x, y, z))?.t
     return !!t && t !== 'water'
+  })
+  let walk = false, walkK = 0, locked = false, riding = false, outlineAt = 0, cycleAt = 0
+  const walkDir = new THREE.Vector3(), boxes: Partial<Record<ViewId, THREE.Box3>> = {}, hitPoint = new THREE.Vector3()
+  for (const id of Object.keys(HIT) as ViewId[]) { const [a, b] = HIT[id]!; boxes[id] = new THREE.Box3(new THREE.Vector3(...a), new THREE.Vector3(...b)) }
+  const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight']
+  const centreRay = () => { ray.setFromCamera(ndc.set(0, 0), camera); ray.far = REACH; return ray }
+
+  // What the crosshair would use: an islander, a machine or a landmark, unless a block is in the way.
+  type Use = { npc: number } | { id: ViewId }
+  function useTarget(r: THREE.Raycaster): Use | null {
+    const blockHit = r.intersectObjects(builder.targets, false)[0]?.distance ?? Infinity
+    let best: Use | null = null, bestD = REACH
+    const npc = r.intersectObjects(people.hits, false)[0]
+    if (npc && npc.distance < bestD) { best = { npc: npc.object.userData.n }; bestD = npc.distance }
+    let inside: ViewId | null = null
+    for (const id of Object.keys(boxes) as ViewId[]) {
+      const box = boxes[id]!
+      if (box.containsPoint(r.ray.origin)) { if (!isMachine(id)) inside = id; continue }
+      if (!r.ray.intersectBox(box, hitPoint)) continue
+      const d = hitPoint.distanceTo(r.ray.origin)
+      // Machines sit inside the factory's box, so they win over it at the same distance.
+      if (d < bestD || (isMachine(id) && d <= bestD + 0.01)) { best = { id }; bestD = d }
+    }
+    if (best && bestD <= blockHit + 0.01) return best
+    // Standing inside a building, the building itself is what you use.
+    return inside && !best ? { id: inside } : null
   }
-  // The visitor is a 0.6 × 1.8 box with the eye 1.62 above the feet; blocks are unit cells centred on integers.
-  const cells = (lo: number, hi: number) => [Math.floor(lo + 0.5 + EPS), Math.floor(hi + 0.5 - EPS)]
-  function bodyHits(px: number, py: number, pz: number) {
-    const [x0, x1] = cells(px - HALF, px + HALF), [y0, y1] = cells(py - EYE, py + HEAD), [z0, z1] = cells(pz - HALF, pz + HALF)
-    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) if (solidAt(x, y, z)) return true
-    return false
+  function use(u: Use) {
+    if ('npc' in u) { talk(u.npc); return }
+    if (u.id === 'm1') { ride(true); return }
+    // Its page is already the current one: just free the mouse so its panel shows.
+    if (u.id === view) document.exitPointerLock()
+    else o.onNavigate(u.id)
   }
-  const inBody = (x: number, y: number, z: number) =>
-    Math.abs(x - flyEye.x) < 0.5 + HALF && Math.abs(z - flyEye.z) < 0.5 + HALF && y + 0.5 > flyEye.y - EYE && y - 0.5 < flyEye.y + HEAD
-  function moveAxis(axis: 'x' | 'y' | 'z', d: number) {
-    if (!d) return
-    flyEye[axis] += d
-    if (bodyHits(flyEye.x, flyEye.y, flyEye.z)) { flyEye[axis] -= d; flyVel[axis] = 0 }
+  function ride(on: boolean) {
+    if (on === riding) return
+    riding = on
+    if (on) sfx.cue('enter')
+    else {
+      const c = P.loopPos(clock * 2.2)
+      walker.place(c.x, 2.2, c.z, walker.yaw, walker.pitch)
+      sfx.cue('exit')
+    }
   }
-  function updateFly(dt: number) {
-    const f = +keys.has('KeyW') - +keys.has('KeyS'), r = +keys.has('KeyD') - +keys.has('KeyA')
-    const u = +keys.has('Space') - +(keys.has('ShiftLeft') || keys.has('ShiftRight'))
-    const sy = Math.sin(flyYaw), cy = Math.cos(flyYaw)
-    flyWish.set(sy * f - cy * r, 0, cy * f + sy * r)
-    if (f || r) flyWish.normalize()
-    flyWish.y = u
-    flyVel.lerp(flyWish.multiplyScalar(SPEED), Math.min(1, dt * 10))
-    // Move in short slices so a long frame can't carry the visitor through a block.
-    const n = Math.max(1, Math.ceil((flyVel.length() * dt) / 0.25))
-    for (let i = 0; i < n; i++) { moveAxis('x', (flyVel.x * dt) / n); moveAxis('y', (flyVel.y * dt) / n); moveAxis('z', (flyVel.z * dt) / n) }
-    const h = Math.hypot(flyEye.x, flyEye.z)
-    if (h > 48) { flyEye.x *= 48 / h; flyEye.z *= 48 / h }
-    flyEye.y = clamp(flyEye.y, -24, 40)
-  }
-  const centreRay = () => { ray.setFromCamera(ndc.set(0, 0), camera); return ray }
-  function flyAct(remove: boolean) {
+  function walkAct(button: number) {
+    if (riding) return
     const r = centreRay()
-    r.far = REACH
-    report(builder.act(r, remove, buildType, inBody))
+    if (button === 2) {
+      const u = useTarget(r)
+      if (u) use(u)
+      else report(builder.act(r, false, buildType, walker.overlaps))
+    } else if (button === 0) report(builder.act(r, true, buildType))
     r.far = Infinity
     outlineAt = 0
   }
+  // Outline what the crosshair points at and name what right-click would do there.
+  function updateAim() {
+    const r = centreRay(), u = riding ? null : useTarget(r)
+    // No outline around a building you are standing inside.
+    setHover(u && 'id' in u && !boxes[u.id]!.containsPoint(r.ray.origin) ? u.id : null)
+    if (u) builder.setGhost(false)
+    else if (!riding) builder.outline(r)
+    r.far = Infinity
+    if (o.aimHint) {
+      const label = riding ? o.text.aim('dismount', '') : !u ? '' : 'npc' in u ? o.text.aim('talk', o.text.npc(people.talkers[u.npc].key).name) : o.text.aim(u.id === 'm1' ? 'ride' : 'open', o.text.tag(u.id).sub ?? o.text.tag(u.id).name)
+      o.aimHint.hidden = !label
+      o.aimHint.textContent = label
+    }
+  }
   function lock() {
     try {
-      // Newer browsers return a promise that rejects without a recent click; the pause overlay asks for one then.
+      // Newer browsers return a promise that rejects without a recent click; the pause card asks for one then.
       const p = canvas.requestPointerLock() as unknown as Promise<void> | undefined
       p?.catch?.(() => {})
     } catch { /* pointer lock unavailable */ }
@@ -414,36 +452,45 @@ export function createIsland(o: IslandOptions) {
   const onLockChange = () => {
     locked = document.pointerLockElement === canvas
     if (locked) (document.activeElement as HTMLElement | null)?.blur?.()
-    else keys.clear()
+    else walker.clearKeys()
     o.onBuildLock(locked)
   }
   const onKeyDown = (e: KeyboardEvent) => {
     if (!locked || !MOVE_KEYS.includes(e.code)) return
-    keys.add(e.code)
     if (e.code === 'Space') e.preventDefault()
+    if (riding) { if (e.code.startsWith('Shift')) ride(false); return }
+    walker.keyDown(e.code, performance.now() / 1000)
   }
-  const onKeyUp = (e: KeyboardEvent) => keys.delete(e.code)
+  const onKeyUp = (e: KeyboardEvent) => walker.keyUp(e.code)
   document.addEventListener('pointerlockchange', onLockChange)
   window.addEventListener('keydown', onKeyDown)
   window.addEventListener('keyup', onKeyUp)
 
-  function setCreative(on: boolean, firstPerson = false) {
+  function spawnAt(at: ViewId | null) {
+    const s = at ? SPOTS[at] : undefined
+    riding = !!s?.ride
+    if (riding) { const c = P.loopPos(clock * 2.2); walker.place(c.x, 2.2, c.z, c.rot, -0.12) }
+    else if (s) walker.place(s.e![0], s.e![1], s.e![2], s.yaw!, s.pitch!)
+    else walker.place(0, 4, 16, PI, -0.2)
+  }
+
+  /** Build mode: first person with a mouse (optionally starting at a look-around spot), the overview otherwise. */
+  function setCreative(on: boolean, firstPerson = false, at: ViewId | null = null) {
     if (on === creative) return
     if (on && fpId) exitLookAround()
     creative = on
-    fly = on && firstPerson
+    walk = on && firstPerson
     setHover(null)
     builder.setGhost(false)
-    if (fly) {
-      flyEye.set(0, 6.5, 16)
-      flyYaw = PI
-      flyPitch = -0.3
-      flyVel.set(0, 0, 0)
-      while (bodyHits(flyEye.x, flyEye.y, flyEye.z) && flyEye.y < 40) flyEye.y += 1
+    if (walk) {
+      spawnAt(at)
+      sfx.cue('enter')
       lock()
     }
     if (!on) {
       if (locked) document.exitPointerLock()
+      riding = false
+      if (o.aimHint) o.aimHint.hidden = true
       zoomT = 1
       // Unwind any full turns so the camera eases back the short way.
       dragAz = Math.atan2(Math.sin(dragAz), Math.cos(dragAz))
@@ -455,19 +502,16 @@ export function createIsland(o: IslandOptions) {
   let down: { x: number; y: number; lx: number; ly: number; drag: boolean; id: number } | null = null
   const onDown = (e: PointerEvent) => {
     if (!ready) { skipIntro(); return }
-    if (fly) {
-      if (!locked) lock()
-      else if (e.button === 0 || e.button === 2) flyAct(e.button === 0)
+    if (walk) {
+      // Clicking back into the world recaptures the mouse, which tucks any open panel away again.
+      if (locked) walkAct(e.button)
+      else lock()
       return
     }
     down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, drag: false, id: e.pointerId }
   }
   const onMove = (e: PointerEvent) => {
-    if (locked) {
-      flyYaw -= e.movementX * 0.0025
-      flyPitch = clamp(flyPitch - e.movementY * 0.0025, -1.5, 1.5)
-      return
-    }
+    if (locked) { walker.look(-e.movementX * 0.0025, -e.movementY * 0.0025); return }
     if (down && e.pointerId === down.id) {
       if (!down.drag && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) {
         down.drag = true
@@ -487,7 +531,7 @@ export function createIsland(o: IslandOptions) {
       down.lx = e.clientX
       down.ly = e.clientY
     } else if (ready && e.target === canvas && e.pointerType === 'mouse') {
-      if (creative) { if (!fly) builder.hover(aimAt(e.clientX, e.clientY), breaking(e)) }
+      if (creative) { if (!walk) builder.hover(aimAt(e.clientX, e.clientY), breaking(e)) }
       else setHover(pick(e.clientX, e.clientY))
     }
   }
@@ -510,7 +554,7 @@ export function createIsland(o: IslandOptions) {
     else if (locked) {
       // Trackpads send a burst of small wheel events, so step at most once per 120 ms.
       if (performance.now() - cycleAt > 120 && Math.abs(e.deltaY) > 2) { cycleAt = performance.now(); o.onBuildCycle(Math.sign(e.deltaY)) }
-    } else if (creative && !fly && e.target === canvas) zoomT = clamp(zoomT * Math.exp(e.deltaY * 0.0012), 0.3, 1.25)
+    } else if (creative && !walk && e.target === canvas) zoomT = clamp(zoomT * Math.exp(e.deltaY * 0.0012), 0.3, 1.25)
   }
   // Right-click breaks blocks in build mode, so keep the browser menu out of the way there.
   const onMenu = (e: MouseEvent) => { if (creative) e.preventDefault() }
@@ -681,27 +725,25 @@ export function createIsland(o: IslandOptions) {
       if (spot.light) fpLight.position.set(...spot.light)
     } else fpLight.intensity = 0
 
-    // blend into the first-person builder's eye
-    flyK += ((fly ? 1 : 0) - flyK) * Math.min(1, reduceMotion ? 1 : dt * 3.2)
-    if (flyK < 0.001 && !fly) flyK = 0
-    if (flyK > 0) {
-      if (fly && locked) updateFly(dt)
-      const k = easeInOut(clamp(flyK, 0, 1))
-      flyDir.set(Math.sin(flyYaw) * Math.cos(flyPitch), Math.sin(flyPitch), Math.cos(flyYaw) * Math.cos(flyPitch))
-      orbDir.copy(cam.t).sub(camPos).normalize().lerp(flyDir, k).normalize()
-      camera.position.lerpVectors(camPos, flyEye, k)
+    // blend into the first-person eye
+    walkK += ((walk ? 1 : 0) - walkK) * Math.min(1, reduceMotion ? 1 : dt * 3.2)
+    if (walkK < 0.001 && !walk) walkK = 0
+    if (walkK > 0) {
+      if (riding) walker.eye.set(cp.x, 1.45, cp.z)
+      else if (walk && locked && walker.update(dt)) sfx.cue('step')
+      const k = easeInOut(clamp(walkK, 0, 1)), yaw = walker.yaw, pitch = walker.pitch
+      walkDir.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch))
+      orbDir.copy(cam.t).sub(camPos).normalize().lerp(walkDir, k).normalize()
+      camera.position.lerpVectors(camPos, walker.eye, k)
       camera.lookAt(camera.position.x + orbDir.x, camera.position.y + orbDir.y, camera.position.z + orbDir.z)
-      // Raycasting the whole island is the costly part, so refresh the outline about 20 times a second.
-      if (fly && flyK > 0.9 && clock - outlineAt > 0.05) {
+      // Raycasting the whole island is the costly part, so refresh the aim about 20 times a second.
+      if (walk && walkK > 0.9 && locked && clock - outlineAt > 0.05) {
         outlineAt = clock
         camera.updateMatrixWorld()
-        const r = centreRay()
-        r.far = REACH
-        builder.outline(r)
-        r.far = Infinity
+        updateAim()
       }
     }
-    const eyeK = Math.max(fpK, flyK)
+    const eyeK = Math.max(fpK, walkK)
     const fov = lerp(40, 72, easeInOut(clamp(eyeK, 0, 1)))
     if (Math.abs(fov - lastFov) > 0.01) {
       lastFov = fov
@@ -747,9 +789,9 @@ export function createIsland(o: IslandOptions) {
 
     // ambient life
     clouds.forEach(c => { c.position.x += dt * c.userData.v; if (c.position.x > 110) c.position.x = -120 })
-    P.update({ dt, clock, view, nightT: n, rideHidesLetter: !!(spot && spot.ride && fpK > 0.3) })
+    P.update({ dt, clock, view, nightT: n, rideHidesLetter: !!(spot && spot.ride && fpK > 0.3) || (riding && walkK > 0.3) })
     people.update(dt, clock, camera)
-    sfx.update(dt, n, !!(spot && spot.ride && fpId))
+    sfx.update(dt, n, !!(spot && spot.ride && fpId) || (riding && walk))
 
     bloom.strength = lerp(0, 0.6, n)
     if (glowAllowed && n > 0.02) composer.render(dt)
@@ -768,6 +810,8 @@ export function createIsland(o: IslandOptions) {
       if (fpId) exitLookAround()
       if (id === view && !instant) return
       view = id
+      // In first person a panel opening (from right-clicking a landmark) frees the mouse so the panel shows.
+      if (walk && id !== 'home' && locked) document.exitPointerLock()
       if (ready) tweenTo(id, instant)
     },
     setNight(on: boolean) {

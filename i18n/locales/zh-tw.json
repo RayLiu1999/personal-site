@@ -651,14 +651,22 @@
     "contactMe": "聯絡我",
     "hint": "拖曳轉動視角 · 數字鍵 1–4 切換地標 · 點島民聊天 · Esc 返回",
     "toDay": "切換成白天",
+    "aim": {
+      "talk": "右鍵 · 和{name}說話",
+      "open": "右鍵 · 打開{name}",
+      "ride": "右鍵 · 搭上{name}",
+      "dismount": "Shift · 下車"
+    },
     "build": {
       "btn": "建造",
+      "fpTitle": "第一人稱",
+      "fpBtn": "第一人稱",
       "title": "建造模式",
       "hint": "左鍵放置 · 右鍵拆除 · 拖曳旋轉 · 滾輪縮放",
       "hintTouch": "點一下放置 · 拖曳旋轉",
-      "hintFly": "WASD 移動 · 空白鍵上升 · Shift 下降 · 左鍵拆除 · 右鍵放置 · 滾輪換方塊",
-      "resume": "點擊畫面開始建造",
-      "resumeSub": "建造時按 Esc 暫停，再按一次離開",
+      "hintFly": "WASD 移動 · 空白鍵跳躍（連按兩下飛行）· 左鍵拆除 · 右鍵互動或放置 · 滾輪換方塊",
+      "resume": "點擊畫面繼續",
+      "resumeSub": "按 Esc 暫停，再按一次離開",
       "done": "完成",
       "place": "放置",
       "remove": "拆除",
@@ -734,6 +742,7 @@
       "enter": "走進去看看",
       "ride": "搭上礦車",
       "enterHint": "用第一人稱環顧四周。再點一次建築也可以進去。",
+      "enterHintFree": "走進去自由走動：和島民說話、打開內容、蓋方塊。按 Esc 暫停。",
       "rideHint": "坐進礦車，跟著訊息繞一圈。",
       "where": {
         "factory": "站在工廠裡",

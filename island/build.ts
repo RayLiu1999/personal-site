@@ -80,6 +80,8 @@ export function buildBuilder(scene: THREE.Scene, MAT: Materials, o: {
 
   return {
     group,
+    /** Meshes the crosshair can hit: the island and the placed blocks. */
+    targets,
     count: () => placed.size,
     has: (x: number, y: number, z: number) => placed.has(key(x, y, z)),
     list: (): Placed[] => [...placed].map(([k, t]) => { const [x, y, z] = k.split('|').map(Number); return [x, y, z, t] }),

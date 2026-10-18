@@ -26,13 +26,14 @@ const props = defineProps<{ view: ViewId; title: string; sub: string; icon?: str
 
 const { t } = useI18n()
 const localePath = useLocalePath()
-const { flat, lookAround } = useIsland()
+const { flat, lookAround, creative, buildFly, buildLocked } = useIsland()
 
 const titleId = 'island-panel-title'
 const heading = ref<HTMLElement>()
 const expanded = ref(false)
 // While looking around in first person the panel slides away; it comes back on exit.
-const hidden = computed(() => !flat.value && !!lookAround.value)
+// Tucked away while looking around, and in first person while the mouse is captured.
+const hidden = computed(() => !flat.value && (!!lookAround.value || (creative.value && buildFly.value && buildLocked.value)))
 
 const closeTo = computed(() => {
   const r = routeForView(isMachineId(props.view) ? 'factory' : 'home')
