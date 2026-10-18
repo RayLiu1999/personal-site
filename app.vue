@@ -9,7 +9,8 @@
 <script setup>
 // Share-card tags need absolute URLs, so build them from the runtime site URL (nuxt.config head is fixed at build time).
 const siteUrl = useRuntimeConfig().public.siteUrl
-const { locale } = useI18n()
+// useI18n isn't auto-imported into app.vue by @nuxtjs/i18n, so read the locale from the i18n plugin instead.
+const { locale } = useNuxtApp().$i18n
 const route = useRoute()
 useHead(() => {
   const image = `${siteUrl}/og/island-${locale.value}.jpg`
