@@ -56,6 +56,8 @@ onMounted(async () => {
     veil: null,
     skyNight: document.querySelector<HTMLElement>('.island-sky.night'),
     panelRect: () => document.querySelector('.island-panel:not(.closed)')?.getBoundingClientRect() ?? null,
+    obstacles: () => [...document.querySelectorAll('.hud-top > *, .island-hotbar, .fp-hud, .home-hud, .island-panel:not(.closed)')]
+      .map(el => el.getBoundingClientRect()),
     isMobile: () => !!mqMobile?.matches,
     text: {
       tag: (id: ViewId) => id.startsWith('m')
