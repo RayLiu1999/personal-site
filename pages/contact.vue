@@ -1,188 +1,137 @@
 <template>
-  <div class="py-16">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
-      <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-coffee-800 dark:text-white mb-4">{{ $t('contact.header.title') }}</h1>
-        <p class="text-coffee-600 dark:text-gray-400">{{ $t('contact.header.subtitle') }}</p>
+  <IslandPanel
+    :view="view"
+    :title="t('island.lm.signpost.name')"
+    :sub="t('island.lm.signpost.sub')"
+  >
+    <p class="lead">{{ t('contact.header.subtitle') }}</p>
+    <form class="form" :aria-busy="isSubmitting" novalidate @submit.prevent="submitForm">
+      <div class="field">
+        <label for="contact-name">{{ t('contact.form.name') }}</label>
+        <input
+          id="contact-name"
+          v-model="form.name"
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+          :placeholder="t('contact.form.namePlaceholder')"
+        />
       </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Contact Form -->
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border dark:border-gray-700">
-          <h2 class="text-2xl font-bold text-coffee-800 dark:text-white mb-6">{{ $t('contact.form.submit') }}</h2>
-          <form @submit.prevent="submitForm" class="space-y-6">
-            <div>
-              <label for="name" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
-                $t('contact.form.name') }}</label>
-              <input type="text" id="name" v-model="form.name" required
-                class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent"
-                :placeholder="$t('contact.form.namePlaceholder')">
-            </div>
-
-            <div>
-              <label for="email" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
-                $t('contact.form.email') }}</label>
-              <input type="email" id="email" v-model="form.email" required
-                class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent"
-                :placeholder="$t('contact.form.emailPlaceholder')">
-            </div>
-
-            <div>
-              <label for="subject" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
-                $t('contact.form.subject') }}</label>
-              <input type="text" id="subject" v-model="form.subject" required
-                class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent"
-                :placeholder="$t('contact.form.subjectPlaceholder')">
-            </div>
-
-            <div>
-              <label for="message" class="block text-sm font-medium text-coffee-700 dark:text-gray-300 mb-2">{{
-                $t('contact.form.message') }}</label>
-              <textarea id="message" v-model="form.message" required rows="6"
-                class="w-full px-4 py-3 border border-coffee-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-coffee-800 dark:text-white rounded-lg focus:ring-2 focus:ring-coffee-500 dark:focus:ring-blue-500 focus:border-transparent resize-none"
-                :placeholder="$t('contact.form.messagePlaceholder')"></textarea>
-            </div>
-
-            <button type="submit" :disabled="isSubmitting"
-              class="w-full bg-coffee-600 hover:bg-coffee-700 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-coffee-400 dark:disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-              <span v-if="!isSubmitting">{{ $t('contact.form.submit') }}</span>
-              <span v-else class="flex items-center justify-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                  </path>
-                </svg>
-                {{ $t('contact.form.sending') }}
-              </span>
-            </button>
-          </form>
-
-          <!-- Success Message -->
-          <div v-if="showSuccess"
-            class="mt-6 p-4 bg-green-100 dark:bg-green-800 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 rounded-lg">
-            <div class="flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"></path>
-              </svg>
-              {{ $t('contact.form.success') }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Contact Info -->
-        <div class="space-y-6">
-          <!-- What we can talk about -->
-          <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border dark:border-gray-700">
-            <h2 class="text-2xl font-bold text-coffee-800 dark:text-white mb-6">{{ $t('contact.sidebar.title') }}</h2>
-            <div class="space-y-5">
-              <div class="flex items-start">
-                <div
-                  class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-coffee-800 dark:text-white">{{ $t('contact.sidebar.tech.title') }}</h3>
-                  <p class="text-coffee-600 dark:text-gray-400 text-sm">{{ $t('contact.sidebar.tech.desc') }}</p>
-                </div>
-              </div>
-              <div class="flex items-start">
-                <div
-                  class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
-                    </path>
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-coffee-800 dark:text-white">{{ $t('contact.sidebar.project.title') }}
-                  </h3>
-                  <p class="text-coffee-600 dark:text-gray-400 text-sm">{{ $t('contact.sidebar.project.desc') }}</p>
-                </div>
-              </div>
-              <div class="flex items-start">
-                <div
-                  class="w-12 h-12 bg-coffee-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg class="w-6 h-6 text-coffee-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M21 3v4a2 2 0 01-2 2H5a2 2 0 01-2-2V3m18 0l-6 6M3 3l6 6m0 0V3m0 6v4a2 2 0 002 2h4a2 2 0 002-2V9">
-                    </path>
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-coffee-800 dark:text-white">{{ $t('contact.sidebar.coffee.title') }}
-                  </h3>
-                  <p class="text-coffee-600 dark:text-gray-400 text-sm">{{ $t('contact.sidebar.coffee.desc') }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Response Time -->
-          <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700 text-center">
-            <h3 class="font-semibold text-coffee-800 dark:text-white mb-2">{{ $t('contact.sidebar.response.title') }}
-            </h3>
-            <p class="text-coffee-600 dark:text-gray-400 text-sm" v-html="$t('contact.sidebar.response.desc')"></p>
-          </div>
-        </div>
+      <div class="field">
+        <label for="contact-email">{{ t('contact.form.email') }}</label>
+        <input
+          id="contact-email"
+          v-model="form.email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          :placeholder="t('contact.form.emailPlaceholder')"
+        />
       </div>
-    </div>
-  </div>
+      <div class="field">
+        <label for="contact-subject">{{ t('contact.form.subject') }}</label>
+        <input
+          id="contact-subject"
+          v-model="form.subject"
+          name="subject"
+          type="text"
+          required
+          :placeholder="t('contact.form.subjectPlaceholder')"
+        />
+      </div>
+      <div class="field">
+        <label for="contact-message">{{ t('contact.form.message') }}</label>
+        <textarea
+          id="contact-message"
+          v-model="form.message"
+          name="message"
+          rows="5"
+          required
+          :placeholder="t('contact.form.messagePlaceholder')"
+        ></textarea>
+      </div>
+      <div>
+        <button class="mc-btn" type="submit" :disabled="isSubmitting">
+          {{ t(isSubmitting ? 'contact.form.sending' : 'contact.form.submit') }}
+        </button>
+      </div>
+      <p class="form-status" role="status" aria-atomic="true">
+        {{ formStatus ? t(formStatus) : '' }}
+      </p>
+    </form>
+
+    <h2 class="sec">{{ t('island.signpost.direct') }}</h2>
+    <ul class="direct">
+      <li>
+        <span>{{ t('island.signpost.emailLabel') }}</span>
+        <code ref="emailText">{{ contactEmail }}</code>
+        <button class="mc-btn small" type="button" @click="copyEmail">
+          {{ t(`island.signpost.${copyState}`) }}
+        </button>
+      </li>
+      <li>
+        <a href="https://github.com/Rayliu1999" target="_blank" rel="noopener">
+          {{ t('island.signpost.githubLabel') }}
+        </a>
+      </li>
+      <li>
+        <a href="https://linkedin.com/in/育誠-劉-279634233" target="_blank" rel="noopener">
+          {{ t('island.signpost.linkedinLabel') }}
+        </a>
+      </li>
+    </ul>
+    <p class="note">
+      {{ responseTime }}
+      <NuxtLink :to="localePath('/privacy-policy')">{{ t('island.signpost.privacy') }}</NuxtLink>
+    </p>
+  </IslandPanel>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'island', landmark: 'signpost' })
+
 const config = useRuntimeConfig()
 const siteUrl = config.public.siteUrl
+const siteKey = config.public.recaptchaSiteKey
 const { t } = useI18n()
+const localePath = useLocalePath()
+const { view } = useIsland()
 
-const form = ref({
-  name: '',
-  email: '',
-  subject: '',
-  message: ''
-})
-
-// reCAPTCHA 狀態
+const form = ref({ name: '', email: '', subject: '', message: '' })
 const recaptchaToken = ref('')
 const recaptchaLoaded = ref(false)
-
-// 表單提交狀態
 const isSubmitting = ref(false)
-const showSuccess = ref(false)
+const formStatus = ref('')
+let successTimer
 
-const submitForm = async () => {
-  // 檢查 reCAPTCHA
-  if (!recaptchaToken.value) {
-    alert('請完成 reCAPTCHA 驗證')
+const submitForm = async (event) => {
+  if (isSubmitting.value) return
+  clearTimeout(successTimer)
+
+  if (Object.values(form.value).some((value) => !value.trim())) {
+    formStatus.value = 'island.signpost.missing'
+    return
+  }
+  if (!event.currentTarget.checkValidity()) {
+    formStatus.value = 'island.signpost.invalidEmail'
+    return
+  }
+  if (!recaptchaLoaded.value || typeof window === 'undefined' || !window.grecaptcha) {
+    formStatus.value = 'island.signpost.recaptchaRequired'
     return
   }
 
   isSubmitting.value = true
+  formStatus.value = ''
 
   try {
-    // 重新獲取 reCAPTCHA token
-    if (typeof window !== 'undefined' && window.grecaptcha) {
-      const config = useRuntimeConfig()
-      const siteKey = config.public.recaptchaSiteKey
-
-      const token = await window.grecaptcha.execute(siteKey, { action: 'contact_form' })
-      recaptchaToken.value = token
-      if (token) {
-        console.log('reCAPTCHA token for submission:', token.substring(0, 20) + '...')
-      } else {
-        console.error('reCAPTCHA returned null token for submission')
-      }
+    // 每次提交都取得新的 reCAPTCHA token。
+    recaptchaToken.value = await window.grecaptcha.execute(siteKey, { action: 'contact_form' })
+    if (!recaptchaToken.value) {
+      formStatus.value = 'island.signpost.recaptchaRequired'
+      return
     }
 
     await $fetch('/api/contact', {
@@ -194,106 +143,86 @@ const submitForm = async () => {
       }
     })
 
-    // 重置表單
-    form.value = {
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    }
-
-    // 清除 reCAPTCHA token
+    form.value = { name: '', email: '', subject: '', message: '' }
     recaptchaToken.value = ''
-
-    // 顯示成功訊息
-    showSuccess.value = true
-    setTimeout(() => {
-      showSuccess.value = false
-    }, 5000)
-
-  } catch (error) {
-    console.error('發送失敗:', error)
-    alert(t('contact.form.error')) // Using translation for alert too
+    formStatus.value = 'contact.form.success'
+    successTimer = setTimeout(() => { formStatus.value = '' }, 5000)
+  } catch {
+    formStatus.value = 'contact.form.error'
   } finally {
     isSubmitting.value = false
   }
 }
 
-// 載入 reCAPTCHA
-const loadRecaptcha = () => {
-  if (typeof window !== 'undefined' && !recaptchaLoaded.value) {
-    const config = useRuntimeConfig()
-    const siteKey = config.public.recaptchaSiteKey
-
-    const script = document.createElement('script')
-    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
-    script.async = true
-    script.defer = true
-    script.onload = () => {
-      recaptchaLoaded.value = true
-      initRecaptcha()
-    }
-    script.onerror = (error) => {
-      console.error('Failed to load reCAPTCHA script:', error)
-    }
-    document.head.appendChild(script)
-  }
-}
-
-// 初始化 reCAPTCHA
 const initRecaptcha = () => {
-  if (typeof window !== 'undefined' && window.grecaptcha) {
-    const config = useRuntimeConfig()
-    const siteKey = config.public.recaptchaSiteKey
+  if (typeof window === 'undefined' || !window.grecaptcha) return
 
-    window.grecaptcha.ready(() => {
-      window.grecaptcha.execute(siteKey, { action: 'contact_form' })
-        .then(token => {
-          recaptchaToken.value = token
-        })
-        .catch(error => {
-          console.error('reCAPTCHA execute error:', error)
-        })
-    })
-  } else {
-    console.error('grecaptcha not available')
+  window.grecaptcha.ready(() => {
+    recaptchaLoaded.value = true
+    window.grecaptcha.execute(siteKey, { action: 'contact_form' })
+      .then((token) => { recaptchaToken.value = token })
+      .catch(() => { formStatus.value = 'island.signpost.recaptchaError' })
+  })
+}
+
+const loadRecaptcha = () => {
+  if (typeof window === 'undefined' || recaptchaLoaded.value) return
+  if (window.grecaptcha) {
+    initRecaptcha()
+    return
+  }
+
+  const script = document.createElement('script')
+  script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
+  script.async = true
+  script.defer = true
+  script.onload = initRecaptcha
+  script.onerror = () => { formStatus.value = 'island.signpost.recaptchaError' }
+  document.head.appendChild(script)
+}
+
+const contactEmail = 'rayliu219@gmail.com'
+const emailText = ref(null)
+const copyState = ref('copy')
+let copyTimer
+
+const copyEmail = async () => {
+  clearTimeout(copyTimer)
+  try {
+    await navigator.clipboard.writeText(contactEmail)
+    copyState.value = 'copied'
+    copyTimer = setTimeout(() => { copyState.value = 'copy' }, 1500)
+  } catch {
+    if (emailText.value) {
+      const range = document.createRange()
+      range.selectNodeContents(emailText.value)
+      const selection = window.getSelection()
+      selection?.removeAllRanges()
+      selection?.addRange(range)
+    }
+    copyState.value = 'copyFail'
+    copyTimer = setTimeout(() => { copyState.value = 'copy' }, 2200)
   }
 }
 
-onMounted(() => {
-  // 載入 reCAPTCHA
-  loadRecaptcha()
+const responseTime = computed(() => t('contact.sidebar.response.desc').replace(/<br\s*\/?>/gi, ' '))
+
+onMounted(loadRecaptcha)
+onBeforeUnmount(() => {
+  clearTimeout(successTimer)
+  clearTimeout(copyTimer)
 })
 
 // SEO Meta 設定
-useHead({
-  title: t('contact.header.title') + ' - Ray Liu | 後端工程師合作洽談',
+useHead(() => ({
+  title: t('island.signpost.seoTitle', { title: t('contact.header.title') }),
   meta: [
-    {
-      name: 'description',
-      content: t('contact.header.subtitle')
-    },
-    {
-      name: 'keywords',
-      content: '聯絡 Ray Liu, 技術合作, 專案洽談, 後端工程師聯絡, 工作機會, 技術諮詢'
-    },
-    // Open Graph
-    {
-      property: 'og:title',
-      content: t('contact.header.title') + ' - Ray Liu 後端工程師'
-    },
-    {
-      property: 'og:description',
-      content: t('contact.header.subtitle')
-    },
-    {
-      property: 'og:type',
-      content: 'website'
-    },
-    {
-      property: 'og:url',
-      content: `${siteUrl}/contact`
-    }
+    { name: 'description', content: t('contact.header.subtitle') },
+    { name: 'keywords', content: t('island.signpost.seoKeywords') },
+    { property: 'og:title', content: t('island.signpost.seoOgTitle', { title: t('contact.header.title') }) },
+    { property: 'og:description', content: t('contact.header.subtitle') },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${siteUrl}${localePath('/contact')}` }
   ]
-})
+}))
 </script>

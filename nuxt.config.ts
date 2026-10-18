@@ -69,6 +69,7 @@ export default defineNuxtConfig({
     ],
     routes: [
       '/',
+      '/blog',
       '/about',
       '/contact',
       '/portfolio',
