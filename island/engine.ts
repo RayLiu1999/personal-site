@@ -26,6 +26,8 @@ export interface IslandOptions {
   skyNight: HTMLElement | null
   /** Rect of the open content panel, so the landmark can be framed beside it; null when closed. */
   panelRect(): DOMRect | null
+  /** Screen rects of the fixed HUD (top bar, hotbar, panel…); name tags that would sit under them are hidden. */
+  obstacles(): DOMRect[]
   isMobile(): boolean
   text: IslandText
   displayFont: string
@@ -158,7 +160,7 @@ export function createIsland(o: IslandOptions) {
   scene.add(fpLight)
 
   /* ---------- name tags ---------- */
-  const tags: Partial<Record<ViewId, { el: HTMLButtonElement; p: THREE.Vector3 }>> = {}
+  const tags: Partial<Record<ViewId, { el: HTMLButtonElement; p: THREE.Vector3; w: number; h: number }>> = {}
   for (const id of Object.keys(TAG_ANCHOR) as ViewId[]) {
     const b = document.createElement('button')
     b.type = 'button'
@@ -166,13 +168,14 @@ export function createIsland(o: IslandOptions) {
     b.hidden = true
     b.addEventListener('click', () => o.onNavigate(id))
     o.tagLayer.appendChild(b)
-    tags[id] = { el: b, p: new THREE.Vector3(...TAG_ANCHOR[id]!) }
+    tags[id] = { el: b, p: new THREE.Vector3(...TAG_ANCHOR[id]!), w: 0, h: 0 }
   }
   function refreshText() {
     for (const id of Object.keys(tags) as ViewId[]) {
       const t = o.text.tag(id), el = tags[id]!.el
       el.replaceChildren(document.createTextNode(t.name))
       if (t.sub) { const s = document.createElement('small'); s.textContent = t.sub; el.appendChild(s) }
+      tags[id]!.w = tags[id]!.h = 0 // re-measure with the new text
     }
     P.drawSign(o.text.sign())
     if (talker) showLine(talker, false)
@@ -345,6 +348,7 @@ export function createIsland(o: IslandOptions) {
   let night = o.night, nightT = night ? 1 : 0
 
   /* ---------- resize & loop ---------- */
+  let blockersAt = -1
   function resize() {
     vw = canvas.clientWidth || innerWidth
     vh = canvas.clientHeight || innerHeight
@@ -352,6 +356,7 @@ export function createIsland(o: IslandOptions) {
     camera.aspect = vw / vh
     camera.updateProjectionMatrix()
     if (!tw && ready) tweenTo(view, true)
+    blockersAt = -1
   }
   window.addEventListener('resize', resize)
   resize()
@@ -360,11 +365,26 @@ export function createIsland(o: IslandOptions) {
   function place(el: HTMLElement, x: number, y: number, extra: string) {
     el.style.transform = `translate(${(x * 0.5 + 0.5) * vw}px,${(-y * 0.5 + 0.5) * vh}px) ${extra}`
   }
+  // HUD rects change only on resize or when the panel slides, so refresh them a few times a second
+  // instead of forcing a layout read every frame.
+  let blockers: DOMRect[] = []
+  function tagFits(tg: { el: HTMLElement; w: number; h: number }, x: number, y: number) {
+    if (!tg.w) { tg.el.hidden = false; tg.w = tg.el.offsetWidth; tg.h = tg.el.offsetHeight }
+    // A tag already hidden needs a little clearance before it comes back, so it doesn't flicker at an edge.
+    const m = tg.el.hidden ? 6 : 0
+    const l = x - tg.w / 2 - m, r = x + tg.w / 2 + m, t = y - tg.h - m, b = y + m
+    if (l < 0 || r > vw || t < 0 || b > vh) return false
+    return !blockers.some(k => l < k.right && r > k.left && t < k.bottom && b > k.top)
+  }
   function updateOverlay() {
+    if (blockersAt < 0 || clock - blockersAt > 0.25) { blockers = o.obstacles(); blockersAt = clock }
     for (const id of Object.keys(tags) as ViewId[]) {
       const tg = tags[id]!
       let show = ready && id !== view && (isMachine(id) ? inFactory() : !(inFactory() && id === 'factory'))
-      if (show) { V.copy(tg.p).project(camera); show = V.z < 1 && Math.abs(V.x) < 1.1 && Math.abs(V.y) < 1.1 }
+      if (show) {
+        V.copy(tg.p).project(camera)
+        show = V.z < 1 && tagFits(tg, (V.x * 0.5 + 0.5) * vw, (-V.y * 0.5 + 0.5) * vh)
+      }
       tg.el.hidden = !show
       if (show) place(tg.el, V.x, V.y, 'translate(-50%,-100%)')
       tg.el.classList.toggle('hot', hoverId === id)
