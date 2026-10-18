@@ -27,7 +27,8 @@ const introPlaying = ref(false)
 // tm() returns the key itself while a locale's messages are still loading, so only map real arrays.
 const list = (key: string) => { const v = tm(key); return Array.isArray(v) ? v.map(s => rt(s as never)) : [] }
 const splashes = computed(() => list('island.splash'))
-const splashIdx = ref(Math.floor(Math.random() * 10))
+// Always open on the first splash (the job title) so visitors see the role first; clicking cycles the rest.
+const splashIdx = ref(0)
 const splashText = computed(() => splashes.value[splashIdx.value % Math.max(1, splashes.value.length)] ?? '')
 const nextSplash = () => { splashIdx.value += 1 + Math.floor(Math.random() * 3) }
 
