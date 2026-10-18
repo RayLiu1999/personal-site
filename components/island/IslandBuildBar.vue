@@ -1,17 +1,24 @@
 <template>
   <div class="fp-hud build-hud">
     <span>{{ t('island.build.title') }}</span>
-    <small>{{ coarse ? t('island.build.hintTouch') : t('island.build.hint') }}</small>
+    <small>{{ buildFly ? t('island.build.hintFly') : coarse ? t('island.build.hintTouch') : t('island.build.hint') }}</small>
     <span class="build-count" :class="{ full: blockCount >= MAX_BLOCKS }">{{ blockCount }} / {{ MAX_BLOCKS }}</span>
     <button ref="done" class="mc-btn small" type="button" @click="creative = false">{{ t('island.build.done') }}</button>
   </div>
 
+  <div v-if="buildFly && !buildLocked" class="build-paused">
+    <strong>{{ t('island.build.resume') }}</strong>
+    <small>{{ t('island.build.resumeSub') }}</small>
+  </div>
+
   <div class="build-tools">
-    <button class="mc-btn small" type="button" :aria-pressed="buildTool === 'remove'" @click="buildTool = buildTool === 'remove' ? 'place' : 'remove'">
-      {{ buildTool === 'remove' ? t('island.build.remove') : t('island.build.place') }}
-    </button>
-    <button class="mc-btn small square" type="button" :aria-label="t('island.build.zoomOut')" :title="t('island.build.zoomOut')" @click="engine?.zoomBy(1.25)">-</button>
-    <button class="mc-btn small square" type="button" :aria-label="t('island.build.zoomIn')" :title="t('island.build.zoomIn')" @click="engine?.zoomBy(0.8)">+</button>
+    <template v-if="!buildFly">
+      <button class="mc-btn small" type="button" :aria-pressed="buildTool === 'remove'" @click="buildTool = buildTool === 'remove' ? 'place' : 'remove'">
+        {{ buildTool === 'remove' ? t('island.build.remove') : t('island.build.place') }}
+      </button>
+      <button class="mc-btn small square" type="button" :aria-label="t('island.build.zoomOut')" :title="t('island.build.zoomOut')" @click="engine?.zoomBy(1.25)">-</button>
+      <button class="mc-btn small square" type="button" :aria-label="t('island.build.zoomIn')" :title="t('island.build.zoomIn')" @click="engine?.zoomBy(0.8)">+</button>
+    </template>
     <button class="mc-btn small" type="button" :disabled="!blockCount" @click="clearAll">
       {{ confirming ? t('island.build.clearConfirm') : t('island.build.clear') }}
     </button>
@@ -39,7 +46,7 @@ import { isoIcon } from '~/island/atlas'
 import { MAX_BLOCKS, PALETTE, faces, type BlockType } from '~/island/blocks'
 
 const { t } = useI18n()
-const { engine, creative, buildType, buildTool, blockCount } = useIsland()
+const { engine, creative, buildType, buildTool, buildFly, buildLocked, blockCount } = useIsland()
 
 const coarse = ref(false)
 const icons = ref<Partial<Record<BlockType, string>>>({})

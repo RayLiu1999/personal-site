@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import type { IslandEngine, ViewId } from '~/island/engine'
+import { PALETTE } from '~/island/blocks'
 
 const { t, tm, rt, locale } = useI18n()
 const island = useIsland()
@@ -94,10 +95,15 @@ onMounted(async () => {
     onBlocksChange: blocks => {
       island.blockCount.value = blocks.length
       store.set(BLOCKS_KEY, JSON.stringify(blocks))
+    },
+    onBuildLock: locked => { island.buildLocked.value = locked },
+    onBuildCycle: step => {
+      const i = PALETTE.indexOf(island.buildType.value)
+      island.buildType.value = PALETTE[(i + step + PALETTE.length) % PALETTE.length]
     }
   })
   island.blockCount.value = engine.blockCount()
-  engine.setCreative(island.creative.value)
+  engine.setCreative(island.creative.value, island.buildFly.value)
   engine.setBuildType(island.buildType.value)
   engine.setBuildTool(island.buildTool.value)
   island.engine.value = engine
@@ -108,7 +114,7 @@ onMounted(async () => {
 watch(island.view, v => engine?.setView(v))
 watch(isDark, v => engine?.setNight(v))
 watch(island.sound, v => engine?.setSound(v))
-watch(island.creative, v => engine?.setCreative(v))
+watch(island.creative, v => engine?.setCreative(v, island.buildFly.value))
 watch(island.buildType, v => engine?.setBuildType(v))
 watch(island.buildTool, v => engine?.setBuildTool(v))
 watch(locale, () => nextTick(() => engine?.refreshText()))

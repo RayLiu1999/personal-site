@@ -59,7 +59,7 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const { isDark, toggleDarkMode } = useDarkMode()
-const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, view, go } = useIsland()
+const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, buildFly, view, go } = useIsland()
 
 const otherLocale = computed(() => (locale.value === 'en' ? 'zh-tw' : 'en'))
 const timeLabel = computed(() => (isDark.value ? t('island.toDay') : t('island.toNight')))
@@ -70,6 +70,7 @@ const rootClass = computed(() => ({
   flat: flat.value,
   fp: !!lookAround.value,
   creative: creative.value && !flat.value,
+  fly: creative.value && buildFly.value && !flat.value,
   'at-home': view.value === 'home',
   'panel-open': view.value !== 'home' && !lookAround.value
 }))
@@ -161,6 +162,7 @@ onMounted(() => {
     flat.value = saved ? saved === '1' : window.matchMedia('(prefers-reduced-motion: reduce)').matches
   }
   try { sound.value = localStorage.getItem(SOUND_KEY) === '1' } catch { /* storage blocked */ }
+  buildFly.value = window.matchMedia('(pointer: fine)').matches && 'requestPointerLock' in HTMLElement.prototype
   window.addEventListener('keydown', onKey)
 })
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))

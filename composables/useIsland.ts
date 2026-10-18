@@ -67,6 +67,10 @@ export function useIsland() {
     creative: useState('island-creative', () => false),
     buildType: useState<BlockType>('island-build-type', () => 'grass'),
     buildTool: useState<BuildTool>('island-build-tool', () => 'place'),
+    /** Build in first person (mouse and pointer lock available) rather than on the overview. */
+    buildFly: useState('island-build-fly', () => false),
+    /** First-person building currently has the mouse captured. */
+    buildLocked: useState('island-build-locked', () => false),
     /** How many blocks the visitor has placed. */
     blockCount: useState('island-block-count', () => 0),
     view: computed(() => viewFromRoute(route)),

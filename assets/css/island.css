@@ -63,6 +63,11 @@
 .mc-btn.small { min-height: 36px; padding: 0 12px; font-size: 14px; }
 .mc-btn.square { width: 44px; padding: 0; }
 .island-root.creative .home-hud { display: none; }
+.island-root.fly .island-crosshair { opacity: .85; }
+.island-root.fly .island-splash { visibility: hidden; }
+.build-paused { position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-100% - 24px)); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 18px; background: var(--tag-bg); color: var(--tag-ink); font-family: var(--font-display); text-align: center; text-shadow: 2px 2px 0 rgba(0, 0, 0, .4); pointer-events: none; z-index: 55; }
+.build-paused strong { font-size: 18px; font-weight: 400; }
+.build-paused small { font-size: 13px; opacity: .8; }
 .build-hud .build-count { font-size: 12px; opacity: .85; }
 .build-hud .build-count.full { color: #ff8a7a; opacity: 1; }
 .build-tools { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 92px); transform: translateX(-50%); display: flex; gap: 6px; z-index: 60; }

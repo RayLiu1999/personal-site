@@ -51,6 +51,10 @@ export interface IslandOptions {
   onIntroSkipped(): void
   onLookAroundChange(id: ViewId | null): void
   onBlocksChange(blocks: Placed[]): void
+  /** First-person building has captured (true) or released (false) the mouse. */
+  onBuildLock(locked: boolean): void
+  /** The mouse wheel stepped through the block hotbar while building in first person. */
+  onBuildCycle(step: number): void
 }
 
 /* ---------- camera framings ---------- */
@@ -339,21 +343,107 @@ export function createIsland(o: IslandOptions) {
   /* ---------- build mode ---------- */
   let creative = false, buildType: BlockType = 'grass', buildTool: BuildTool = 'place', zoom = 1, zoomT = 1
   const breaking = (e: PointerEvent) => buildTool === 'remove' || e.button === 2 || e.shiftKey
-  function build(e: PointerEvent) {
-    const r = builder.act(aimAt(e.clientX, e.clientY), breaking(e), buildType)
+  function report(r: ReturnType<typeof builder.act>) {
     if (r === 'placed' || r === 'removed') {
       sfx.cue(r === 'placed' ? 'place' : 'break')
       o.onBlocksChange(builder.list())
     } else if (r) sfx.cue('deny')
+  }
+  function build(e: PointerEvent) {
+    report(builder.act(aimAt(e.clientX, e.clientY), breaking(e), buildType))
     if (e.pointerType === 'mouse') builder.hover(aimAt(e.clientX, e.clientY), breaking(e))
   }
-  function setCreative(on: boolean) {
+
+  /* ---------- build mode in first person ---------- */
+  // With a mouse, building happens in first person: fly with WASD, Space and Shift, look around with the pointer
+  // locked, break with the left button and place with the right, like Minecraft. Touch screens keep the overview.
+  const EYE = 1.62, HALF = 0.3, HEAD = 0.18, REACH = 8, SPEED = 6, EPS = 1e-4
+  let fly = false, flyK = 0, locked = false, flyYaw = PI, flyPitch = -0.3, outlineAt = 0, cycleAt = 0
+  const flyEye = new THREE.Vector3(), flyVel = new THREE.Vector3(), flyWish = new THREE.Vector3(), flyDir = new THREE.Vector3()
+  const keys = new Set<string>()
+  const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight']
+  const solidAt = (x: number, y: number, z: number) => {
+    if (builder.has(x, y, z)) return true
+    const t = world.W.get(world.key(x, y, z))?.t
+    return !!t && t !== 'water'
+  }
+  // The visitor is a 0.6 × 1.8 box with the eye 1.62 above the feet; blocks are unit cells centred on integers.
+  const cells = (lo: number, hi: number) => [Math.floor(lo + 0.5 + EPS), Math.floor(hi + 0.5 - EPS)]
+  function bodyHits(px: number, py: number, pz: number) {
+    const [x0, x1] = cells(px - HALF, px + HALF), [y0, y1] = cells(py - EYE, py + HEAD), [z0, z1] = cells(pz - HALF, pz + HALF)
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) if (solidAt(x, y, z)) return true
+    return false
+  }
+  const inBody = (x: number, y: number, z: number) =>
+    Math.abs(x - flyEye.x) < 0.5 + HALF && Math.abs(z - flyEye.z) < 0.5 + HALF && y + 0.5 > flyEye.y - EYE && y - 0.5 < flyEye.y + HEAD
+  function moveAxis(axis: 'x' | 'y' | 'z', d: number) {
+    if (!d) return
+    flyEye[axis] += d
+    if (bodyHits(flyEye.x, flyEye.y, flyEye.z)) { flyEye[axis] -= d; flyVel[axis] = 0 }
+  }
+  function updateFly(dt: number) {
+    const f = +keys.has('KeyW') - +keys.has('KeyS'), r = +keys.has('KeyD') - +keys.has('KeyA')
+    const u = +keys.has('Space') - +(keys.has('ShiftLeft') || keys.has('ShiftRight'))
+    const sy = Math.sin(flyYaw), cy = Math.cos(flyYaw)
+    flyWish.set(sy * f - cy * r, 0, cy * f + sy * r)
+    if (f || r) flyWish.normalize()
+    flyWish.y = u
+    flyVel.lerp(flyWish.multiplyScalar(SPEED), Math.min(1, dt * 10))
+    // Move in short slices so a long frame can't carry the visitor through a block.
+    const n = Math.max(1, Math.ceil((flyVel.length() * dt) / 0.25))
+    for (let i = 0; i < n; i++) { moveAxis('x', (flyVel.x * dt) / n); moveAxis('y', (flyVel.y * dt) / n); moveAxis('z', (flyVel.z * dt) / n) }
+    const h = Math.hypot(flyEye.x, flyEye.z)
+    if (h > 48) { flyEye.x *= 48 / h; flyEye.z *= 48 / h }
+    flyEye.y = clamp(flyEye.y, -24, 40)
+  }
+  const centreRay = () => { ray.setFromCamera(ndc.set(0, 0), camera); return ray }
+  function flyAct(remove: boolean) {
+    const r = centreRay()
+    r.far = REACH
+    report(builder.act(r, remove, buildType, inBody))
+    r.far = Infinity
+    outlineAt = 0
+  }
+  function lock() {
+    try {
+      // Newer browsers return a promise that rejects without a recent click; the pause overlay asks for one then.
+      const p = canvas.requestPointerLock() as unknown as Promise<void> | undefined
+      p?.catch?.(() => {})
+    } catch { /* pointer lock unavailable */ }
+  }
+  const onLockChange = () => {
+    locked = document.pointerLockElement === canvas
+    if (locked) (document.activeElement as HTMLElement | null)?.blur?.()
+    else keys.clear()
+    o.onBuildLock(locked)
+  }
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (!locked || !MOVE_KEYS.includes(e.code)) return
+    keys.add(e.code)
+    if (e.code === 'Space') e.preventDefault()
+  }
+  const onKeyUp = (e: KeyboardEvent) => keys.delete(e.code)
+  document.addEventListener('pointerlockchange', onLockChange)
+  window.addEventListener('keydown', onKeyDown)
+  window.addEventListener('keyup', onKeyUp)
+
+  function setCreative(on: boolean, firstPerson = false) {
     if (on === creative) return
     if (on && fpId) exitLookAround()
     creative = on
+    fly = on && firstPerson
     setHover(null)
     builder.setGhost(false)
+    if (fly) {
+      flyEye.set(0, 6.5, 16)
+      flyYaw = PI
+      flyPitch = -0.3
+      flyVel.set(0, 0, 0)
+      while (bodyHits(flyEye.x, flyEye.y, flyEye.z) && flyEye.y < 40) flyEye.y += 1
+      lock()
+    }
     if (!on) {
+      if (locked) document.exitPointerLock()
       zoomT = 1
       // Unwind any full turns so the camera eases back the short way.
       dragAz = Math.atan2(Math.sin(dragAz), Math.cos(dragAz))
@@ -365,9 +455,19 @@ export function createIsland(o: IslandOptions) {
   let down: { x: number; y: number; lx: number; ly: number; drag: boolean; id: number } | null = null
   const onDown = (e: PointerEvent) => {
     if (!ready) { skipIntro(); return }
+    if (fly) {
+      if (!locked) lock()
+      else if (e.button === 0 || e.button === 2) flyAct(e.button === 0)
+      return
+    }
     down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, drag: false, id: e.pointerId }
   }
   const onMove = (e: PointerEvent) => {
+    if (locked) {
+      flyYaw -= e.movementX * 0.0025
+      flyPitch = clamp(flyPitch - e.movementY * 0.0025, -1.5, 1.5)
+      return
+    }
     if (down && e.pointerId === down.id) {
       if (!down.drag && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) {
         down.drag = true
@@ -387,7 +487,7 @@ export function createIsland(o: IslandOptions) {
       down.lx = e.clientX
       down.ly = e.clientY
     } else if (ready && e.target === canvas && e.pointerType === 'mouse') {
-      if (creative) builder.hover(aimAt(e.clientX, e.clientY), breaking(e))
+      if (creative) { if (!fly) builder.hover(aimAt(e.clientX, e.clientY), breaking(e)) }
       else setHover(pick(e.clientX, e.clientY))
     }
   }
@@ -407,7 +507,10 @@ export function createIsland(o: IslandOptions) {
   const onLeave = () => { if (!down) { setHover(null); builder.setGhost(false) } }
   const onWheel = (e: WheelEvent) => {
     if (!ready) skipIntro()
-    else if (creative && e.target === canvas) zoomT = clamp(zoomT * Math.exp(e.deltaY * 0.0012), 0.3, 1.25)
+    else if (locked) {
+      // Trackpads send a burst of small wheel events, so step at most once per 120 ms.
+      if (performance.now() - cycleAt > 120 && Math.abs(e.deltaY) > 2) { cycleAt = performance.now(); o.onBuildCycle(Math.sign(e.deltaY)) }
+    } else if (creative && !fly && e.target === canvas) zoomT = clamp(zoomT * Math.exp(e.deltaY * 0.0012), 0.3, 1.25)
   }
   // Right-click breaks blocks in build mode, so keep the browser menu out of the way there.
   const onMenu = (e: MouseEvent) => { if (creative) e.preventDefault() }
@@ -577,11 +680,33 @@ export function createIsland(o: IslandOptions) {
       fpLight.intensity = spot.light ? k * 4 : 0
       if (spot.light) fpLight.position.set(...spot.light)
     } else fpLight.intensity = 0
-    const fov = lerp(40, 72, easeInOut(clamp(fpK, 0, 1)))
+
+    // blend into the first-person builder's eye
+    flyK += ((fly ? 1 : 0) - flyK) * Math.min(1, reduceMotion ? 1 : dt * 3.2)
+    if (flyK < 0.001 && !fly) flyK = 0
+    if (flyK > 0) {
+      if (fly && locked) updateFly(dt)
+      const k = easeInOut(clamp(flyK, 0, 1))
+      flyDir.set(Math.sin(flyYaw) * Math.cos(flyPitch), Math.sin(flyPitch), Math.cos(flyYaw) * Math.cos(flyPitch))
+      orbDir.copy(cam.t).sub(camPos).normalize().lerp(flyDir, k).normalize()
+      camera.position.lerpVectors(camPos, flyEye, k)
+      camera.lookAt(camera.position.x + orbDir.x, camera.position.y + orbDir.y, camera.position.z + orbDir.z)
+      // Raycasting the whole island is the costly part, so refresh the outline about 20 times a second.
+      if (fly && flyK > 0.9 && clock - outlineAt > 0.05) {
+        outlineAt = clock
+        camera.updateMatrixWorld()
+        const r = centreRay()
+        r.far = REACH
+        builder.outline(r)
+        r.far = Infinity
+      }
+    }
+    const eyeK = Math.max(fpK, flyK)
+    const fov = lerp(40, 72, easeInOut(clamp(eyeK, 0, 1)))
     if (Math.abs(fov - lastFov) > 0.01) {
       lastFov = fov
       camera.fov = fov
-      camera.near = lerp(0.5, 0.05, fpK)
+      camera.near = lerp(0.5, 0.05, eyeK)
       camera.updateProjectionMatrix()
     }
 
@@ -673,6 +798,10 @@ export function createIsland(o: IslandOptions) {
       window.removeEventListener('pointerup', onUp)
       canvas.removeEventListener('pointerleave', onLeave)
       canvas.removeEventListener('contextmenu', onMenu)
+      document.removeEventListener('pointerlockchange', onLockChange)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+      if (locked) document.exitPointerLock()
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('resize', resize)
       for (const t of Object.values(tags)) t?.el.remove()

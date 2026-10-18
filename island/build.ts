@@ -81,6 +81,7 @@ export function buildBuilder(scene: THREE.Scene, MAT: Materials, o: {
   return {
     group,
     count: () => placed.size,
+    has: (x: number, y: number, z: number) => placed.has(key(x, y, z)),
     list: (): Placed[] => [...placed].map(([k, t]) => { const [x, y, z] = k.split('|').map(Number); return [x, y, z, t] }),
 
     /** Restore saved blocks, skipping anything malformed or no longer allowed. */
@@ -102,13 +103,24 @@ export function buildBuilder(scene: THREE.Scene, MAT: Materials, o: {
       ghost.visible = !!t && (t.ok || !remove)
       if (!t) return
       ghost.position.set(t.x, t.y, t.z)
+      ghostFill.visible = true
       const c = !t.ok ? 0x777777 : remove ? 0xff5a4a : 0xffffff
       ;(ghostEdges.material as THREE.LineBasicMaterial).color.setHex(c)
       ;(ghostFill.material as THREE.MeshBasicMaterial).color.setHex(c)
     },
 
+    /** First person: outline the block under the crosshair, the way Minecraft does. */
+    outline(ray: THREE.Raycaster) {
+      const t = aim(ray, true)
+      ghost.visible = !!t
+      if (!t) return
+      ghost.position.set(t.x, t.y, t.z)
+      ghostFill.visible = false
+      ;(ghostEdges.material as THREE.LineBasicMaterial).color.setHex(0x111111)
+    },
+
     /** Place or break the block under the pointer. */
-    act(ray: THREE.Raycaster, remove: boolean, type: BlockType): 'placed' | 'removed' | 'full' | 'blocked' | null {
+    act(ray: THREE.Raycaster, remove: boolean, type: BlockType, avoid?: (x: number, y: number, z: number) => boolean): 'placed' | 'removed' | 'full' | 'blocked' | null {
       const t = aim(ray, remove)
       if (!t) return null
       if (remove) {
@@ -119,7 +131,7 @@ export function buildBuilder(scene: THREE.Scene, MAT: Materials, o: {
         return 'removed'
       }
       if (placed.size >= MAX_BLOCKS) return 'full'
-      if (!t.ok) return 'blocked'
+      if (!t.ok || avoid?.(t.x, t.y, t.z)) return 'blocked'
       placed.set(key(t.x, t.y, t.z), type)
       rebuild(type)
       return 'placed'
