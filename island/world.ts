@@ -223,6 +223,8 @@ export function buildIslandMeshes(world: ReturnType<typeof buildWorld>, MAT: Mat
     meshes.push({ mesh, n, xs, ys, zs, del })
   }
   const introEnd = maxDelay + FALL + 0.15
+  // When each block touches down, in order, so the intro can make a sound as blocks land.
+  const landTimes = Float32Array.from(meshes.flatMap(d => Array.from(d.del, t => t + FALL))).sort()
   function applyIntro(t: number) {
     for (const d of meshes) {
       const { mesh, n, xs, ys, zs, del } = d
@@ -242,5 +244,5 @@ export function buildIslandMeshes(world: ReturnType<typeof buildWorld>, MAT: Mat
   function dispose() {
     for (const d of meshes) { d.mesh.geometry.dispose(); d.mesh.dispose() }
   }
-  return { introEnd, applyIntro, dispose }
+  return { introEnd, landTimes, applyIntro, dispose }
 }

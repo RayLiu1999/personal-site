@@ -11,6 +11,13 @@
         <span>RAY LIU</span><span class="label">{{ t('island.brandSub') }}</span>
       </NuxtLink>
       <div class="hud-actions">
+        <button v-if="!flat" class="mc-btn square" type="button" :aria-label="soundLabel" :title="soundLabel" :aria-pressed="sound" @click="toggleSound">
+          <svg class="px-icon" viewBox="0 0 12 12" aria-hidden="true">
+            <path d="M1 5h2v-1h1v-1h1v-1h2v9h-2v-1h-1v-1h-1v-1h-2z" />
+            <path v-if="sound" d="M8 5h1v3H8zM10 3h1v7h-1z" />
+            <path v-else d="M8 5h1v1H8zM10 5h1v1h-1zM9 6h1v1H9zM8 7h1v1H8zM10 7h1v1h-1z" />
+          </svg>
+        </button>
         <button v-if="!noWebgl" class="mc-btn small" type="button" @click="toggleFlat">
           {{ flat ? t('island.islandBtn') : t('island.flatBtn') }}
         </button>
@@ -46,10 +53,11 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const { isDark, toggleDarkMode } = useDarkMode()
-const { engine, ready, lookAround, flat, noWebgl, view, go } = useIsland()
+const { engine, ready, lookAround, flat, noWebgl, sound, view, go } = useIsland()
 
 const otherLocale = computed(() => (locale.value === 'en' ? 'zh-tw' : 'en'))
 const timeLabel = computed(() => (isDark.value ? t('island.toDay') : t('island.toNight')))
+const soundLabel = computed(() => (sound.value ? t('island.soundOff') : t('island.soundOn')))
 
 const rootClass = computed(() => ({
   ready: ready.value,
@@ -65,6 +73,14 @@ function toggleFlat() {
   flat.value = !flat.value
   try { localStorage.setItem(FLAT_KEY, flat.value ? '1' : '0') } catch { /* storage blocked */ }
   umTrackEvent('island-flat', { on: flat.value })
+}
+
+/* ---------- sound ---------- */
+const SOUND_KEY = 'island.sound'
+function toggleSound() {
+  sound.value = !sound.value
+  try { localStorage.setItem(SOUND_KEY, sound.value ? '1' : '0') } catch { /* storage blocked */ }
+  umTrackEvent('island-sound', { on: sound.value })
 }
 
 /* ---------- toast with the landmark name ---------- */
@@ -116,6 +132,7 @@ onMounted(() => {
     try { saved = localStorage.getItem(FLAT_KEY) } catch { /* storage blocked */ }
     flat.value = saved ? saved === '1' : window.matchMedia('(prefers-reduced-motion: reduce)').matches
   }
+  try { sound.value = localStorage.getItem(SOUND_KEY) === '1' } catch { /* storage blocked */ }
   window.addEventListener('keydown', onKey)
 })
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))

@@ -651,6 +651,8 @@
     "contactMe": "Contact me",
     "hint": "Drag to look around · Keys 1–4 jump to landmarks · Click islanders to chat · Esc to go back",
     "toDay": "Switch to day",
+    "soundOn": "Turn sound on",
+    "soundOff": "Turn sound off",
     "toNight": "Switch to night",
     "dayGlyph": "☼",
     "nightGlyph": "☾",
