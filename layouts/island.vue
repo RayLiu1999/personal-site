@@ -51,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import '~/assets/css/island.css'
 import type { LandmarkId } from '~/composables/useIsland'
 import { PALETTE } from '~/island/blocks'
 
@@ -175,3 +174,6 @@ onMounted(() => {
 })
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
+
+<!-- As an SFC style block (not a script import) so SSR inlines it and the page never paints unstyled. -->
+<style src="~/assets/css/island.css"></style>
