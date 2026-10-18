@@ -74,6 +74,7 @@ onMounted(async () => {
     intro,
     night: isDark.value,
     reduceMotion,
+    sound: island.sound.value,
     onNavigate: id => {
       umTrackEvent('island-landmark', { id })
       island.go(id)
@@ -96,6 +97,7 @@ onMounted(async () => {
 
 watch(island.view, v => engine?.setView(v))
 watch(isDark, v => engine?.setNight(v))
+watch(island.sound, v => engine?.setSound(v))
 watch(locale, () => nextTick(() => engine?.refreshText()))
 
 onBeforeUnmount(() => {

@@ -7,6 +7,7 @@ import { getAtlas } from './atlas'
 import { buildIslandMeshes, buildWorld, createMaterials, pk } from './world'
 import { buildProps } from './props'
 import { buildIslanders, type Talker } from './islanders'
+import { createSound } from './sound'
 import { angLerp, clamp, easeInOut, lerp, mulberry32 } from './rand'
 
 export type ViewId = 'home' | 'factory' | 'library' | 'cabin' | 'signpost' | 'm17' | 'm1' | 'm11' | 'm16'
@@ -39,6 +40,8 @@ export interface IslandOptions {
   intro: 'full' | 'short' | 'none'
   night: boolean
   reduceMotion: boolean
+  /** Sound effects and ambience; off unless the visitor switched them on. */
+  sound: boolean
   onNavigate(id: ViewId): void
   onReady(): void
   onIntroSkipped(): void
@@ -117,6 +120,8 @@ export function createIsland(o: IslandOptions) {
   const props = P.props
   const groundY = (x: number, z: number) => (world.tops.get(pk(Math.round(x), Math.round(z))) ?? 0) + 0.5
   const people = buildIslanders(props, P.box, groundY, reduceMotion)
+  const sfx = createSound()
+  sfx.setEnabled(o.sound)
 
   /* ---------- sky dressing ---------- */
   // The sky gradient is drawn by WebGL (same colours as the CSS sky shown before the engine loads), so the canvas
@@ -269,6 +274,7 @@ export function createIsland(o: IslandOptions) {
     n.talk = 5
     talker = n
     showLine(n)
+    sfx.talk(n.key)
   }
 
   /* ---------- camera ---------- */
@@ -286,6 +292,7 @@ export function createIsland(o: IslandOptions) {
     const to = viewFor(id)
     if (instant) { cam.t.copy(to.t); cam.az = to.az; cam.el = to.el; cam.d = to.d; tw = null; return }
     tw = { from: { t: cam.t.clone(), az: cam.az, el: cam.el, d: cam.d }, to, start: clock, dur: reduceMotion ? 0.01 : 1.25 }
+    if (id !== 'intro') sfx.cue('move')
   }
   let dragAz = 0, dragEl = 0, offX = 0, offY = 0
 
@@ -299,11 +306,13 @@ export function createIsland(o: IslandOptions) {
     fpYaw = 0; fpPitch = 0
     if (spot.ride) rideYaw = P.loopPos(clock * 2.2).rot
     setHover(null)
+    sfx.cue('enter')
     o.onLookAroundChange(id)
   }
   function exitLookAround() {
     if (!fpId) return
     fpId = null
+    sfx.cue('exit')
     o.onLookAroundChange(null)
   }
   function lookAround(dYaw: number, dPitch: number) {
@@ -355,7 +364,7 @@ export function createIsland(o: IslandOptions) {
   window.addEventListener('wheel', onWheel, { passive: true })
 
   /* ---------- intro ---------- */
-  let introT = 0, introSpeed = o.intro === 'short' ? island.introEnd / 1.1 : 1, ready = false
+  let introT = 0, introSpeed = o.intro === 'short' ? island.introEnd / 1.1 : 1, ready = false, landed = 0
   function skipIntro() {
     if (ready || introT >= island.introEnd) return
     introT = island.introEnd
@@ -461,6 +470,9 @@ export function createIsland(o: IslandOptions) {
     if (!ready) {
       introT += dt * introSpeed
       island.applyIntro(introT)
+      const before = landed
+      while (landed < island.landTimes.length && island.landTimes[landed] <= introT) landed++
+      sfx.land(landed - before)
       if (o.veil) o.veil.style.opacity = String(clamp(1 - introT / 0.8, 0, 1))
       props.visible = introT > 2.4
       const k = easeInOut(clamp(introT / island.introEnd, 0, 1)), a = viewFor('intro'), b = viewFor(view)
@@ -553,6 +565,7 @@ export function createIsland(o: IslandOptions) {
     clouds.forEach(c => { c.position.x += dt * c.userData.v; if (c.position.x > 110) c.position.x = -120 })
     P.update({ dt, clock, view, nightT: n, rideHidesLetter: !!(spot && spot.ride && fpK > 0.3) })
     people.update(dt, clock, camera)
+    sfx.update(dt, n, !!(spot && spot.ride && fpId))
 
     bloom.strength = lerp(0, 0.6, n)
     if (glowAllowed && n > 0.02) composer.render(dt)
@@ -573,7 +586,11 @@ export function createIsland(o: IslandOptions) {
       view = id
       if (ready) tweenTo(id, instant)
     },
-    setNight(on: boolean) { night = on },
+    setNight(on: boolean) {
+      if (on !== night && ready) sfx.cue(on ? 'night' : 'day')
+      night = on
+    },
+    setSound(on: boolean) { sfx.setEnabled(on) },
     enterLookAround,
     exitLookAround,
     lookAround,
@@ -581,6 +598,7 @@ export function createIsland(o: IslandOptions) {
     refreshText,
     dispose() {
       cancelAnimationFrame(raf)
+      sfx.dispose()
       canvas.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)

@@ -60,6 +60,8 @@ export function useIsland() {
     flat: useState('island-flat', () => false),
     /** 3D is unavailable on this device, so flat mode cannot be turned off. */
     noWebgl: useState('island-no-webgl', () => false),
+    /** Island sound effects and ambience; off until the visitor turns them on. */
+    sound: useState('island-sound', () => false),
     view: computed(() => viewFromRoute(route)),
     go(id: ViewId) {
       const r = routeForView(id)
