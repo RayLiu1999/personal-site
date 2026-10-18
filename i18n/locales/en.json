@@ -638,5 +638,190 @@
       "title": "Contact Us",
       "content": "If you have any questions about this Privacy Policy, please feel free to contact me via the <a href=\"/contact\" class=\"text-blue-500 hover:underline\">Contact Page</a>."
     }
+  },
+  "island": {
+    "brandSub": "’s Island",
+    "skip": "Click anywhere to skip the intro",
+    "intro": "I am a passionate {role}, focusing on building {a}, {b} and {c} systems.",
+    "introRole": "Back-end Developer",
+    "introA": "stable",
+    "introB": "high-performance",
+    "introC": "scalable",
+    "viewWork": "View work",
+    "contactMe": "Contact me",
+    "hint": "Drag to look around · Keys 1–4 jump to landmarks · Click islanders to chat · Esc to go back",
+    "toDay": "Switch to day",
+    "toNight": "Switch to night",
+    "dayGlyph": "☼",
+    "nightGlyph": "☾",
+    "langLabel": "切換成中文",
+    "langShort": "中",
+    "flatBtn": "Flat",
+    "islandBtn": "Island",
+    "close": "Close",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "grip": "Expand or collapse the panel",
+    "nav": "Landmark hotbar",
+    "splashLabel": "Show another splash",
+    "splash": [
+      "Back-end developer!",
+      "Zero downtime!",
+      "Now with 100% more Kafka!",
+      "SELECT * FROM surprises;",
+      "Matching engine at full speed!",
+      "Two K3s nodes!",
+      "$0/month servers!",
+      "Exactly-once (mostly)!",
+      "Cache hit!",
+      "git push to deploy!"
+    ],
+    "lm": {
+      "factory": {
+        "name": "Redstone Factory",
+        "sub": "Portfolio"
+      },
+      "library": {
+        "name": "Library",
+        "sub": "Blog"
+      },
+      "cabin": {
+        "name": "Cabin",
+        "sub": "About"
+      },
+      "signpost": {
+        "name": "Signpost",
+        "sub": "Contact"
+      }
+    },
+    "mc": {
+      "m17": "Matching Engine",
+      "m1": "Message Minecart",
+      "m11": "Deploy Pipeline",
+      "m16": "Server Tower"
+    },
+    "fp": {
+      "enter": "Step inside",
+      "ride": "Ride the minecart",
+      "enterHint": "Look around in first person. Clicking the building again works too.",
+      "rideHint": "Hop in and follow a message around the loop.",
+      "where": {
+        "factory": "Inside the factory",
+        "library": "Between the shelves",
+        "cabin": "Inside the cabin",
+        "m17": "By the hopper",
+        "m11": "By the pipeline",
+        "m16": "By the racks",
+        "m1": "In the minecart"
+      },
+      "hint": "Drag to look around · Esc to leave",
+      "exit": "Leave"
+    },
+    "npc": {
+      "eng": {
+        "name": "Redstone engineer Flint",
+        "lines": [
+          "Every machine here is one of Ray’s projects. Click one and see what happens.",
+          "The matching engine ate another hundred thousand orders today. Hopper’s still fine.",
+          "The yellow light on the server tower? Totally normal. …Probably.",
+          "The minecart carries messages, not ore. Don’t ask."
+        ]
+      },
+      "lib": {
+        "name": "Librarian Page",
+        "lines": [
+          "Every book on these shelves is one of Ray’s blog posts.",
+          "The newest posts are in the panel. Click a spine to read one.",
+          "The Laravel-to-C# one keeps getting checked out.",
+          "Want the whole collection? The blog link is at the bottom of the panel."
+        ]
+      },
+      "post": {
+        "name": "Mail carrier Stamp",
+        "lines": [
+          "Looking for Ray? I empty the mailbox by the signpost every day.",
+          "He usually replies within 24 hours. Faster than I deliver.",
+          "When the mailbox flag is up, there’s new mail. Why not send one?"
+        ]
+      },
+      "hiker": {
+        "name": "Traveler Rook",
+        "lines": [
+          "Drag the screen to look around.",
+          "Keys 1 to 4 teleport you to each landmark.",
+          "At a landmark, click the building again to step inside.",
+          "Come back at night. The torches and server lights glow.",
+          "I heard there’s an easter egg on this island… haven’t found it yet."
+        ]
+      },
+      "hen": {
+        "name": "Chicken",
+        "lines": [
+          "Bawk.",
+          "Bawk bawk?",
+          "…bawk.",
+          "(stares at you)"
+        ]
+      }
+    },
+    "factory": {
+      "lead": "The projects that best show my back-end and infrastructure work are built as working redstone machines. Everything else is in the inventory.",
+      "flag": "Flagship machines",
+      "flagHint": "Pick a machine and the camera flies over",
+      "inv": "Inventory",
+      "readout": "Hover a slot to see the project. Click it for the full write-up.",
+      "detail": "Full write-up",
+      "demo": "Demo",
+      "github": "GitHub",
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "seoTitle": "{title} - Ray Liu | Back-end Developer Projects",
+      "seoOgTitle": "{title} - Ray Liu, Back-end Developer",
+      "seoKeywords": "Ray Liu portfolio, programming projects, full-stack development, back-end systems, Node.js projects, Python applications, Vue.js development, DevOps automation"
+    },
+    "machine": {
+      "back": "← Redstone Factory",
+      "how": "What this machine shows"
+    },
+    "metaphor": {
+      "m17": "Green blocks are buy orders, red blocks are sell orders. Both ride into the hopper, get matched inside, and leave as a gold trade event.",
+      "m1": "A minecart carries messages around the track, with Redis as the redstone hub in the middle. Each node lights up as the cart passes, like Redis Pub/Sub broadcasting room events to every pod.",
+      "m11": "The dispenser ships a new image tag, the piston pushes it into the cluster, and the lamp lights when ArgoCD finishes syncing.",
+      "m16": "The rack LEDs show node health. This machine holds two infrastructure projects: GCP Free Stack and the OVH dual-node K3s cluster."
+    },
+    "library": {
+      "lead": "The latest posts from blog.liu-yucheng.com (written in Chinese).",
+      "more": "Visit the blog →",
+      "empty": "Couldn’t load the posts right now. Visit the blog directly.",
+      "seoTitle": "Technical Blog - Ray Liu | Back-end Development & DevOps",
+      "seoDescription": "Read Ray Liu's latest posts on back-end development, system architecture, DevOps, and lessons from building projects."
+    },
+    "cabin": {
+      "chest": "Tools in the chest",
+      "seoKeywords": "Ray Liu biography, back-end developer background, programmer story, development philosophy, career development, personal experience"
+    },
+    "signpost": {
+      "sign": [
+        "Contact",
+        "→ Mailbox"
+      ],
+      "direct": "Reach me directly",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyFail": "Copy failed, select it manually",
+      "emailLabel": "Email",
+      "githubLabel": "GitHub · Rayliu1999",
+      "linkedinLabel": "LinkedIn",
+      "privacy": "This form is protected by reCAPTCHA. See the privacy policy.",
+      "missing": "Please fill in every field.",
+      "invalidEmail": "Please enter a valid email address.",
+      "recaptchaRequired": "reCAPTCHA verification is not ready. Please try again shortly.",
+      "recaptchaError": "Could not load reCAPTCHA verification. Please reload the page and try again.",
+      "seoTitle": "{title} - Ray Liu | Back-end Development Collaboration",
+      "seoOgTitle": "{title} - Ray Liu, Back-end Developer",
+      "seoKeywords": "contact Ray Liu, technical collaboration, project inquiries, back-end developer contact, job opportunities, technical consulting"
+    },
+    "flatNote": "Flat mode: used when WebGL is unavailable or reduced motion is on. Same content as the island.",
+    "srTitle": "Ray Liu, back-end developer"
   }
 }

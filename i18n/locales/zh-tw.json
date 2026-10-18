@@ -638,5 +638,190 @@
       "title": "聯絡我們",
       "content": "若您對本隱私權政策有任何疑問，歡迎隨時透過 <a href=\"/contact\" class=\"text-blue-500 hover:underline\">聯絡頁面</a> 與我聯繫。"
     }
+  },
+  "island": {
+    "brandSub": "的浮空島",
+    "skip": "點擊任意處跳過開場",
+    "intro": "我是一名熱愛技術的{role}，專注於打造{a}、{b}且{c}的系統。",
+    "introRole": "後端工程師",
+    "introA": "穩定",
+    "introB": "高效",
+    "introC": "易於擴展",
+    "viewWork": "看作品",
+    "contactMe": "聯絡我",
+    "hint": "拖曳轉動視角 · 數字鍵 1–4 切換地標 · 點島民聊天 · Esc 返回",
+    "toDay": "切換成白天",
+    "toNight": "切換成夜晚",
+    "dayGlyph": "晝",
+    "nightGlyph": "夜",
+    "langLabel": "Switch to English",
+    "langShort": "EN",
+    "flatBtn": "平面版",
+    "islandBtn": "浮空島",
+    "close": "關閉",
+    "expand": "展開",
+    "collapse": "收合",
+    "grip": "展開或收合面板",
+    "nav": "地標快捷欄",
+    "splashLabel": "換一句標語",
+    "splash": [
+      "後端工程師！",
+      "Zero downtime!",
+      "Now with 100% more Kafka!",
+      "SELECT * FROM 驚喜;",
+      "撮合引擎全速運轉！",
+      "K3s 雙節點！",
+      "每月 $0 的伺服器！",
+      "Exactly-once（大概）！",
+      "快取命中！",
+      "git push 就上線！"
+    ],
+    "lm": {
+      "factory": {
+        "name": "紅石工廠",
+        "sub": "作品集"
+      },
+      "library": {
+        "name": "圖書館",
+        "sub": "部落格"
+      },
+      "cabin": {
+        "name": "小屋",
+        "sub": "關於我"
+      },
+      "signpost": {
+        "name": "告示牌",
+        "sub": "聯絡我"
+      }
+    },
+    "mc": {
+      "m17": "撮合引擎",
+      "m1": "訊息礦車",
+      "m11": "部署流水線",
+      "m16": "伺服器塔"
+    },
+    "fp": {
+      "enter": "走進去看看",
+      "ride": "搭上礦車",
+      "enterHint": "用第一人稱環顧四周。再點一次建築也可以進去。",
+      "rideHint": "坐進礦車，跟著訊息繞一圈。",
+      "where": {
+        "factory": "站在工廠裡",
+        "library": "站在書架之間",
+        "cabin": "在小屋裡",
+        "m17": "站在漏斗前",
+        "m11": "站在流水線旁",
+        "m16": "站在機櫃前",
+        "m1": "坐在礦車上"
+      },
+      "hint": "拖曳環顧四周 · Esc 離開",
+      "exit": "離開"
+    },
+    "npc": {
+      "eng": {
+        "name": "紅石工程師 阿石",
+        "lines": [
+          "這些機器都是 Ray 的專案，點一台看看會發生什麼。",
+          "撮合引擎今天又吃了十萬張單，漏斗還沒塞住。",
+          "伺服器塔上的黃燈？正常的。……應該是正常的。",
+          "礦車載的是訊息，不是礦。別問我為什麼。"
+        ]
+      },
+      "lib": {
+        "name": "圖書管理員 書蟲",
+        "lines": [
+          "架上每一本都是 Ray 寫的部落格文章。",
+          "最新的文章都在面板裡，點書背就能讀。",
+          "Laravel 轉 C# 那篇被借走好幾次了。",
+          "想看全部的書？面板最下面有部落格的入口。"
+        ]
+      },
+      "post": {
+        "name": "郵差 小信",
+        "lines": [
+          "想找 Ray？告示牌旁的信箱我每天都會收。",
+          "他通常 24 小時內回信，比我送信還快。",
+          "信箱旗子舉起來就代表有新信，你也來一封吧？"
+        ]
+      },
+      "hiker": {
+        "name": "旅人 阿遊",
+        "lines": [
+          "拖曳畫面可以轉視角喔。",
+          "按數字鍵 1 到 4 可以直接傳送到地標。",
+          "到了地標再點一次建築，就能走進去看看。",
+          "晚上來的話，火把和伺服器燈都會亮。",
+          "聽說這座島上藏了一個彩蛋……我還沒找到。"
+        ]
+      },
+      "hen": {
+        "name": "雞",
+        "lines": [
+          "咕咕。",
+          "咕咕咕？",
+          "……咕。",
+          "（盯著你看）"
+        ]
+      }
+    },
+    "factory": {
+      "lead": "最能代表後端與基礎設施能力的專案，做成了工廠裡會動的紅石機器。其餘作品收在物品欄。",
+      "flag": "旗艦機器",
+      "flagHint": "點一台機器，鏡頭會飛過去",
+      "inv": "物品欄",
+      "readout": "游標移到格子上看專案名稱，點格子看完整介紹。",
+      "detail": "完整介紹",
+      "demo": "Demo",
+      "github": "GitHub",
+      "frontend": "前端",
+      "backend": "後端",
+      "seoTitle": "{title} - Ray Liu | 後端工程師專案展示",
+      "seoOgTitle": "{title} - Ray Liu 後端工程師",
+      "seoKeywords": "Ray Liu 作品集, 程式設計專案, 全端開發, 後端系統, Node.js 專案, Python 應用, Vue.js 開發, DevOps 自動化"
+    },
+    "machine": {
+      "back": "← 紅石工廠",
+      "how": "這台機器在演示什麼"
+    },
+    "metaphor": {
+      "m17": "綠色方塊是買單、紅色方塊是賣單。兩邊從軌道送進漏斗，在裡面配對成交，吐出金色的成交事件。",
+      "m1": "礦車載著訊息沿軌道繞行，中間的紅石方塊是 Redis。每經過一個節點，節點燈就亮，就像 Redis Pub/Sub 把聊天室事件廣播到每個 Pod。",
+      "m11": "發射器送出新的映像版本，活塞把它推進叢集，燈亮代表 ArgoCD 同步完成。",
+      "m16": "機櫃燈號代表節點狀態。這台機器收錄兩個基礎設施專案：GCP 零成本自架、OVH 雙節點 K3s。"
+    },
+    "library": {
+      "lead": "最新文章，來自 blog.liu-yucheng.com。",
+      "more": "前往部落格 →",
+      "empty": "暫時抓不到文章，請直接前往部落格。",
+      "seoTitle": "技術部落格 - Ray Liu | 後端開發與 DevOps",
+      "seoDescription": "閱讀 Ray Liu 的最新技術文章，分享後端開發、系統架構、DevOps 與專案實作心得。"
+    },
+    "cabin": {
+      "chest": "箱子裡的工具",
+      "seoKeywords": "Ray Liu 簡介, 後端工程師背景, 程式設計師故事, 技術哲學, 職涯發展, 個人經歷"
+    },
+    "signpost": {
+      "sign": [
+        "聯絡我",
+        "→ 信箱"
+      ],
+      "direct": "直接找我",
+      "copy": "複製",
+      "copied": "已複製",
+      "copyFail": "無法複製，請手動選取",
+      "emailLabel": "電子郵件",
+      "githubLabel": "GitHub · Rayliu1999",
+      "linkedinLabel": "LinkedIn",
+      "privacy": "本表單使用 reCAPTCHA 保護，詳見隱私權政策。",
+      "missing": "請填寫所有欄位。",
+      "invalidEmail": "請輸入有效的電子郵件地址。",
+      "recaptchaRequired": "reCAPTCHA 驗證尚未完成，請稍候再試。",
+      "recaptchaError": "無法載入 reCAPTCHA 驗證，請重新整理頁面後再試。",
+      "seoTitle": "{title} - Ray Liu | 後端工程師合作洽談",
+      "seoOgTitle": "{title} - Ray Liu 後端工程師",
+      "seoKeywords": "聯絡 Ray Liu, 技術合作, 專案洽談, 後端工程師聯絡, 工作機會, 技術諮詢"
+    },
+    "flatNote": "平面版：不支援 WebGL 或系統設定為減少動態時使用，內容與浮空島相同。",
+    "srTitle": "Ray Liu，後端工程師"
   }
 }

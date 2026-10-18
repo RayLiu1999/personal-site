@@ -1,7 +1,9 @@
-import { ref, readonly, onMounted } from 'vue'
+import { readonly, onMounted } from 'vue'
 
 export const useDarkMode = () => {
-  const isDark = ref(false)
+  // Shared across components so the island's day/night and the page theme never disagree.
+  const isDark = useState('dark-mode', () => false)
+  const initialized = useState('dark-mode-init', () => false)
 
   const toggleDarkMode = () => {
     isDark.value = !isDark.value
@@ -31,11 +33,12 @@ export const useDarkMode = () => {
         isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
       }
       updateDarkMode()
+      initialized.value = true
     }
   }
 
   onMounted(() => {
-    initDarkMode()
+    if (!initialized.value) initDarkMode()
   })
 
   return {
