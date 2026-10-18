@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from 'nuxt/config';
+import { PROJECTS } from './data/projects';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-31',
@@ -67,24 +68,8 @@ export default defineNuxtConfig({
       '/admin/**',
       '/api/**'
     ],
-    routes: [
-      '/',
-      '/blog',
-      '/about',
-      '/contact',
-      '/portfolio',
-      '/portfolio/chat-app-backend',
-      '/portfolio/chat-app-frontend',
-      '/portfolio/chess-in-vue',
-      '/portfolio/e-commerce-cart',
-      '/portfolio/green-fragrance-soap-admin',
-      '/portfolio/green-fragrance-soap-backend',
-      '/portfolio/green-fragrance-soap-nuxt',
-      '/portfolio/n8n-yt-dlp-docker-compose',
-      '/portfolio/tomato-clock',
-      '/portfolio/youtube-extension',
-      '/portfolio/yt-discord-bot'
-    ],
+    // Pages are found automatically; project pages are dynamic, so list them (each locale gets its own URL).
+    urls: PROJECTS.map((project) => ({ loc: `/portfolio/${project.id}`, _i18nTransform: true })),
     defaults: {
       changefreq: 'weekly',
       priority: 0.8,

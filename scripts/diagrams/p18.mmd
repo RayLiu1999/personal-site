@@ -1,0 +1,12 @@
+graph TD
+    A[YouTube Video / Live] -->|Web Audio API| B(Content Script)
+    B -->|WebSocket Buffer| C[Go Backend]
+    C -->|Streaming API| D[Deepgram Nova-2 STT]
+    D -->|Transcript| C
+    C --> E{Round-Robin Load Balancer}
+    E -->|Primary| F[Google Translate]
+    E -->|Failover| G[DeepL API]
+    F --> C
+    G --> C
+    C -->|Translation Data| B
+    B -->|DOM Update| H[Draggable Subtitles]

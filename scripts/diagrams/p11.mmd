@@ -1,0 +1,8 @@
+graph TD
+  Developer -->|Git Push| GitRepo[GitHub Repository]
+  GitRepo -->|Webhook / Poll| Argo[ArgoCD]
+  Argo -->|1. Sync| RootApp[Root Application]
+  RootApp -->|2. Generate| ProjectApps[Project Apps Apps/A, B, C]
+  ProjectApps -->|3. Deploy| K3s[K3s Cluster]
+  GHCR[GHCR] -->|Pull Image| K3s
+  CI[GitHub Actions] -.->|Update Tag| GitRepo

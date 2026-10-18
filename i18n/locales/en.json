@@ -369,7 +369,7 @@
         "title": "Muon Music Player",
         "description": "A cross-platform mobile music player app built with Flutter, streaming and downloading YouTube audio/video ad-free with offline playback support.",
         "overview": "Muon is a minimalist, ad-free mobile music player for iOS and Android that streams and downloads YouTube content. Users can search YouTube, play audio in the background with lock-screen controls, download audio (m4a) or full video (H.264/mp4), and manage offline playlists. The FastAPI backend handles download tasks asynchronously via a task queue with status polling, serves static media files, and runs a TTL-based disk cleanup service.",
-        "architectureDescription": "Flutter frontend uses Riverpod (code-gen) for state management, just_audio + audio_service for background playback, Drift (SQLite) for local offline storage, and Dio for HTTP. FastAPI backend wraps yt-dlp + ffmpeg in an async task system, exposes a /api/status/{task_id} polling endpoint, and serves downloaded files via StaticFiles. Deployed via Docker Compose.",
+        "architectureDescription": "Flutter frontend uses Riverpod (code-gen) for state management, just_audio + audio_service for background playback, Drift (SQLite) for local offline storage, and Dio for HTTP. FastAPI backend wraps yt-dlp + ffmpeg in an async task system, exposes a /api/status/{'{'}task_id{'}'} polling endpoint, and serves downloaded files via StaticFiles. Deployed via Docker Compose.",
         "learnings": "Building Muon gave me deep experience with Flutter's audio ecosystem (just_audio, audio_service) and the complexity of background media sessions across iOS and Android. Designing an async task queue on FastAPI with status polling was a valuable pattern for handling long-running jobs without blocking the API response cycle.",
         "challenges": [
           {
@@ -380,7 +380,7 @@
           {
             "title": "Async Download Task System",
             "problem": "YouTube downloads via yt-dlp can take 10–60+ seconds. A synchronous API would time out and leave the client hanging.",
-            "solution": "Implemented an async task queue on the FastAPI backend: the POST /api/download endpoint immediately returns a task_id, while the Flutter client polls GET /api/status/{task_id} until the status is 'completed', then fetches the media URL."
+            "solution": "Implemented an async task queue on the FastAPI backend: the POST /api/download endpoint immediately returns a task_id, while the Flutter client polls GET /api/status/{'{'}task_id{'}'} until the status is 'completed', then fetches the media URL."
           },
           {
             "title": "Offline Storage & Playlist Management",
@@ -861,6 +861,29 @@
       "seoKeywords": "contact Ray Liu, technical collaboration, project inquiries, back-end developer contact, job opportunities, technical consulting"
     },
     "flatNote": "Flat mode: used when WebGL is unavailable or reduced motion is on. Same content as the island.",
-    "srTitle": "Ray Liu, back-end developer"
+    "srTitle": "Ray Liu, back-end developer",
+    "project": {
+      "back": "← {name}",
+      "enlarge": "Click to enlarge",
+      "diagramLabel": "System architecture of {title}",
+      "prev": "Previous project",
+      "next": "Next project",
+      "pager": "More projects"
+    },
+    "error": {
+      "voidTitle": "Nothing but the void",
+      "voidBody": "The page you are looking for is not on the island. It may have fallen into the void.",
+      "title": "Something went wrong on the island",
+      "body": "The server is not responding right now. Please try again in a moment.",
+      "home": "Back to the island"
+    },
+    "privacy": {
+      "updated": "Last updated: September 13, 2025",
+      "recaptcha": "To protect the contact form from spam abuse, this website uses the reCAPTCHA v3 service provided by Google. The use of this service implies that you agree to and accept Google's {privacy} and {terms}. reCAPTCHA collects necessary hardware and software information (such as device and application data) and transmits it to Google for analysis to determine if you are a human user.",
+      "privacyLink": "Privacy Policy",
+      "termsLink": "Terms of Service",
+      "contact": "If you have any questions about this Privacy Policy, please feel free to contact me via {link}.",
+      "contactLink": "the contact form on the signpost"
+    }
   }
 }

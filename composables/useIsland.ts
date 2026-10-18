@@ -2,6 +2,7 @@ import { shallowRef } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import type { IslandEngine, ViewId } from '~/island/engine'
 import type { BlockType, BuildTool } from '~/island/blocks'
+import { INVENTORY_IDS } from '~/data/projects'
 
 export type LandmarkId = 'factory' | 'library' | 'cabin' | 'signpost'
 export type MachineId = 'm17' | 'm1' | 'm11' | 'm16'
@@ -10,6 +11,10 @@ export const LANDMARK_IDS: LandmarkId[] = ['factory', 'library', 'cabin', 'signp
 export const MACHINE_IDS: MachineId[] = ['m17', 'm1', 'm11', 'm16']
 /** Which projects each flagship machine shows (project ids from data/projects.ts). */
 export const MACHINE_PROJECTS: Record<MachineId, number[]> = { m17: [17], m1: [1], m11: [11], m16: [16, 10] }
+/** The flagship machine a project is shown on, if any. */
+export const machineOf = (projectId: number) => MACHINE_IDS.find(m => MACHINE_PROJECTS[m].includes(projectId)) ?? null
+/** Every project in the order the factory lists them: flagship machines first, then the inventory. */
+export const PROJECT_ORDER = [...MACHINE_IDS.flatMap(m => MACHINE_PROJECTS[m]), ...INVENTORY_IDS]
 /** Spots that support look-around (first person). Mirrors SPOTS in island/engine.ts. */
 export const LOOK_AROUND_IDS: ViewId[] = ['factory', 'library', 'cabin', 'm17', 'm1', 'm11', 'm16']
 
@@ -27,13 +32,28 @@ export function webglAvailable() {
 
 export const isMachineId = (id: string): id is MachineId => (MACHINE_IDS as string[]).includes(id)
 
-/** The island view a route stands for: page meta `landmark`, plus `?m=` for a machine inside the factory. */
+/**
+ * The island view a route stands for: page meta `landmark`, plus a machine inside the factory, picked by `?m=`
+ * or by being the page of a project that machine shows.
+ */
 export function viewFromRoute(route: RouteLocationNormalizedLoaded): ViewId {
   const lm = route.meta.landmark as LandmarkId | undefined
   if (!lm) return 'home'
+  if (lm !== 'factory') return lm
   const m = route.query.m
-  if (lm === 'factory' && typeof m === 'string' && isMachineId(m)) return m
-  return lm
+  if (typeof m === 'string' && isMachineId(m)) return m
+  const id = route.params.id
+  return (typeof id === 'string' && machineOf(Number(id))) || lm
+}
+
+/**
+ * Where closing the panel leads. A page inside a landmark (page meta `subpage`, like a project page) goes back to
+ * the landmark or machine it belongs to, a machine to the factory, and a landmark to the island overview.
+ */
+export function parentView(route: RouteLocationNormalizedLoaded): ViewId {
+  const v = viewFromRoute(route)
+  if (route.meta.subpage) return v
+  return isMachineId(v) ? 'factory' : 'home'
 }
 
 export function routeForView(id: ViewId) {
@@ -76,6 +96,13 @@ export function useIsland() {
     /** How many blocks the visitor has placed. */
     blockCount: useState('island-block-count', () => 0),
     view: computed(() => viewFromRoute(route)),
+    /** The current page sits inside a landmark (a project page, the privacy policy) rather than being one. */
+    subpage: computed(() => !!route.meta.subpage),
+    /** Link to a view, for NuxtLink `to`. */
+    linkTo(id: ViewId) {
+      const r = routeForView(id)
+      return { path: localePath(r.path), query: r.query }
+    },
     go(id: ViewId) {
       const r = routeForView(id)
       return navigateTo({ path: localePath(r.path), query: r.query })

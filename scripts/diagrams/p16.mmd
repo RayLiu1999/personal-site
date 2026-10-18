@@ -1,0 +1,12 @@
+graph TD
+  User -->|IPv4/IPv6| CF[Cloudflare Edge]
+  subgraph GCP ["GCP e2-micro VM - IPv6 Only"]
+    CF -->|Cloudflare Tunnel| Tunnel[cloudflared container]
+    Tunnel --> Nginx[Nginx / Traefik]
+    Nginx --> App1[Uptime Kuma]
+    Nginx --> App2[Umami / Homer]
+    App1 --> |IPv4 Monitor| Socat[Socat 4001]
+    Docker[Docker Daemon] -->|Pull| WARP[WARP Proxy 4000]
+    Socat --> WARP
+  end
+  WARP -->|Internet Outbound| Target[GitHub / IPv4 Targets]

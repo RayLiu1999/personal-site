@@ -58,7 +58,8 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const { isDark, toggleDarkMode } = useDarkMode()
-const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, buildFly, buildLocked, fpSpawn, view, go } = useIsland()
+const route = useRoute()
+const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, buildFly, buildLocked, fpSpawn, view, subpage, go } = useIsland()
 
 const otherLocale = computed(() => (locale.value === 'en' ? 'zh-tw' : 'en'))
 const timeLabel = computed(() => (isDark.value ? t('island.toDay') : t('island.toNight')))
@@ -137,7 +138,8 @@ watch(lookAround, id => { if (id) nextTick(() => fpExit.value?.focus({ preventSc
 function onKey(e: KeyboardEvent) {
   const el = e.target as HTMLElement | null
   if (!flat.value && engine.value && !ready.value) { engine.value.skipIntro(); return }
-  if (el?.closest?.('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return
+  // A dialog (the enlarged architecture diagram) handles its own keys, Esc included.
+  if (el?.closest?.('input, textarea, select, dialog') || e.metaKey || e.ctrlKey || e.altKey) return
   if (creative.value && !flat.value) { onBuildKey(e); return }
   const k = e.key
   if (lookAround.value) {
@@ -147,7 +149,7 @@ function onKey(e: KeyboardEvent) {
   }
   if ((k === 'f' || k === 'F') && !flat.value && LOOK_AROUND_IDS.includes(view.value)) { engine.value?.enterLookAround(view.value); return }
   if (k === 'Escape') {
-    if (view.value !== 'home') { e.preventDefault(); go(isMachineId(view.value) ? 'factory' : 'home') }
+    if (view.value !== 'home' || subpage.value) { e.preventDefault(); go(parentView(route)) }
     return
   }
   const n = parseInt(k, 10)

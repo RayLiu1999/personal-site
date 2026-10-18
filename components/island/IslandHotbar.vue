@@ -21,12 +21,13 @@ import type { LandmarkId } from '~/composables/useIsland'
 
 const { t } = useI18n()
 const localePath = useLocalePath()
-const { view, flat } = useIsland()
+const { view, flat, subpage } = useIsland()
 
 const current = computed(() => landmarkOf(view.value))
-// Pressing the slot of the landmark you are at takes you back to the island overview, like toggling a hotbar item.
+// Pressing the slot of the landmark you are at takes you back to the island overview, like toggling a hotbar item;
+// from a page inside it (a project page), it takes you to the landmark itself.
 const slotTo = (id: LandmarkId) => {
-  const r = routeForView(current.value === id && !flat.value ? 'home' : id)
+  const r = routeForView(current.value === id && !flat.value && !subpage.value ? 'home' : id)
   return localePath(r.path)
 }
 
