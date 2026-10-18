@@ -1,4 +1,8 @@
 import * as THREE from 'three'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { getAtlas } from './atlas'
 import { buildIslandMeshes, buildWorld, createMaterials, pk } from './world'
 import { buildProps } from './props'
@@ -96,7 +100,8 @@ export function createIsland(o: IslandOptions) {
   const coarse = window.matchMedia('(pointer: coarse)').matches
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
   renderer.setClearColor(0x000000, 0)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2))
+  let pixelRatio = Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2)
+  renderer.setPixelRatio(pixelRatio)
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFShadowMap
   const scene = new THREE.Scene()
@@ -114,6 +119,27 @@ export function createIsland(o: IslandOptions) {
   const people = buildIslanders(props, P.box, groundY, reduceMotion)
 
   /* ---------- sky dressing ---------- */
+  // The sky gradient is drawn by WebGL (same colours as the CSS sky shown before the engine loads), so the canvas
+  // is opaque and the night bloom has something to blend onto instead of turning transparent pixels grey.
+  const SKY_DAY = ['#6f9ff5', '#b6d1fb', '#e3eefc'], SKY_NIGHT = ['#03050f', '#111938', '#1f2a52']
+  const skyCv = document.createElement('canvas')
+  skyCv.width = 2
+  skyCv.height = 256
+  const skyTex = new THREE.CanvasTexture(skyCv)
+  skyTex.colorSpace = THREE.SRGBColorSpace
+  scene.background = skyTex
+  const skyC = new THREE.Color(), skyN = new THREE.Color()
+  let skyDrawnFor = -1
+  function drawSky(n: number) {
+    const g = skyCv.getContext('2d')!, grad = g.createLinearGradient(0, 0, 0, 256)
+    // Blend in sRGB like the CSS cross-fade did.
+    const stop = (i: number) => '#' + skyC.setStyle(SKY_DAY[i], THREE.LinearSRGBColorSpace).lerp(skyN.setStyle(SKY_NIGHT[i], THREE.LinearSRGBColorSpace), n).getHexString(THREE.LinearSRGBColorSpace)
+    grad.addColorStop(0, stop(0)); grad.addColorStop(0.58, stop(1)); grad.addColorStop(1, stop(2))
+    g.fillStyle = grad
+    g.fillRect(0, 0, 2, 256)
+    skyTex.needsUpdate = true
+    skyDrawnFor = n
+  }
   const sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshBasicMaterial({ color: 0xfff2a8, fog: false }))
   const moonMesh = new THREE.Mesh(new THREE.PlaneGeometry(11, 11), new THREE.MeshBasicMaterial({ color: 0xe9edff, fog: false }))
   scene.add(sunMesh, moonMesh)
@@ -347,12 +373,39 @@ export function createIsland(o: IslandOptions) {
   /* ---------- day / night ---------- */
   let night = o.night, nightT = night ? 1 : 0
 
+  /* ---------- night glow ---------- */
+  // Bloom only runs at night, when lamps, torches and server LEDs are the brightest things on screen;
+  // by day the frame is rendered directly and the extra passes cost nothing.
+  const composer = new EffectComposer(renderer)
+  composer.addPass(new RenderPass(scene, camera))
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0, 0.2, 0.75)
+  composer.addPass(bloom)
+  composer.addPass(new OutputPass())
+
+  /* ---------- adaptive quality ---------- */
+  // After the intro, sample the frame rate; if the device can't keep up, first drop the glow, then resolution.
+  let glowAllowed = true, sampleStart = -1, sampleFrames = 0
+  function watchFrameRate(now: number) {
+    if (!ready || document.hidden || tw) { sampleStart = -1; return }
+    if (sampleStart < 0) { sampleStart = now; sampleFrames = 0; return }
+    sampleFrames++
+    const elapsed = now - sampleStart
+    if (elapsed < 3000) return
+    const fps = (sampleFrames * 1000) / elapsed
+    sampleStart = -1
+    if (fps >= 40) return
+    if (glowAllowed && nightT > 0.02) glowAllowed = false
+    else if (pixelRatio > 1) { pixelRatio = 1; renderer.setPixelRatio(1); resize() }
+  }
+
   /* ---------- resize & loop ---------- */
   let blockersAt = -1
   function resize() {
     vw = canvas.clientWidth || innerWidth
     vh = canvas.clientHeight || innerHeight
     renderer.setSize(vw, vh, false)
+    composer.setPixelRatio(renderer.getPixelRatio())
+    composer.setSize(vw, vh)
     camera.aspect = vw / vh
     camera.updateProjectionMatrix()
     if (!tw && ready) tweenTo(view, true)
@@ -484,6 +537,7 @@ export function createIsland(o: IslandOptions) {
     fog.near = cam.d * 1.5
     fog.far = cam.d * 1.5 + 130
     if (o.skyNight) o.skyNight.style.opacity = n.toFixed(3)
+    if (Math.abs(n - skyDrawnFor) > 0.004) drawSky(n)
     starMat.opacity = n
     MAT.glow.emissiveIntensity = lerp(0.45, 1.05, n)
     cloudMat.emissive.setRGB(lerp(0.78, 0.12, n), lerp(0.82, 0.14, n), lerp(0.9, 0.24, n))
@@ -500,7 +554,10 @@ export function createIsland(o: IslandOptions) {
     P.update({ dt, clock, view, nightT: n, rideHidesLetter: !!(spot && spot.ride && fpK > 0.3) })
     people.update(dt, clock, camera)
 
-    renderer.render(scene, camera)
+    bloom.strength = lerp(0, 0.6, n)
+    if (glowAllowed && n > 0.02) composer.render(dt)
+    else renderer.render(scene, camera)
+    watchFrameRate(now)
     updateOverlay()
   }
 
@@ -538,6 +595,9 @@ export function createIsland(o: IslandOptions) {
         const mats = Array.isArray(m.material) ? m.material : m.material ? [m.material] : []
         for (const mat of mats) { (mat as THREE.MeshLambertMaterial).map?.dispose(); mat.dispose() }
       })
+      composer.dispose()
+      skyTex.dispose()
+      bloom.dispose()
       renderer.dispose()
     }
   }
