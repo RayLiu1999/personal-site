@@ -62,6 +62,18 @@
 .mc-btn:disabled { opacity: .6; cursor: default; }
 .mc-btn.small { min-height: 36px; padding: 0 12px; font-size: 14px; }
 .mc-btn.square { width: 44px; padding: 0; }
+.island-root.creative .home-hud { display: none; }
+.island-root.fly .island-crosshair { opacity: .85; }
+.island-root.fly .island-splash { visibility: hidden; }
+.island-aim { position: absolute; left: 50%; top: calc(50% + 18px); transform: translateX(-50%); padding: 3px 8px; background: var(--tag-bg); color: var(--tag-ink); font-family: var(--font-display); font-size: 13px; white-space: nowrap; pointer-events: none; text-shadow: 1px 1px 0 rgba(0, 0, 0, .4); }
+.build-paused { position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-100% - 24px)); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 18px; background: var(--tag-bg); color: var(--tag-ink); font-family: var(--font-display); text-align: center; text-shadow: 2px 2px 0 rgba(0, 0, 0, .4); pointer-events: none; z-index: 55; }
+.build-paused strong { font-size: 18px; font-weight: 400; }
+.build-paused small { font-size: 13px; opacity: .8; }
+.build-hud .build-count { font-size: 12px; opacity: .85; }
+.build-hud .build-count.full { color: #ff8a7a; opacity: 1; }
+.build-tools { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 92px); transform: translateX(-50%); display: flex; gap: 6px; z-index: 60; }
+.build-tools [aria-pressed="true"] { background: #a8382c; }
+.island-hotbar.blocks .slot-btn[aria-pressed="true"] { box-shadow: 0 0 0 3px #fffaf3, inset 0 0 0 3px #000; z-index: 1; }
 .px-icon { width: 20px; height: 20px; fill: currentColor; shape-rendering: crispEdges; filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, .35)); }
 
 /* top HUD */
@@ -156,8 +168,17 @@
   .home-hud .hint { display: none; }
   .island-splash span { font-size: 16px; }
   .brand .label { display: none; }
+  .brand { padding: 0 10px; font-size: 14px; white-space: nowrap; }
+  .hud-actions { gap: 6px; }
+  .hud-actions .mc-btn.small { padding: 0 8px; }
+  .hud-actions .mc-btn.square { width: 36px; }
+  .hud-top { gap: 8px; }
   .fp-hud small { display: none; }
   .fp-hud { top: calc(env(safe-area-inset-top, 0px) + 64px); }
+  .island-hotbar.blocks .slot-btn { width: 36px; height: 36px; }
+  .island-hotbar.blocks .slot-btn img { width: 26px; height: 26px; }
+  .island-hotbar.blocks .slot-btn .num { display: none; }
+  .build-tools { bottom: calc(env(safe-area-inset-bottom, 0px) + 66px); }
 }
 
 /* panel content */

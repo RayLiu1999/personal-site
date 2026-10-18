@@ -1,7 +1,7 @@
 // Island sound. Every cue is synthesised with Web Audio (no audio files), so nothing loads until it is switched on.
 // Off by default; the AudioContext is only created after the visitor has interacted with the page.
 
-export type Cue = 'move' | 'enter' | 'exit' | 'day' | 'night'
+export type Cue = 'move' | 'enter' | 'exit' | 'day' | 'night' | 'place' | 'break' | 'deny' | 'step'
 
 const VOICE: Record<string, number> = { eng: 200, lib: 160, post: 250, hiker: 225 }
 
@@ -153,6 +153,15 @@ export function createSound() {
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.85)
         s.start(t, Math.random() * 1.5)
         s.stop(t + 0.9)
+      } else if (c === 'place') {
+        burst(t, 0.07, 0.25, 'lowpass', 1400)
+        tone('sine', 190 * (0.9 + Math.random() * 0.2), 90, t, 0.09, 0.3)
+      } else if (c === 'break') {
+        for (let i = 0; i < 3; i++) burst(t + i * 0.03, 0.06, 0.18, 'bandpass', 900 + Math.random() * 900, 1.5)
+      } else if (c === 'step') {
+        burst(t, 0.06, 0.07, 'lowpass', 500 + Math.random() * 300)
+      } else if (c === 'deny') {
+        tone('square', 140, 120, t, 0.12, 0.05, sfx, 700)
       } else if (c === 'enter' || c === 'exit') {
         const up = c === 'enter'
         tone('triangle', up ? 330 : 660, up ? 660 : 330, t, 0.12, 0.08)

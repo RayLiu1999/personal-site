@@ -12,5 +12,5 @@
 ## Consequences
 
 - three.js 只在瀏覽器端、文字面板渲染完之後才下載，不會拖慢首屏文字。
-- 之後的後製特效（P2）用 three 官方的 `EffectComposer`；創造模式（P4）用 `PointerLockControls`。兩者都不需要 TresJS。
+- 之後的後製特效（P2）用 three 官方的 `EffectComposer`；建造模式（P4）用 three 的 `Raycaster` 對 InstancedMesh 取方塊與面。兩者都不需要 TresJS。
 - 升級 Nuxt 4 時不必再回頭評估 `@tresjs/nuxt`。

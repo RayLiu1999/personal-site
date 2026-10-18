@@ -18,6 +18,9 @@
             <path v-else d="M8 5h1v1H8zM10 5h1v1h-1zM9 6h1v1H9zM8 7h1v1H8zM10 7h1v1h-1z" />
           </svg>
         </button>
+        <button v-if="!flat" class="mc-btn small" type="button" :aria-pressed="creative" @click="toggleCreative">
+          {{ buildFly ? t('island.build.fpBtn') : t('island.build.btn') }}
+        </button>
         <button v-if="!noWebgl" class="mc-btn small" type="button" @click="toggleFlat">
           {{ flat ? t('island.islandBtn') : t('island.flatBtn') }}
         </button>
@@ -40,20 +43,23 @@
       <button ref="fpExit" class="mc-btn small" type="button" @click="engine?.exitLookAround()">{{ t('island.fp.exit') }}</button>
     </div>
 
+    <IslandBuildBar v-if="creative && !flat" />
+
     <div class="island-toast" :class="{ show: toast.show }" aria-live="polite">{{ toast.text }}</div>
-    <IslandHotbar />
+    <IslandHotbar v-if="!creative || flat" />
   </div>
 </template>
 
 <script setup lang="ts">
 import '~/assets/css/island.css'
 import type { LandmarkId } from '~/composables/useIsland'
+import { PALETTE } from '~/island/blocks'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const { isDark, toggleDarkMode } = useDarkMode()
-const { engine, ready, lookAround, flat, noWebgl, sound, view, go } = useIsland()
+const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, buildFly, buildLocked, fpSpawn, view, go } = useIsland()
 
 const otherLocale = computed(() => (locale.value === 'en' ? 'zh-tw' : 'en'))
 const timeLabel = computed(() => (isDark.value ? t('island.toDay') : t('island.toNight')))
@@ -63,8 +69,10 @@ const rootClass = computed(() => ({
   ready: ready.value,
   flat: flat.value,
   fp: !!lookAround.value,
+  creative: creative.value && !flat.value,
+  fly: creative.value && buildFly.value && !flat.value,
   'at-home': view.value === 'home',
-  'panel-open': view.value !== 'home' && !lookAround.value
+  'panel-open': view.value !== 'home' && !lookAround.value && !(creative.value && buildFly.value && buildLocked.value)
 }))
 
 /* ---------- flat mode ---------- */
@@ -81,6 +89,34 @@ function toggleSound() {
   sound.value = !sound.value
   try { localStorage.setItem(SOUND_KEY, sound.value ? '1' : '0') } catch { /* storage blocked */ }
   umTrackEvent('island-sound', { on: sound.value })
+}
+
+/* ---------- build mode ---------- */
+// With a mouse this is first person, starting inside the landmark you are at (if it has a spot) and carrying on
+// across pages. On touch screens it is the overview builder, which flies home first and ends when you leave home.
+async function toggleCreative() {
+  if (creative.value) { creative.value = false; return }
+  if (buildFly.value) fpSpawn.value = LOOK_AROUND_IDS.includes(view.value) ? view.value : null
+  else if (view.value !== 'home') await go('home')
+  creative.value = true
+  umTrackEvent('island-build', { firstPerson: buildFly.value })
+}
+watch([view, flat], ([v, f]) => { if ((v !== 'home' && !buildFly.value) || f) creative.value = false })
+
+function onBuildKey(e: KeyboardEvent) {
+  const k = e.key
+  if (k === 'Escape') {
+    e.preventDefault()
+    // First person: Esc closes an open panel first, then leaves.
+    if (buildFly.value && view.value !== 'home') go('home')
+    else creative.value = false
+    return
+  }
+  const n = parseInt(k, 10)
+  if (n >= 1 && n <= PALETTE.length) { buildType.value = PALETTE[n - 1]; buildTool.value = 'place'; return }
+  if (k === 'x' || k === 'X') buildTool.value = buildTool.value === 'remove' ? 'place' : 'remove'
+  else if (k === '+' || k === '=') engine.value?.zoomBy(0.8)
+  else if (k === '-' || k === '_') engine.value?.zoomBy(1.25)
 }
 
 /* ---------- toast with the landmark name ---------- */
@@ -103,6 +139,7 @@ function onKey(e: KeyboardEvent) {
   const el = e.target as HTMLElement | null
   if (!flat.value && engine.value && !ready.value) { engine.value.skipIntro(); return }
   if (el?.closest?.('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return
+  if (creative.value && !flat.value) { onBuildKey(e); return }
   const k = e.key
   if (lookAround.value) {
     if (k === 'Escape' || k === 'f' || k === 'F') { e.preventDefault(); engine.value?.exitLookAround(); return }
@@ -133,6 +170,7 @@ onMounted(() => {
     flat.value = saved ? saved === '1' : window.matchMedia('(prefers-reduced-motion: reduce)').matches
   }
   try { sound.value = localStorage.getItem(SOUND_KEY) === '1' } catch { /* storage blocked */ }
+  buildFly.value = window.matchMedia('(pointer: fine)').matches && 'requestPointerLock' in HTMLElement.prototype
   window.addEventListener('keydown', onKey)
 })
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))

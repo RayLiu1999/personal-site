@@ -8,6 +8,9 @@ import { buildIslandMeshes, buildWorld, createMaterials, pk } from './world'
 import { buildProps } from './props'
 import { buildIslanders, type Talker } from './islanders'
 import { createSound } from './sound'
+import { buildBuilder } from './build'
+import { createWalker } from './walker'
+import type { BlockType, BuildTool, Placed } from './blocks'
 import { angLerp, clamp, easeInOut, lerp, mulberry32 } from './rand'
 
 export type ViewId = 'home' | 'factory' | 'library' | 'cabin' | 'signpost' | 'm17' | 'm1' | 'm11' | 'm16'
@@ -19,6 +22,8 @@ export interface IslandText {
   tag(id: ViewId): { name: string; sub?: string }
   npc(key: string): { name: string; lines: string[] }
   sign(): [string, string]
+  /** Crosshair hint for what right-click does in first person, e.g. "Right-click · talk to Ada". */
+  aim(kind: 'talk' | 'open' | 'ride' | 'dismount', name: string): string
 }
 
 export interface IslandOptions {
@@ -26,6 +31,8 @@ export interface IslandOptions {
   /** Holds the landmark name tags. */
   tagLayer: HTMLElement
   bubble: HTMLElement
+  /** Shows what right-click would do in first person. */
+  aimHint: HTMLElement | null
   splash: HTMLElement | null
   veil: HTMLElement | null
   skyNight: HTMLElement | null
@@ -42,10 +49,21 @@ export interface IslandOptions {
   reduceMotion: boolean
   /** Sound effects and ambience; off unless the visitor switched them on. */
   sound: boolean
+  /** Blocks the visitor placed in build mode on an earlier visit (validated before use). */
+  blocks: unknown
   onNavigate(id: ViewId): void
   onReady(): void
   onIntroSkipped(): void
   onLookAroundChange(id: ViewId | null): void
+  onBlocksChange(blocks: Placed[]): void
+  /** Whether look-around should become free-roaming first person (a mouse and pointer lock are available). */
+  freeRoam(): boolean
+  /** A look-around spot was entered with free roaming available; the page turns first person on there. */
+  onFirstPerson(at: ViewId): void
+  /** First-person building has captured (true) or released (false) the mouse. */
+  onBuildLock(locked: boolean): void
+  /** The mouse wheel stepped through the block hotbar while building in first person. */
+  onBuildCycle(step: number): void
 }
 
 /* ---------- camera framings ---------- */
@@ -122,6 +140,12 @@ export function createIsland(o: IslandOptions) {
   const people = buildIslanders(props, P.box, groundY, reduceMotion)
   const sfx = createSound()
   sfx.setEnabled(o.sound)
+  const builder = buildBuilder(scene, MAT, {
+    ground: island.meshes,
+    solid: (x, y, z) => world.W.has(world.key(x, y, z)),
+    keepClear: Object.values(HIT) as [[number, number, number], [number, number, number]][]
+  })
+  builder.load(o.blocks)
 
   /* ---------- sky dressing ---------- */
   // The sky gradient is drawn by WebGL (same colours as the CSS sky shown before the engine loads), so the canvas
@@ -230,10 +254,14 @@ export function createIsland(o: IslandOptions) {
   let hoverId: string | null = null
 
   const inFactory = () => view === 'factory' || isMachine(view)
-  function pick(cx: number, cy: number): string | null {
+  function aimAt(cx: number, cy: number) {
     const r = canvas.getBoundingClientRect()
     ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1)
     ray.setFromCamera(ndc, camera)
+    return ray
+  }
+  function pick(cx: number, cy: number): string | null {
+    aimAt(cx, cy)
     const hits = ray.intersectObjects(hitMeshes, false), nh = ray.intersectObjects(people.hits, false)[0]
     if (nh && (!hits.length || nh.distance < hits[0].distance)) return 'npc:' + nh.object.userData.n
     if (!hits.length) return null
@@ -300,7 +328,8 @@ export function createIsland(o: IslandOptions) {
   let fpId: ViewId | null = null, spot: Spot | null = null, fpK = 0, fpYaw = 0, fpPitch = 0, rideYaw = 0, lastFov = 40
   const fpEye = new THREE.Vector3(), fpDir = new THREE.Vector3(), orbDir = new THREE.Vector3()
   function enterLookAround(id: ViewId) {
-    if (!SPOTS[id] || !ready || view !== id || fpId) return
+    if (!SPOTS[id] || !ready || view !== id || fpId || walk) return
+    if (o.freeRoam()) { o.onFirstPerson(id); return }
     spot = SPOTS[id]!
     fpId = id
     fpYaw = 0; fpPitch = 0
@@ -321,13 +350,168 @@ export function createIsland(o: IslandOptions) {
     fpPitch = clamp(fpPitch + dPitch, -1.1, 1.1)
   }
 
+  /* ---------- build mode ---------- */
+  let creative = false, buildType: BlockType = 'grass', buildTool: BuildTool = 'place', zoom = 1, zoomT = 1
+  const breaking = (e: PointerEvent) => buildTool === 'remove' || e.button === 2 || e.shiftKey
+  function report(r: ReturnType<typeof builder.act>) {
+    if (r === 'placed' || r === 'removed') {
+      sfx.cue(r === 'placed' ? 'place' : 'break')
+      o.onBlocksChange(builder.list())
+    } else if (r) sfx.cue('deny')
+  }
+  function build(e: PointerEvent) {
+    report(builder.act(aimAt(e.clientX, e.clientY), breaking(e), buildType))
+    if (e.pointerType === 'mouse') builder.hover(aimAt(e.clientX, e.clientY), breaking(e))
+  }
+
+  /* ---------- first person ---------- */
+  // With a mouse, first person is one free-roaming mode, Minecraft style: walk, jump and fly around the island,
+  // break blocks with the left button, and with the right button talk to islanders, open a landmark or machine,
+  // ride the minecart, or place a block. Touch screens keep the fixed look-around spots and the overview builder.
+  const REACH = 8
+  const walker = createWalker((x, y, z) => {
+    if (builder.has(x, y, z)) return true
+    const t = world.W.get(world.key(x, y, z))?.t
+    return !!t && t !== 'water'
+  })
+  let walk = false, walkK = 0, locked = false, riding = false, outlineAt = 0, cycleAt = 0
+  const walkDir = new THREE.Vector3(), boxes: Partial<Record<ViewId, THREE.Box3>> = {}, hitPoint = new THREE.Vector3()
+  for (const id of Object.keys(HIT) as ViewId[]) { const [a, b] = HIT[id]!; boxes[id] = new THREE.Box3(new THREE.Vector3(...a), new THREE.Vector3(...b)) }
+  const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight']
+  const centreRay = () => { ray.setFromCamera(ndc.set(0, 0), camera); ray.far = REACH; return ray }
+
+  // What the crosshair would use: an islander, a machine or a landmark, unless a block is in the way.
+  type Use = { npc: number } | { id: ViewId }
+  function useTarget(r: THREE.Raycaster): Use | null {
+    const blockHit = r.intersectObjects(builder.targets, false)[0]?.distance ?? Infinity
+    let best: Use | null = null, bestD = REACH
+    const npc = r.intersectObjects(people.hits, false)[0]
+    if (npc && npc.distance < bestD) { best = { npc: npc.object.userData.n }; bestD = npc.distance }
+    let inside: ViewId | null = null
+    for (const id of Object.keys(boxes) as ViewId[]) {
+      const box = boxes[id]!
+      if (box.containsPoint(r.ray.origin)) { if (!isMachine(id)) inside = id; continue }
+      if (!r.ray.intersectBox(box, hitPoint)) continue
+      const d = hitPoint.distanceTo(r.ray.origin)
+      // Machines sit inside the factory's box, so they win over it at the same distance.
+      if (d < bestD || (isMachine(id) && d <= bestD + 0.01)) { best = { id }; bestD = d }
+    }
+    if (best && bestD <= blockHit + 0.01) return best
+    // Standing inside a building, the building itself is what you use.
+    return inside && !best ? { id: inside } : null
+  }
+  function use(u: Use) {
+    if ('npc' in u) { talk(u.npc); return }
+    if (u.id === 'm1') { ride(true); return }
+    // Its page is already the current one: just free the mouse so its panel shows.
+    if (u.id === view) document.exitPointerLock()
+    else o.onNavigate(u.id)
+  }
+  function ride(on: boolean) {
+    if (on === riding) return
+    riding = on
+    if (on) sfx.cue('enter')
+    else {
+      const c = P.loopPos(clock * 2.2)
+      walker.place(c.x, 2.2, c.z, walker.yaw, walker.pitch)
+      sfx.cue('exit')
+    }
+  }
+  function walkAct(button: number) {
+    if (riding) return
+    const r = centreRay()
+    if (button === 2) {
+      const u = useTarget(r)
+      if (u) use(u)
+      else report(builder.act(r, false, buildType, walker.overlaps))
+    } else if (button === 0) report(builder.act(r, true, buildType))
+    r.far = Infinity
+    outlineAt = 0
+  }
+  // Outline what the crosshair points at and name what right-click would do there.
+  function updateAim() {
+    const r = centreRay(), u = riding ? null : useTarget(r)
+    // No outline around a building you are standing inside.
+    setHover(u && 'id' in u && !boxes[u.id]!.containsPoint(r.ray.origin) ? u.id : null)
+    if (u) builder.setGhost(false)
+    else if (!riding) builder.outline(r)
+    r.far = Infinity
+    if (o.aimHint) {
+      const label = riding ? o.text.aim('dismount', '') : !u ? '' : 'npc' in u ? o.text.aim('talk', o.text.npc(people.talkers[u.npc].key).name) : o.text.aim(u.id === 'm1' ? 'ride' : 'open', o.text.tag(u.id).sub ?? o.text.tag(u.id).name)
+      o.aimHint.hidden = !label
+      o.aimHint.textContent = label
+    }
+  }
+  function lock() {
+    try {
+      // Newer browsers return a promise that rejects without a recent click; the pause card asks for one then.
+      const p = canvas.requestPointerLock() as unknown as Promise<void> | undefined
+      p?.catch?.(() => {})
+    } catch { /* pointer lock unavailable */ }
+  }
+  const onLockChange = () => {
+    locked = document.pointerLockElement === canvas
+    if (locked) (document.activeElement as HTMLElement | null)?.blur?.()
+    else walker.clearKeys()
+    o.onBuildLock(locked)
+  }
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (!locked || !MOVE_KEYS.includes(e.code)) return
+    if (e.code === 'Space') e.preventDefault()
+    if (riding) { if (e.code.startsWith('Shift')) ride(false); return }
+    walker.keyDown(e.code, performance.now() / 1000)
+  }
+  const onKeyUp = (e: KeyboardEvent) => walker.keyUp(e.code)
+  document.addEventListener('pointerlockchange', onLockChange)
+  window.addEventListener('keydown', onKeyDown)
+  window.addEventListener('keyup', onKeyUp)
+
+  function spawnAt(at: ViewId | null) {
+    const s = at ? SPOTS[at] : undefined
+    riding = !!s?.ride
+    if (riding) { const c = P.loopPos(clock * 2.2); walker.place(c.x, 2.2, c.z, c.rot, -0.12) }
+    else if (s) walker.place(s.e![0], s.e![1], s.e![2], s.yaw!, s.pitch!)
+    else walker.place(0, 4, 16, PI, -0.2)
+  }
+
+  /** Build mode: first person with a mouse (optionally starting at a look-around spot), the overview otherwise. */
+  function setCreative(on: boolean, firstPerson = false, at: ViewId | null = null) {
+    if (on === creative) return
+    if (on && fpId) exitLookAround()
+    creative = on
+    walk = on && firstPerson
+    setHover(null)
+    builder.setGhost(false)
+    if (walk) {
+      spawnAt(at)
+      sfx.cue('enter')
+      lock()
+    }
+    if (!on) {
+      if (locked) document.exitPointerLock()
+      riding = false
+      if (o.aimHint) o.aimHint.hidden = true
+      zoomT = 1
+      // Unwind any full turns so the camera eases back the short way.
+      dragAz = Math.atan2(Math.sin(dragAz), Math.cos(dragAz))
+      if (ready) tweenTo(view, false)
+    }
+  }
+
   /* ---------- input ---------- */
   let down: { x: number; y: number; lx: number; ly: number; drag: boolean; id: number } | null = null
   const onDown = (e: PointerEvent) => {
     if (!ready) { skipIntro(); return }
+    if (walk) {
+      // Clicking back into the world recaptures the mouse, which tucks any open panel away again.
+      if (locked) walkAct(e.button)
+      else lock()
+      return
+    }
     down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, drag: false, id: e.pointerId }
   }
   const onMove = (e: PointerEvent) => {
+    if (locked) { walker.look(-e.movementX * 0.0025, -e.movementY * 0.0025); return }
     if (down && e.pointerId === down.id) {
       if (!down.drag && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) {
         down.drag = true
@@ -335,13 +519,21 @@ export function createIsland(o: IslandOptions) {
         try { canvas.setPointerCapture(e.pointerId) } catch { /* pointer already released */ }
       }
       if (down.drag && fpId) lookAround((e.clientX - down.lx) * 0.005, (e.clientY - down.ly) * 0.004)
-      else if (down.drag) {
+      else if (down.drag && creative) {
+        // Build mode turns all the way round, so you can build on every side.
+        builder.setGhost(false)
+        dragAz -= (e.clientX - down.lx) * 0.005
+        dragEl = clamp(dragEl + (e.clientY - down.ly) * 0.003, -0.3, 0.75)
+      } else if (down.drag) {
         dragAz = clamp(dragAz - (e.clientX - down.lx) * 0.004, -0.6, 0.6)
         dragEl = clamp(dragEl + (e.clientY - down.ly) * 0.003, -0.22, 0.3)
       }
       down.lx = e.clientX
       down.ly = e.clientY
-    } else if (ready && e.target === canvas && e.pointerType === 'mouse') setHover(pick(e.clientX, e.clientY))
+    } else if (ready && e.target === canvas && e.pointerType === 'mouse') {
+      if (creative) { if (!walk) builder.hover(aimAt(e.clientX, e.clientY), breaking(e)) }
+      else setHover(pick(e.clientX, e.clientY))
+    }
   }
   const onUp = (e: PointerEvent) => {
     if (!down || e.pointerId !== down.id) return
@@ -349,14 +541,24 @@ export function createIsland(o: IslandOptions) {
     down = null
     canvas.classList.remove('dragging')
     if (wasDrag || e.target !== canvas) return
+    if (creative) { build(e); return }
     const id = pick(e.clientX, e.clientY)
     if (!id) return
     if (id.startsWith('npc:')) talk(+id.slice(4))
     else if (id === view && SPOTS[id as ViewId]) enterLookAround(id as ViewId)
     else o.onNavigate(id as ViewId)
   }
-  const onLeave = () => { if (!down) setHover(null) }
-  const onWheel = () => { if (!ready) skipIntro() }
+  const onLeave = () => { if (!down) { setHover(null); builder.setGhost(false) } }
+  const onWheel = (e: WheelEvent) => {
+    if (!ready) skipIntro()
+    else if (locked) {
+      // Trackpads send a burst of small wheel events, so step at most once per 120 ms.
+      if (performance.now() - cycleAt > 120 && Math.abs(e.deltaY) > 2) { cycleAt = performance.now(); o.onBuildCycle(Math.sign(e.deltaY)) }
+    } else if (creative && !walk && e.target === canvas) zoomT = clamp(zoomT * Math.exp(e.deltaY * 0.0012), 0.3, 1.25)
+  }
+  // Right-click breaks blocks in build mode, so keep the browser menu out of the way there.
+  const onMenu = (e: MouseEvent) => { if (creative) e.preventDefault() }
+  canvas.addEventListener('contextmenu', onMenu)
   canvas.addEventListener('pointerdown', onDown)
   window.addEventListener('pointermove', onMove)
   window.addEventListener('pointerup', onUp)
@@ -374,6 +576,9 @@ export function createIsland(o: IslandOptions) {
     ready = true
     island.applyIntro(1e9)
     props.visible = true
+    builder.group.visible = true
+    // Blocks have settled, so size the bounds build mode raycasts against.
+    island.meshes.forEach(m => m.computeBoundingSphere())
     if (o.veil) { o.veil.style.opacity = '0'; setTimeout(() => o.veil && (o.veil.hidden = true), 900) }
     o.onReady()
     tweenTo(view, false)
@@ -442,7 +647,7 @@ export function createIsland(o: IslandOptions) {
     if (blockersAt < 0 || clock - blockersAt > 0.25) { blockers = o.obstacles(); blockersAt = clock }
     for (const id of Object.keys(tags) as ViewId[]) {
       const tg = tags[id]!
-      let show = ready && id !== view && (isMachine(id) ? inFactory() : !(inFactory() && id === 'factory'))
+      let show = ready && !creative && id !== view && (isMachine(id) ? inFactory() : !(inFactory() && id === 'factory'))
       if (show) {
         V.copy(tg.p).project(camera)
         show = V.z < 1 && tagFits(tg, (V.x * 0.5 + 0.5) * vw, (-V.y * 0.5 + 0.5) * vh)
@@ -487,9 +692,10 @@ export function createIsland(o: IslandOptions) {
       if (p >= 1) tw = null
     }
 
-    const sway = view === 'home' && !reduceMotion ? Math.sin(clock * 0.18) * 0.07 : 0
+    zoom += (zoomT - zoom) * Math.min(1, dt * 8)
+    const sway = view === 'home' && !reduceMotion && !creative ? Math.sin(clock * 0.18) * 0.07 : 0
     const az = cam.az + dragAz + sway, el = clamp(cam.el + dragEl, 0.04, 1.25)
-    camPos.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(cam.d).add(cam.t)
+    camPos.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(cam.d * zoom).add(cam.t)
     camera.position.copy(camPos)
     camera.lookAt(cam.t)
 
@@ -518,11 +724,31 @@ export function createIsland(o: IslandOptions) {
       fpLight.intensity = spot.light ? k * 4 : 0
       if (spot.light) fpLight.position.set(...spot.light)
     } else fpLight.intensity = 0
-    const fov = lerp(40, 72, easeInOut(clamp(fpK, 0, 1)))
+
+    // blend into the first-person eye
+    walkK += ((walk ? 1 : 0) - walkK) * Math.min(1, reduceMotion ? 1 : dt * 3.2)
+    if (walkK < 0.001 && !walk) walkK = 0
+    if (walkK > 0) {
+      if (riding) walker.eye.set(cp.x, 1.45, cp.z)
+      else if (walk && locked && walker.update(dt)) sfx.cue('step')
+      const k = easeInOut(clamp(walkK, 0, 1)), yaw = walker.yaw, pitch = walker.pitch
+      walkDir.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch))
+      orbDir.copy(cam.t).sub(camPos).normalize().lerp(walkDir, k).normalize()
+      camera.position.lerpVectors(camPos, walker.eye, k)
+      camera.lookAt(camera.position.x + orbDir.x, camera.position.y + orbDir.y, camera.position.z + orbDir.z)
+      // Raycasting the whole island is the costly part, so refresh the aim about 20 times a second.
+      if (walk && walkK > 0.9 && locked && clock - outlineAt > 0.05) {
+        outlineAt = clock
+        camera.updateMatrixWorld()
+        updateAim()
+      }
+    }
+    const eyeK = Math.max(fpK, walkK)
+    const fov = lerp(40, 72, easeInOut(clamp(eyeK, 0, 1)))
     if (Math.abs(fov - lastFov) > 0.01) {
       lastFov = fov
       camera.fov = fov
-      camera.near = lerp(0.5, 0.05, fpK)
+      camera.near = lerp(0.5, 0.05, eyeK)
       camera.updateProjectionMatrix()
     }
 
@@ -563,9 +789,9 @@ export function createIsland(o: IslandOptions) {
 
     // ambient life
     clouds.forEach(c => { c.position.x += dt * c.userData.v; if (c.position.x > 110) c.position.x = -120 })
-    P.update({ dt, clock, view, nightT: n, rideHidesLetter: !!(spot && spot.ride && fpK > 0.3) })
+    P.update({ dt, clock, view, nightT: n, rideHidesLetter: !!(spot && spot.ride && fpK > 0.3) || (riding && walkK > 0.3) })
     people.update(dt, clock, camera)
-    sfx.update(dt, n, !!(spot && spot.ride && fpId))
+    sfx.update(dt, n, !!(spot && spot.ride && fpId) || (riding && walk))
 
     bloom.strength = lerp(0, 0.6, n)
     if (glowAllowed && n > 0.02) composer.render(dt)
@@ -584,6 +810,8 @@ export function createIsland(o: IslandOptions) {
       if (fpId) exitLookAround()
       if (id === view && !instant) return
       view = id
+      // In first person a panel opening (from right-clicking a landmark) frees the mouse so the panel shows.
+      if (walk && id !== 'home' && locked) document.exitPointerLock()
       if (ready) tweenTo(id, instant)
     },
     setNight(on: boolean) {
@@ -591,6 +819,16 @@ export function createIsland(o: IslandOptions) {
       night = on
     },
     setSound(on: boolean) { sfx.setEnabled(on) },
+    setCreative,
+    blockCount: () => builder.count(),
+    setBuildType(t: BlockType) { buildType = t },
+    setBuildTool(t: BuildTool) { buildTool = t },
+    zoomBy(f: number) { zoomT = clamp(zoomT * f, 0.3, 1.25) },
+    clearBlocks() {
+      builder.clear()
+      sfx.cue('break')
+      o.onBlocksChange([])
+    },
     enterLookAround,
     exitLookAround,
     lookAround,
@@ -603,6 +841,11 @@ export function createIsland(o: IslandOptions) {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
       canvas.removeEventListener('pointerleave', onLeave)
+      canvas.removeEventListener('contextmenu', onMenu)
+      document.removeEventListener('pointerlockchange', onLockChange)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+      if (locked) document.exitPointerLock()
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('resize', resize)
       for (const t of Object.values(tags)) t?.el.remove()
