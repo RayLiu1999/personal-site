@@ -9,8 +9,8 @@ ARG VERSION
 ENV BUILDTIME=$BUILDTIME
 ENV VERSION=$VERSION
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm (version pinned by the packageManager field; pnpm@latest broke installs when pnpm 12 shipped)
+RUN corepack enable
 
 WORKDIR /app
 
