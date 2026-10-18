@@ -38,3 +38,6 @@ argocd-key.pub
 
 # vscode
 # .vscode/ 不再排除
+
+# Playwright MCP 截圖與紀錄
+.playwright-mcp

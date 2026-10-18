@@ -301,8 +301,6 @@ const closeLightbox = () => {
 
 const route = useRoute();
 const projectId = parseInt(route.params.id);
-const config = useRuntimeConfig();
-const siteUrl = config.public.siteUrl;
 const { t, tm } = useI18n();
 const localePath = useLocalePath();
 
@@ -855,10 +853,6 @@ useHead(() => {
         content: p ? `${p.title} - Ray Liu` : t("portfolio.project.notFound"),
       },
       { property: "og:description", content: p ? p.description : "" },
-      {
-        property: "og:image",
-        content: p ? `${siteUrl}${p.image}` : `${siteUrl}/og-image.png`,
-      },
     ],
   };
 });

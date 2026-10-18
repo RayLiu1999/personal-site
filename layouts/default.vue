@@ -12,7 +12,7 @@
             <div class="flex items-center">
               <NuxtLink :to="localePath('/')"
                 class="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-300">
-                <img src="/logo.png" alt="Ray Liu Logo" class="h-5 w-auto">
+                <img src="/icon-192.png" alt="Ray Liu Logo" class="h-7 w-7">
                 <span class="text-coffee-50 dark:text-white text-xl font-bold">
                   Ray Liu
                 </span>

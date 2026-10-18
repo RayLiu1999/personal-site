@@ -182,7 +182,7 @@ pnpm preview
 
    - 更新 `layouts/default.vue` 中的 logo 和網站名稱
    - 修改 `pages/index.vue` 中的自我介紹和技能展示
-   - 替換 `public/avatar.jpg` 和 `public/logo.png`
+   - 替換 `public/avatar.jpg` 和網站 icon（`public/favicon.ico`、`icon-*.png`、`apple-touch-icon.png`）
 
 2. **關於我頁面**
 
@@ -322,7 +322,8 @@ personal-site/
 │   ├── contact.vue         # 聯絡頁面
 │   └── portfolio/          # 作品集
 ├── 📂 public/               # 靜態資源
-│   ├── logo.png            # 網站 Logo
+│   ├── favicon.ico         # 網站 icon（另有 icon-*.png、apple-touch-icon.png）
+│   ├── og/                 # 分享預覽圖（各語系一張）
 │   ├── avatar.jpg          # 個人照片
 │   └── project*.png        # 專案截圖
 ├── 📂 server/               # 後端 API
