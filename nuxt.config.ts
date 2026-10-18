@@ -44,13 +44,10 @@ export default defineNuxtConfig({
         // Open Graph (Facebook)
         { property: 'og:title', content: 'Ray Liu 個人網站' },
         { property: 'og:description', content: '您好，我是 Ray Liu，一位熱愛技術的後端工程師。這個網站展示我的專業技能與個人作品，歡迎參觀與交流！' },
-        { property: 'og:image', content: '/og-image.png' },
-        { property: 'og:url', content: process.env.SITE_URL || 'https://your-domain.com' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Ray Liu 個人網站' },
-        { name: 'twitter:description', content: '您好，我是 Ray Liu，一位熱愛技術的後端工程師。這個網站展示我的專業技能與個人作品，歡迎參觀與交流！' },
-        { name: 'twitter:image', content: '/og-image.png' }
+        { name: 'twitter:description', content: '您好，我是 Ray Liu，一位熱愛技術的後端工程師。這個網站展示我的專業技能與個人作品，歡迎參觀與交流！' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
