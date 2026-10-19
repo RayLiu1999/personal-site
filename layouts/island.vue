@@ -59,7 +59,7 @@ const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const { isDark, toggleDarkMode } = useDarkMode()
 const route = useRoute()
-const { engine, ready, lookAround, flat, noWebgl, sound, creative, buildType, buildTool, buildFly, buildLocked, fpSpawn, view, subpage, go } = useIsland()
+const { engine, ready, lookAround, flat, flatAuto, noWebgl, sound, creative, buildType, buildTool, buildFly, buildLocked, fpSpawn, view, subpage, go } = useIsland()
 
 const otherLocale = computed(() => (locale.value === 'en' ? 'zh-tw' : 'en'))
 const timeLabel = computed(() => (isDark.value ? t('island.toDay') : t('island.toNight')))
@@ -79,6 +79,7 @@ const rootClass = computed(() => ({
 const FLAT_KEY = 'island.flat'
 function toggleFlat() {
   flat.value = !flat.value
+  flatAuto.value = false
   try { localStorage.setItem(FLAT_KEY, flat.value ? '1' : '0') } catch { /* storage blocked */ }
   umTrackEvent('island-flat', { on: flat.value })
 }
@@ -168,7 +169,8 @@ onMounted(() => {
   } else {
     let saved: string | null = null
     try { saved = localStorage.getItem(FLAT_KEY) } catch { /* storage blocked */ }
-    flat.value = saved ? saved === '1' : window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    flatAuto.value = !saved && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    flat.value = saved ? saved === '1' : flatAuto.value
   }
   try { sound.value = localStorage.getItem(SOUND_KEY) === '1' } catch { /* storage blocked */ }
   buildFly.value = window.matchMedia('(pointer: fine)').matches && 'requestPointerLock' in HTMLElement.prototype

@@ -8,11 +8,12 @@
     </div>
   </header>
   <div v-if="flat" class="flat-ground" />
-  <div v-if="flat" class="flat-main">
-    <p class="note gui" style="padding: 10px 14px">{{ t('island.flatNote') }}</p>
+  <div v-if="flat && (noWebgl || flatAuto)" class="flat-main">
+    <!-- Says why the page is flat; a visitor who switched to flat themselves needs no explanation. -->
+    <p class="note gui" style="padding: 10px 14px">{{ t(noWebgl ? 'island.flatNote.webgl' : 'island.flatNote.motion') }}</p>
   </div>
 
-  <section v-else class="home-hud">
+  <section v-if="!flat" class="home-hud">
     <h1 class="sr-only">{{ t('island.srTitle') }}</h1>
     <p class="intro"><IntroText /></p>
     <div class="ctas">
@@ -26,7 +27,7 @@
 <script setup lang="ts">
 const { t, tm, rt } = useI18n()
 const localePath = useLocalePath()
-const { flat } = useIsland()
+const { flat, flatAuto, noWebgl } = useIsland()
 
 const splash = computed(() => { const v = tm('island.splash'); return Array.isArray(v) && v.length ? rt(v[0] as never) : '' })
 
