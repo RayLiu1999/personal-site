@@ -36,12 +36,6 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# PM2
-ecosystem.config.js
-
-# Kubernetes
-k8s/
-
 # Documentation
 README.md
 project_docs/
