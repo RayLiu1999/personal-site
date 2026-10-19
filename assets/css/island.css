@@ -1,6 +1,24 @@
 /* Island layout: full-bleed 3D stage; GUI overlays (panel right on desktop, bottom sheet on mobile, hotbar bottom).
    Flat mode turns the same panels into a normal scrolling page. */
 
+/* Minimal reset; the island styles below build on it (it stands in for what Tailwind's preflight used to provide). */
+*, ::before, ::after { box-sizing: border-box; border: 0 solid; }
+html { line-height: 1.5; -webkit-text-size-adjust: 100%; tab-size: 4; }
+body { margin: 0; line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+h1, h2, h3, h4, h5, h6, p, blockquote, dl, dd, figure, pre, hr { margin: 0; }
+ol, ul, menu { list-style: none; margin: 0; padding: 0; }
+a { color: inherit; text-decoration: inherit; }
+b, strong { font-weight: bolder; }
+button, input, select, textarea { font: inherit; color: inherit; margin: 0; padding: 0; }
+button { background: transparent; cursor: pointer; }
+img, svg, video, canvas { display: block; vertical-align: middle; }
+img, video { max-width: 100%; height: auto; }
+dialog { padding: 0; }
+textarea { resize: vertical; }
+::placeholder { opacity: 1; color: #9ca3af; }
+[hidden] { display: none; }
+
 /* Cubic 11 (俐方體11號), SIL OFL 1.1 — subset to the characters the site uses; see public/fonts/README.md. */
 @font-face {
   font-family: "Cubic 11";

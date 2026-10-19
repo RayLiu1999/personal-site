@@ -5,7 +5,6 @@ import { PROJECTS } from './data/projects';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-31',
   modules: [
-    '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
     'nuxt-umami'

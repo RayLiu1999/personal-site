@@ -1,6 +1,6 @@
 # 首頁是 3D 浮空島導覽，內容放在 SSR HTML 面板，子頁共用浮空島
 
-網站改版成受 Minecraft 啟發的 voxel 風格。主要訪客是招募方，他們停留時間短，所以 3D 只負責導覽與驚艷感，不承載內容。浮空島是導覽地圖，點擊地標後鏡頭飛過去，再浮出 SSR 的 HTML 內容面板。`/about`、`/portfolio`、`/contact` 同樣渲染浮空島，鏡頭直接停在對應地標、面板已展開。`/portfolio/[id]` 與 `/privacy-policy` 維持一般 2D 頁面。偵測到不支援 WebGL 或偏好減少動態時，改用內容相同的平面版。
+網站改版成受 Minecraft 啟發的 voxel 風格。主要訪客是招募方，他們停留時間短，所以 3D 只負責導覽與驚艷感，不承載內容。浮空島是導覽地圖，點擊地標後鏡頭飛過去，再浮出 SSR 的 HTML 內容面板。`/about`、`/portfolio`、`/contact` 同樣渲染浮空島，鏡頭直接停在對應地標、面板已展開。`/portfolio/[id]` 與 `/privacy-policy` 維持一般 2D 頁面（這部分已由 [ADR 0004](0004-single-island-layout-no-tailwind.md) 取代，兩頁都改成浮空島的子頁）。偵測到不支援 WebGL 或偏好減少動態時，改用內容相同的平面版。
 
 ## Considered Options
 

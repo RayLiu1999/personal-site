@@ -1,50 +1,4 @@
 {
-  "nav": {
-    "home": "首頁",
-    "portfolio": "作品集",
-    "about": "關於我",
-    "blog": "部落格",
-    "contact": "聯絡我"
-  },
-  "ui": {
-    "toggleDarkMode": "切換到深色模式",
-    "toggleLightMode": "切換到亮色模式",
-    "language": "語言"
-  },
-  "footer": {
-    "copyright": "個人網站. All rights reserved.",
-    "privacyPolicy": "隱私權政策",
-    "contact": "聯絡我"
-  },
-  "home": {
-    "hero": {
-      "greeting": "Hi, 我是",
-      "role": "後端工程師",
-      "intro_part1": "我是一名熱愛技術的",
-      "intro_part2": "，",
-      "intro_part3": "專注於打造",
-      "intro_highlight1": "穩定",
-      "intro_highlight2": "高效",
-      "intro_highlight3": "易於擴展",
-      "intro_part4": "的系統。",
-      "viewPortfolio": "查看作品集",
-      "contactMe": "聯絡我",
-      "and1": "、",
-      "and2": "且"
-    },
-    "blog": {
-      "title": "部落格最新文章",
-      "subtitle": "分享技術與日常生活",
-      "readMore": "閱讀更多",
-      "visitBlog": "前往部落格"
-    },
-    "projects": {
-      "title": "精選作品",
-      "subtitle": "最新的專案成果",
-      "viewDetails": "查看詳情",
-      "viewAll": "查看所有作品"
-    }
-  },
   "about": {
     "header": {
       "title": "Hi, 我是 Ray Liu",
@@ -52,7 +6,6 @@
     },
     "story": {
       "title": "我的故事",
-      "subtitle": "從一行程式碼開始的旅程",
       "p1": "你好！我是一名擁有 3 年多實戰經驗的後端工程師。對我來說，程式設計不僅僅是工作，更是一種創造與解決問題的藝術。我對所有新技術都抱持著強烈的好奇心，無論是前端、後端，還是 DevOps 的自動化世界。",
       "p2": "我特別喜歡透過 Side Project 來學習，因為我相信這是最扎實、最貼近實戰的成長方式。尤其在 AI 工具日益強大的今天，學習的效率與深度都得到了前所未有的提升，讓我可以更快地將新知識應用到專案中。",
       "p3": "工作與學習之餘，我也喜歡動手寫些能為生活帶來便利或純粹趣味的小工具，我相信技術最大的價值，在於它能真正融入日常。",
@@ -76,7 +29,6 @@
       }
     },
     "sidebar": {
-      "toolbox": "我的技術工具箱",
       "languages": "語言能力",
       "lang_items": {
         "chinese": "中文",
@@ -112,21 +64,7 @@
       "error": "發送失敗，請稍後再試。"
     },
     "sidebar": {
-      "title": "我們可以聊些什麼？",
-      "tech": {
-        "title": "聊聊技術",
-        "desc": "從後端架構、系統設計到 DevOps，我都樂於交流。"
-      },
-      "project": {
-        "title": "有趣的專案",
-        "desc": "有好點子或需要技術夥伴嗎？我很感興趣！"
-      },
-      "coffee": {
-        "title": "喝杯咖啡",
-        "desc": "如果你在附近，我們可以約個時間，聊聊任何事。"
-      },
       "response": {
-        "title": "訊息回覆",
         "desc": "通常在 24 小時內回覆。<br>如果沒回，可能是我正在專心寫扣或是在探索新的咖啡店！☕️"
       }
     }
@@ -134,13 +72,7 @@
   "portfolio": {
     "title": "作品集",
     "subtitle": "展示我在前端與後端開發領域的專案經驗與技術成果",
-    "filter": {
-      "all": "全部",
-      "clear": "清除所有篩選"
-    },
     "project": {
-      "viewDetails": "查看詳情",
-      "backToPortfolio": "返回作品集",
       "githubSource": "GitHub 源碼",
       "liveDemo": "線上展示",
       "overview": "專案概述",
@@ -148,8 +80,7 @@
       "solutionLabel": "解決方案：",
       "architecture": "系統架構",
       "learnings": "學習與心得",
-      "techStack": "技術棧",
-      "notFound": "專案不存在"
+      "techStack": "技術棧"
     },
     "categories": {
       "fullstack": "全端開發",
@@ -162,17 +93,12 @@
       "devops": "DevOps / 基礎設施",
       "knowledge_base": "知識庫"
     },
-    "tags": {
-      "game_dev": "遊戲開發",
-      "tools": "工具/自動化"
-    },
     "techStack": {
       "frontend": "前端",
       "backend": "後端",
       "database": "資料庫",
       "messaging": "事件流與可靠性",
       "client_side": "前台",
-      "admin_panel": "後台",
       "frontend_framework": "前端框架",
       "ai_engine": "AI 引擎",
       "deployment": "部署",
@@ -199,8 +125,7 @@
       "financial_data": "金融資料",
       "state_management": "狀態管理",
       "visualization": "資料視覺化",
-      "content": "內容",
-      "search_filter": "搜尋與篩選"
+      "content": "內容"
     },
     "items": {
       "p1": {
@@ -613,7 +538,6 @@
   },
   "privacy": {
     "title": "隱私權政策",
-    "lastUpdated": "最後更新日期",
     "intro": {
       "title": "前言",
       "content": "歡迎您使用本網站。我們非常重視您的隱私權，因此制定了本隱私權政策，以說明我們如何收集、使用、保護您的個人資訊。"
@@ -627,16 +551,14 @@
       "content": "本網站可能使用 Cookie 技術，以便提供更個人化的服務。Cookie 是網站伺服器用來和使用者瀏覽器進行溝通的一種技術，它可能在使用者的電腦中儲存某些資訊，但使用者可以經由瀏覽器的設定，取消或限制此項功能。"
     },
     "recaptcha": {
-      "title": "Google reCAPTCHA",
-      "content": "本網站為了保護聯絡表單不被垃圾訊息濫用，使用了 Google 提供的 reCAPTCHA v3 服務。這項服務的啟用代表您同意並接受 Google 的 <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-500 hover:underline\">隱私權政策</a> 與 <a href=\"https://policies.google.com/terms\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-500 hover:underline\">服務條款</a>。reCAPTCHA 會收集必要的硬體和軟體資訊（例如裝置和應用程式資料）並傳送給 Google 進行分析，以判斷您是否為真人使用者。"
+      "title": "Google reCAPTCHA"
     },
     "revision": {
       "title": "政策修訂",
       "content": "我們保留隨時修訂本隱私權政策的權利。當我們做出重大修改時，將會在本頁面上公布。"
     },
     "contact": {
-      "title": "聯絡我們",
-      "content": "若您對本隱私權政策有任何疑問，歡迎隨時透過 <a href=\"/contact\" class=\"text-blue-500 hover:underline\">聯絡頁面</a> 與我聯繫。"
+      "title": "聯絡我們"
     }
   },
   "island": {

@@ -1,50 +1,4 @@
 {
-  "nav": {
-    "home": "Home",
-    "portfolio": "Portfolio",
-    "about": "About",
-    "blog": "Blog",
-    "contact": "Contact"
-  },
-  "ui": {
-    "toggleDarkMode": "Switch to dark mode",
-    "toggleLightMode": "Switch to light mode",
-    "language": "Language"
-  },
-  "footer": {
-    "copyright": "Personal Website. All rights reserved.",
-    "privacyPolicy": "Privacy Policy",
-    "contact": "Contact Me"
-  },
-  "home": {
-    "hero": {
-      "greeting": "Hi, I am",
-      "role": "Back-end Developer",
-      "intro_part1": "I am a passionate ",
-      "intro_part2": ",",
-      "intro_part3": " focusing on building ",
-      "intro_highlight1": "stable",
-      "intro_highlight2": "high-performance",
-      "intro_highlight3": "scalable",
-      "intro_part4": " systems.",
-      "viewPortfolio": "View Portfolio",
-      "contactMe": "Contact Me",
-      "and1": ", ",
-      "and2": " and "
-    },
-    "blog": {
-      "title": "Latest Blog Posts",
-      "subtitle": "Sharing technology and daily life",
-      "readMore": "Read More",
-      "visitBlog": "Visit Blog"
-    },
-    "projects": {
-      "title": "Featured Projects",
-      "subtitle": "Latest Project Outcomes",
-      "viewDetails": "View Details",
-      "viewAll": "View All Projects"
-    }
-  },
   "about": {
     "header": {
       "title": "Hi, I am Ray Liu",
@@ -52,7 +6,6 @@
     },
     "story": {
       "title": "My Story",
-      "subtitle": "A journey starting from a line of code",
       "p1": "Hello! I am a back-end developer with over 3 years of practical experience. For me, programming is not just a job, but an art of creation and problem-solving. I have a strong curiosity for all new technologies, whether it's frontend, backend, or the world of DevOps automation.",
       "p2": "I especially enjoy learning through Side Projects because I believe this is the most solid and practical way to grow. Especially today, with AI tools becoming increasingly powerful, the efficiency and depth of learning have been unprecedentedly improved, allowing me to apply new knowledge to projects faster.",
       "p3": "Outside of work and study, I also like to write small tools that bring convenience or pure fun to life. I believe the greatest value of technology lies in its ability to truly integrate into daily life.",
@@ -76,7 +29,6 @@
       }
     },
     "sidebar": {
-      "toolbox": "My Tech Toolbox",
       "languages": "Languages",
       "lang_items": {
         "chinese": "Chinese",
@@ -112,21 +64,7 @@
       "error": "Failed to send, please try again."
     },
     "sidebar": {
-      "title": "What can we talk about?",
-      "tech": {
-        "title": "Tech Talk",
-        "desc": "From backend architecture, system design to DevOps, I am happy to exchange ideas."
-      },
-      "project": {
-        "title": "Interesting Projects",
-        "desc": "Have a great idea or need a tech partner? I am interested!"
-      },
-      "coffee": {
-        "title": "Have a Coffee",
-        "desc": "If you are nearby, we can meet up and chat about anything."
-      },
       "response": {
-        "title": "Response Time",
         "desc": "Usually reply within 24 hours.<br>If not, I might be focusing on coding or exploring a new coffee shop! ☕️"
       }
     }
@@ -134,13 +72,7 @@
   "portfolio": {
     "title": "Portfolio",
     "subtitle": "Showcasing my project experience and technical achievements in frontend and backend development.",
-    "filter": {
-      "all": "All",
-      "clear": "Clear all filters"
-    },
     "project": {
-      "viewDetails": "View Details",
-      "backToPortfolio": "Back to Portfolio",
       "githubSource": "GitHub Source",
       "liveDemo": "Live Demo",
       "overview": "Project Overview",
@@ -148,8 +80,7 @@
       "solutionLabel": "Solution:",
       "architecture": "Architecture",
       "learnings": "Learnings",
-      "techStack": "Tech Stack",
-      "notFound": "Project Not Found"
+      "techStack": "Tech Stack"
     },
     "categories": {
       "fullstack": "Full Stack",
@@ -162,17 +93,12 @@
       "devops": "DevOps / Infrastructure",
       "knowledge_base": "Knowledge Base"
     },
-    "tags": {
-      "game_dev": "Game Dev",
-      "tools": "Tools/Automation"
-    },
     "techStack": {
       "frontend": "Frontend",
       "backend": "Backend",
       "database": "Database",
       "messaging": "Event Streaming & Reliability",
       "client_side": "Client Side",
-      "admin_panel": "Admin Panel",
       "frontend_framework": "Frontend Framework",
       "ai_engine": "AI Engine",
       "deployment": "Deployment",
@@ -199,8 +125,7 @@
       "financial_data": "Financial Data",
       "state_management": "State Management",
       "visualization": "Visualization",
-      "content": "Content",
-      "search_filter": "Search & Filter"
+      "content": "Content"
     },
     "items": {
       "p1": {
@@ -613,7 +538,6 @@
   },
   "privacy": {
     "title": "Privacy Policy",
-    "lastUpdated": "Last Updated",
     "intro": {
       "title": "Introduction",
       "content": "Welcome to this website. We value your privacy, so we have developed this Privacy Policy to explain how we collect, use, and protect your personal information."
@@ -627,16 +551,14 @@
       "content": "This website may use Cookie technology to provide more personalized services. Cookies are a technology used by the website server to communicate with the user's browser. They may store certain information on the user's computer, but users can cancel or limit this function through browser settings."
     },
     "recaptcha": {
-      "title": "Google reCAPTCHA",
-      "content": "To protect the contact form from spam abuse, this website uses the reCAPTCHA v3 service provided by Google. The use of this service implies that you agree to and accept Google's <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-500 hover:underline\">Privacy Policy</a> and <a href=\"https://policies.google.com/terms\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-500 hover:underline\">Terms of Service</a>. reCAPTCHA collects necessary hardware and software information (such as device and application data) and transmits it to Google for analysis to determine if you are a human user."
+      "title": "Google reCAPTCHA"
     },
     "revision": {
       "title": "Policy Revision",
       "content": "We reserve the right to revise this Privacy Policy at any time. When we make significant changes, we will post them on this page."
     },
     "contact": {
-      "title": "Contact Us",
-      "content": "If you have any questions about this Privacy Policy, please feel free to contact me via the <a href=\"/contact\" class=\"text-blue-500 hover:underline\">Contact Page</a>."
+      "title": "Contact Us"
     }
   },
   "island": {
