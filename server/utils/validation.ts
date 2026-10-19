@@ -1,4 +1,16 @@
-import type { ContactForm, ValidationResult } from '~/types/contact'
+export interface ContactForm {
+  name: string
+  email: string
+  subject: string
+  message: string
+  recaptchaToken?: string
+}
+
+export interface ValidationResult {
+  isValid: boolean
+  message: string
+  errors?: Record<string, string>
+}
 
 export function validateContactForm(data: Partial<ContactForm>): ValidationResult {
   const errors: Record<string, string> = {}
@@ -38,21 +50,11 @@ export function validateContactForm(data: Partial<ContactForm>): ValidationResul
     errors.message = '訊息不能超過 1000 個字元'
   }
 
-  // reCAPTCHA token 驗證（前端基本驗證）
-  // 注意：實際的 reCAPTCHA 驗證在後端進行
-  if (process.client && data.recaptchaToken !== undefined && !data.recaptchaToken?.trim()) {
-    errors.recaptcha = '請完成 reCAPTCHA 驗證'
-  }
-  
   const hasErrors = Object.keys(errors).length > 0
-  
+
   return {
     isValid: !hasErrors,
     message: hasErrors ? '請修正表單中的錯誤' : '驗證通過',
     errors: hasErrors ? errors : undefined
   }
-}
-
-export function sanitizeInput(input: string): string {
-  return input.trim().replace(/[<>]/g, '')
 }

@@ -24,9 +24,6 @@ logs
 .env.*
 !.env.example
 
-# Kubernetes secrets
-k8s/secret.yaml
-
 # ArgoCD secrets
 argocd/github-secret.yaml
 argocd/github-ssh-secret.yaml

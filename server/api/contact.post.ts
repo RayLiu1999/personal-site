@@ -1,4 +1,4 @@
-import { validateContactForm } from '~/utils/validation'
+import { validateContactForm } from '../utils/validation'
 import { createLineNotificationService } from '../utils/line'
 import { getClientIP } from '../utils/common'
 import { handleApiError } from '../utils/error'
