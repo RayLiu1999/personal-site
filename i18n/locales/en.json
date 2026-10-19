@@ -782,7 +782,10 @@
       "seoOgTitle": "{title} - Ray Liu, Back-end Developer",
       "seoKeywords": "contact Ray Liu, technical collaboration, project inquiries, back-end developer contact, job opportunities, technical consulting"
     },
-    "flatNote": "Flat mode: used when WebGL is unavailable or reduced motion is on. Same content as the island.",
+    "flatNote": {
+      "webgl": "Your browser can't show 3D, so this is the flat version with the same content.",
+      "motion": "Your system is set to reduce motion, so you're seeing the flat version. Press \"Island\" at the top right to switch to 3D."
+    },
     "srTitle": "Ray Liu, back-end developer",
     "project": {
       "back": "← {name}",

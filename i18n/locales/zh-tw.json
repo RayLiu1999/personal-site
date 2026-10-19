@@ -782,7 +782,10 @@
       "seoOgTitle": "{title} - Ray Liu 後端工程師",
       "seoKeywords": "聯絡 Ray Liu, 技術合作, 專案洽談, 後端工程師聯絡, 工作機會, 技術諮詢"
     },
-    "flatNote": "平面版：不支援 WebGL 或系統設定為減少動態時使用，內容與浮空島相同。",
+    "flatNote": {
+      "webgl": "你的瀏覽器無法顯示 3D，這裡是內容相同的平面版。",
+      "motion": "系統設定為減少動態，所以先顯示平面版；可以按右上角的「浮空島」切回 3D。"
+    },
     "srTitle": "Ray Liu，後端工程師",
     "project": {
       "back": "← {name}",

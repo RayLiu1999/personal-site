@@ -81,6 +81,8 @@ export function useIsland() {
     flat: useState('island-flat', () => false),
     /** 3D is unavailable on this device, so flat mode cannot be turned off. */
     noWebgl: useState('island-no-webgl', () => false),
+    /** Flat mode came from the system's reduced-motion setting rather than the visitor's own choice. */
+    flatAuto: useState('island-flat-auto', () => false),
     /** Island sound effects and ambience; off until the visitor turns them on. */
     sound: useState('island-sound', () => false),
     /** Build mode: the visitor places and breaks blocks on the island overview. */
