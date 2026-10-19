@@ -1,0 +1,13 @@
+graph TD
+  Internet -->|Cloudflare Tunnel| CF[Cloudflared]
+  CF --> Traefik[Traefik Ingress]
+  subgraph VPS-1 [OVH Master Node]
+    Traefik
+    Argocd[ArgoCD]
+    Prom[Prometheus/Grafana]
+  end
+  subgraph VPS-2 [OVH Worker Node]
+    App[User Apps]
+  end
+  Traefik --> Argocd
+  Traefik -->|Tailscale Mesh 100.x.x.x| App

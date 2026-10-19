@@ -21,6 +21,12 @@ export interface Project {
   github?: string;
   githubs?: { label: "frontend" | "backend"; url: string }[];
   features?: string[];
+  /** The project page groups its tech stack by these headings (portfolio.techStack.<key>). */
+  techStack: { key: string; items: string[] }[];
+  /** The architecture is a pre-rendered diagram (assets/diagrams/p<id>.svg) … */
+  diagram?: boolean;
+  /** … or a screenshot. */
+  architectureImage?: string;
 }
 
 const projects: Project[] = [
@@ -51,6 +57,14 @@ const projects: Project[] = [
         url: "https://github.com/RayLiu1999/cyptocurrency-exchange-backend",
       },
     ],
+    diagram: true,
+    techStack: [
+      { key: "backend", items: ["Go 1.25", "Gin", "Price-Time Priority", "Leader Election"] },
+      { key: "database", items: ["PostgreSQL", "Redis", "pgx v5"] },
+      { key: "messaging", items: ["Kafka / Redpanda", "Transactional Outbox", "Atomic Settlement", "Idempotency"] },
+      { key: "deployment", items: ["Docker", "AWS ECS", "Terraform", "ecspresso"] },
+      { key: "monitoring", items: ["Prometheus", "Grafana", "CloudWatch", "k6"] },
+    ],
   },
   {
     id: 8,
@@ -70,6 +84,15 @@ const projects: Project[] = [
       "Docker",
     ],
     github: "https://github.com/RayLiu1999/muon",
+    diagram: true,
+    techStack: [
+      { key: "mobile_framework", items: ["Flutter", "Dart", "Riverpod"] },
+      { key: "audio_playback", items: ["just_audio", "audio_service", "video_player"] },
+      { key: "local_database", items: ["Drift (SQLite)"] },
+      { key: "backend", items: ["Python", "FastAPI"] },
+      { key: "media_processing", items: ["yt-dlp", "ffmpeg"] },
+      { key: "deployment", items: ["Docker Compose"] },
+    ],
   },
   {
     id: 18,
@@ -89,6 +112,12 @@ const projects: Project[] = [
       "DeepL API",
     ],
     github: "https://github.com/RayLiu1999/yt-realtime-subtitles",
+    diagram: true,
+    techStack: [
+      { key: "extension", items: ["JavaScript", "Chrome Extension API", "Web Audio API"] },
+      { key: "backend", items: ["Go", "WebSocket"] },
+      { key: "ai_service", items: ["Deepgram STT API", "Google Translate", "DeepL API"] },
+    ],
   },
   {
     id: 10,
@@ -107,6 +136,16 @@ const projects: Project[] = [
       "Loki",
       "rclone",
     ],
+    diagram: true,
+    techStack: [
+      { key: "container_orchestration", items: ["K3s", "ArgoCD", "Traefik"] },
+      { key: "networking", items: ["Tailscale", "Cloudflare Tunnel"] },
+      { key: "monitoring", items: ["Prometheus", "Grafana", "Node Exporter"] },
+      { key: "log_management", items: ["Loki", "Promtail"] },
+      { key: "database", items: ["PostgreSQL 16", "MongoDB 8", "Redis 7"] },
+      { key: "backup", items: ["rclone", "OVH S3", "Google Drive"] },
+      { key: "tools", items: ["Bash", "Docker"] },
+    ],
   },
   {
     id: 11,
@@ -122,6 +161,13 @@ const projects: Project[] = [
       "GitHub Actions",
       "GHCR",
       "K3s",
+    ],
+    diagram: true,
+    techStack: [
+      { key: "gitops", items: ["ArgoCD", "App-of-Apps Pattern"] },
+      { key: "container_orchestration", items: ["K3s", "Kustomize"] },
+      { key: "secret_management", items: ["kubeseal", "Bitnami Sealed Secrets"] },
+      { key: "deployment", items: ["GitHub Actions", "GHCR", "Docker"] },
     ],
   },
   {
@@ -140,6 +186,13 @@ const projects: Project[] = [
       "Ubuntu",
     ],
     github: "https://github.com/RayLiu1999/gcp-free-stack",
+    diagram: true,
+    techStack: [
+      { key: "container_orchestration", items: ["Docker", "Docker Compose", "Portainer"] },
+      { key: "networking", items: ["Cloudflare Tunnel", "Cloudflare WARP", "Socat", "Cloudflare Workers"] },
+      { key: "monitoring", items: ["Uptime Kuma", "Umami", "Dash."] },
+      { key: "deployment", items: ["GCP e2-micro", "GCP IAP", "Ubuntu", "systemd"] },
+    ],
   },
   {
     id: 12,
@@ -159,6 +212,16 @@ const projects: Project[] = [
       "Redis",
     ],
     demo: "https://lazybacktest.liu-yucheng.com/",
+    diagram: true,
+    techStack: [
+      { key: "frontend", items: ["React 18", "TypeScript", "Vite", "TailwindCSS"] },
+      { key: "visualization", items: ["Recharts"] },
+      { key: "backend", items: ["Python 3.11+", "FastAPI", "SQLAlchemy", "Alembic"] },
+      { key: "data_analysis", items: ["Pandas", "NumPy"] },
+      { key: "financial_data", items: ["yfinance"] },
+      { key: "database", items: ["PostgreSQL", "Redis", "SQLite (test)"] },
+      { key: "deployment", items: ["Docker Compose", "Nginx"] },
+    ],
   },
   {
     id: 13,
@@ -177,6 +240,12 @@ const projects: Project[] = [
       "Docker",
     ],
     demo: "https://leetcode.liu-yucheng.com/",
+    techStack: [
+      { key: "frontend_framework", items: ["React 19", "TypeScript", "Vite 7", "TailwindCSS 4"] },
+      { key: "state_management", items: ["Zustand"] },
+      { key: "tools", items: ["react-markdown", "rehype-highlight", "highlight.js", "framer-motion"] },
+      { key: "deployment", items: ["Docker", "Nginx"] },
+    ],
   },
   {
     id: 14,
@@ -195,6 +264,13 @@ const projects: Project[] = [
       "Docker",
     ],
     demo: "https://guitar.liu-yucheng.com/",
+    techStack: [
+      { key: "frontend_framework", items: ["React 19", "TypeScript", "Vite", "TailwindCSS"] },
+      { key: "visualization", items: ["react-force-graph-2d (D3)", "react-activity-calendar", "Recharts"] },
+      { key: "backend", items: ["Node.js", "Express", "TypeScript"] },
+      { key: "database", items: ["MongoDB", "Mongoose"] },
+      { key: "deployment", items: ["Docker Compose", "Nginx"] },
+    ],
   },
   {
     id: 15,
@@ -205,6 +281,10 @@ const projects: Project[] = [
     tags: ["Go"],
     technologies: ["Markdown", "Go", "GitHub"],
     github: "https://github.com/RayLiu1999/senior_interview",
+    techStack: [
+      { key: "content", items: ["Markdown"] },
+      { key: "tools", items: ["Go (code examples)", "GitHub"] },
+    ],
   },
   {
     id: 4,
@@ -222,6 +302,12 @@ const projects: Project[] = [
       "Webhook",
     ],
     github: "https://github.com/RayLiu1999/youtube-extension",
+    architectureImage: "/archs/project4-sa.png",
+    techStack: [
+      { key: "extension", items: ["JavaScript", "Chrome Extension API"] },
+      { key: "workflow", items: ["n8n", "yt-dlp", "Docker Compose"] },
+      { key: "ai_service", items: ["Webhook"] },
+    ],
   },
   {
     id: 2,
@@ -241,6 +327,13 @@ const projects: Project[] = [
       "Grafana",
     ],
     demo: "https://gf-soap.com",
+    architectureImage: "/archs/project3-sa.png",
+    techStack: [
+      { key: "client_side", items: ["Nuxt 3", "Tailwind CSS", "TypeScript"] },
+      { key: "backend", items: ["Node.js (ESM)", "Express", "Drizzle ORM", "PostgreSQL", "MinIO (S3)"] },
+      { key: "deployment_management", items: ["Kubernetes (k3s)", "ArgoCD (GitOps)", "GitHub Actions"] },
+      { key: "monitoring", items: ["Prometheus", "Grafana"] },
+    ],
   },
   {
     id: 1,
@@ -269,6 +362,14 @@ const projects: Project[] = [
       },
       { label: "backend", url: "https://github.com/RayLiu1999/chat_app_backend" },
     ],
+    diagram: true,
+    techStack: [
+      { key: "frontend", items: ["Vue 3", "TypeScript", "Element Plus", "Pinia", "UnoCSS"] },
+      { key: "backend", items: ["Go 1.25", "Gin", "gorilla/websocket", "JWT", "Redis Pub/Sub"] },
+      { key: "database", items: ["MongoDB", "Redis"] },
+      { key: "container_orchestration", items: ["K3s", "HPA", "Kustomize", "ArgoCD"] },
+      { key: "monitoring", items: ["Prometheus", "pprof", "k6"] },
+    ],
   },
   {
     id: 3,
@@ -280,6 +381,12 @@ const projects: Project[] = [
     technologies: ["Vue 3", "Vuex", "Vite", "Stockfish.js", "Docker"],
     demo: "https://chess.liu-yucheng.com",
     github: "https://github.com/RayLiu1999/chess-in-vue",
+    architectureImage: "/archs/project2-sa.png",
+    techStack: [
+      { key: "frontend_framework", items: ["Vue 3", "Vuex 4", "Vite"] },
+      { key: "ai_engine", items: ["Stockfish.js"] },
+      { key: "deployment", items: ["Docker"] },
+    ],
   },
   {
     id: 5,
@@ -298,6 +405,13 @@ const projects: Project[] = [
       "Docker",
     ],
     github: "https://github.com/RayLiu1999/yt_discord_bot",
+    architectureImage: "/archs/project7-sa.png",
+    techStack: [
+      { key: "core_tech", items: ["Node.js", "Discord.js v14", "JavaScript (ES Modules)"] },
+      { key: "crawler_tech", items: ["node-fetch", "Cheerio", "Puppeteer"] },
+      { key: "database", items: ["MongoDB", "Mongoose"] },
+      { key: "deployment_management", items: ["PM2", "Docker"] },
+    ],
   },
   {
     id: 6,
@@ -316,6 +430,11 @@ const projects: Project[] = [
       "商品管理",
       "Session 管理",
     ],
+    architectureImage: "/archs/project5-sa.png",
+    techStack: [
+      { key: "backend", items: ["PHP", "MySQL"] },
+      { key: "tools", items: ["Composer", "Apache"] },
+    ],
   },
   {
     id: 7,
@@ -327,6 +446,11 @@ const projects: Project[] = [
     technologies: ["PHP", "MySQL", "JavaScript", "Gulp", "Prepros"],
     demo: "https://pomodoro.liu-yucheng.com",
     github: "https://github.com/RayLiu1999/tomato-clock",
+    architectureImage: "/archs/project6-sa.png",
+    techStack: [
+      { key: "backend", items: ["PHP", "MySQL"] },
+      { key: "dev_tools", items: ["JavaScript", "Gulp", "Prepros"] },
+    ],
   },
 ];
 

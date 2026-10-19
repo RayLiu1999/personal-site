@@ -28,7 +28,7 @@ def strings(node):
 
 def main(src: str) -> None:
     chars = set(chr(c) for c in range(0x20, 0x7F))
-    chars |= set("·→←✕☼☾›＋…，。、：；！？「」（）『』—–’“”")
+    chars |= set("·→←✕☼☾‹›＋…，。、：；！？「」（）『』—–’“”")
     for loc in (ROOT / "i18n" / "locales").glob("*.json"):
         for s in strings(json.loads(loc.read_text(encoding="utf-8"))):
             chars |= set(s)

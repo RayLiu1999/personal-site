@@ -369,7 +369,7 @@
         "title": "Muon 音樂播放器",
         "description": "跨平台行動音樂播放器，使用 Flutter 開發，可免廣告串流和下載 YouTube 音樂/影片，支援離線播放。",
         "overview": "Muon 是一款簡約、無廣告的 iOS/Android 行動音樂播放器，可串流和下載 YouTube 內容。用戶可搜尋 YouTube、在背景播放音樂（含鎖定螢幕控制）、下載音頻（m4a）或完整影片（H.264/mp4），並管理離線播放清單。FastAPI 後端透過任務佇列非同步處理下載任務，支援狀態輪詢，並自動清理過期磁碟檔案。",
-        "architectureDescription": "Flutter 前端：Riverpod（程式碼生成）管理狀態、just_audio + audio_service 實現背景播放、Drift（SQLite）本地離線儲存、Dio 處理 HTTP 請求。FastAPI 後端：yt-dlp + ffmpeg 非同步任務系統、/api/status/{task_id} 輪詢端點、StaticFiles 提供媒體存取。使用 Docker Compose 部署。",
+        "architectureDescription": "Flutter 前端：Riverpod（程式碼生成）管理狀態、just_audio + audio_service 實現背景播放、Drift（SQLite）本地離線儲存、Dio 處理 HTTP 請求。FastAPI 後端：yt-dlp + ffmpeg 非同步任務系統、/api/status/{'{'}task_id{'}'} 輪詢端點、StaticFiles 提供媒體存取。使用 Docker Compose 部署。",
         "learnings": "開發 Muon 讓我深入了解 Flutter 音訊生態（just_audio、audio_service）以及 iOS/Android 背景媒體播放的複雜性。在 FastAPI 上設計帶狀態輪詢的非同步任務佇列，是處理長時間執行任務而不阻塞 API 的寶貴模式。",
         "challenges": [
           {
@@ -380,7 +380,7 @@
           {
             "title": "非同步下載任務系統",
             "problem": "透過 yt-dlp 下載 YouTube 內容可能需要 10–60 秒以上。同步 API 會超時並讓客戶端無回應。",
-            "solution": "在 FastAPI 後端實作非同步任務佇列：POST /api/download 端點立即返回 task_id，Flutter 客戶端輪詢 GET /api/status/{task_id} 直到狀態為「completed」，再取得媒體 URL。"
+            "solution": "在 FastAPI 後端實作非同步任務佇列：POST /api/download 端點立即返回 task_id，Flutter 客戶端輪詢 GET /api/status/{'{'}task_id{'}'} 直到狀態為「completed」，再取得媒體 URL。"
           },
           {
             "title": "離線儲存與播放清單管理",
@@ -861,6 +861,29 @@
       "seoKeywords": "聯絡 Ray Liu, 技術合作, 專案洽談, 後端工程師聯絡, 工作機會, 技術諮詢"
     },
     "flatNote": "平面版：不支援 WebGL 或系統設定為減少動態時使用，內容與浮空島相同。",
-    "srTitle": "Ray Liu，後端工程師"
+    "srTitle": "Ray Liu，後端工程師",
+    "project": {
+      "back": "← {name}",
+      "enlarge": "點擊放大",
+      "diagramLabel": "{title} 的系統架構圖",
+      "prev": "上一個作品",
+      "next": "下一個作品",
+      "pager": "其他作品"
+    },
+    "error": {
+      "voidTitle": "這裡是一片虛空",
+      "voidBody": "你要找的頁面不在浮空島上，可能已經掉進虛空了。",
+      "title": "島上出了點狀況",
+      "body": "伺服器暫時沒有回應，請稍後再試一次。",
+      "home": "回到浮空島"
+    },
+    "privacy": {
+      "updated": "最後更新：2025 年 9 月 13 日",
+      "recaptcha": "本網站為了保護聯絡表單不被垃圾訊息濫用，使用了 Google 提供的 reCAPTCHA v3 服務。這項服務的啟用代表您同意並接受 Google 的{privacy}與{terms}。reCAPTCHA 會收集必要的硬體和軟體資訊（例如裝置和應用程式資料）並傳送給 Google 進行分析，以判斷您是否為真人使用者。",
+      "privacyLink": "隱私權政策",
+      "termsLink": "服務條款",
+      "contact": "若您對本隱私權政策有任何疑問，歡迎隨時透過{link}與我聯繫。",
+      "contactLink": "告示牌的聯絡表單"
+    }
   }
 }

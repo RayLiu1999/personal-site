@@ -1,0 +1,11 @@
+graph TD
+  subgraph Client [Flutter App]
+    UI[Riverpod UI] --> Player[just_audio / video_player]
+    UI --> DB[(Drift SQLite)]
+    UI --> API_Client[Dio HTTP]
+  end
+  subgraph Server [FastAPI Backend]
+    API_Client -->|REST API| API_Server[FastAPI]
+    API_Server --> YTDLP[yt-dlp]
+    YTDLP -.->|Download| YouTube[YouTube]
+  end

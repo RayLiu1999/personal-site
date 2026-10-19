@@ -1,0 +1,15 @@
+graph TD
+  Client[Frontend / Trader UI] -->|HTTP / WS| Gateway[gateway]
+  Gateway -->|REST / Idempotency / Rate Limit| Order[order-service]
+  Gateway <-->|WS Proxy| Market[market-data-service]
+  Order -->|TX1 Lock Funds + Create Order + Outbox| DB[(PostgreSQL)]
+  Order -->|Sliding Window / Idempotency Cache| Redis[(Redis)]
+  Order -->|Outbox Worker| Kafka[(Kafka / Redpanda)]
+  Kafka -->|exchange.orders| Matching[matching-engine]
+  Matching -->|Leader Election + Fencing| DB
+  Matching -->|Warm Start / Active Orders| DB
+  Matching -->|Orderbook Snapshot| Redis
+  Matching -->|settlements / trades / orderbook| Kafka
+  Kafka -->|exchange.settlements| Order
+  Kafka -->|orderbook / trades / order_updates| Market
+  Market -->|Realtime Push| Client

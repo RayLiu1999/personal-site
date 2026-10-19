@@ -1,0 +1,6 @@
+graph TD
+  User -->|React UI| Vite[Vite SPA]
+  Vite -->|REST API| API[FastAPI Backend]
+  API -->|Strategy/Grid Search| Pandas[Pandas Engine]
+  API <--> DB[(PostgreSQL)]
+  API -.->|Fetch History| YF[yfinance API]

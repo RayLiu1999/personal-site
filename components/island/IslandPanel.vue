@@ -1,5 +1,5 @@
 <template>
-  <section class="island-panel gui" :class="{ closed: hidden, expanded }" :aria-labelledby="titleId" :inert="hidden || undefined">
+  <section class="island-panel gui" :class="{ closed: hidden, expanded, wide }" :aria-labelledby="titleId" :inert="hidden || undefined">
     <button class="grip" type="button" :aria-label="t('island.grip')" @click="expanded = !expanded" />
     <div class="panel-head">
       <img :src="iconSrc" alt="" width="40" height="40">
@@ -22,11 +22,12 @@
 import type { ViewId } from '~/island/engine'
 import { isoIcon, LANDMARK_ICON_TILES } from '~/island/atlas'
 
-const props = defineProps<{ view: ViewId; title: string; sub: string; icon?: string }>()
+// `wide` gives long reads (a project page) more room on desktop.
+const props = defineProps<{ view: ViewId; title: string; sub: string; icon?: string; wide?: boolean }>()
 
 const { t } = useI18n()
-const localePath = useLocalePath()
-const { flat, lookAround, creative, buildFly, buildLocked } = useIsland()
+const route = useRoute()
+const { flat, lookAround, creative, buildFly, buildLocked, linkTo } = useIsland()
 
 const titleId = 'island-panel-title'
 const heading = ref<HTMLElement>()
@@ -35,10 +36,7 @@ const expanded = ref(false)
 // Tucked away while looking around, and in first person while the mouse is captured.
 const hidden = computed(() => !flat.value && (!!lookAround.value || (creative.value && buildFly.value && buildLocked.value)))
 
-const closeTo = computed(() => {
-  const r = routeForView(isMachineId(props.view) ? 'factory' : 'home')
-  return localePath(r.path)
-})
+const closeTo = computed(() => linkTo(parentView(route)))
 
 // Block icons are drawn from the procedural atlas, which needs a canvas: render them after mount.
 const blockIcon = ref('')
