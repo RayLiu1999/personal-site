@@ -7,13 +7,13 @@
     "start": "nuxt start"
   },
   "dependencies": {
-    "@line/bot-sdk": "^10.2.0",
-    "@nuxtjs/i18n": "^10.1.0",
-    "nuxt": "^3.17.6",
+    "@line/bot-sdk": "^10.8.0",
+    "@nuxtjs/i18n": "^10.6.0",
+    "nuxt": "^3.21.11",
     "three": "0.186.1"
   },
   "devDependencies": {
-    "@nuxtjs/sitemap": "^7.4.3",
+    "@nuxtjs/sitemap": "^7.6.2",
     "@types/three": "0.186.0",
     "nuxt-umami": "^3.2.1"
   },
